@@ -6,6 +6,8 @@ import Register from './pages/Register';
 import Marketplace from './pages/Marketplace';
 import Dashboard from './pages/Dashboard';
 import SellerDashboard from './pages/SellerDashboard';
+import PlantCare from './pages/PlantCare';
+
 
 function App() {
     return (
@@ -19,6 +21,7 @@ function App() {
                     <Route path="/marketplace" element={<Marketplace />} />
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/seller" element={<SellerDashboard />} />
+                    <Route path="/plant-care" element={<PlantCare />} />
                 </Routes>
             </main>
             <footer className="bg-nature-900 text-nature-100 py-6 text-center">

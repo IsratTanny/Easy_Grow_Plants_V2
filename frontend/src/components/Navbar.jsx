@@ -21,6 +21,7 @@ export default function Navbar() {
 
                 <div className="flex items-center gap-6">
                     <Link to="/marketplace" className="text-gray-600 hover:text-nature-600 font-medium">Marketplace</Link>
+                    <Link to="/plant-care" className="text-gray-600 hover:text-nature-600 font-medium">Plant Care</Link>
                     <Link to="/plant-library" className="text-gray-600 hover:text-nature-600 font-medium">Plant Library</Link>
 
                     {isAuth ? (

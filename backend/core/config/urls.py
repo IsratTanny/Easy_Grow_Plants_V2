@@ -70,6 +70,7 @@ urlpatterns = [
     
     # API
     path('api/', include(router.urls)),
+    path('api/plant-care/', include('backend.apps.plant_care.urls')),
     
     # Auth API
     path('api/auth/register/', RegisterView.as_view(), name='auth_register'),

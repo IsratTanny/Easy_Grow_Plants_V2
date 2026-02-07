@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'backend.apps.users',
     'backend.apps.marketplace',
     'backend.apps.iot',
+    'backend.apps.plant_care',
 ]
 
 MIDDLEWARE = [
