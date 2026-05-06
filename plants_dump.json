@@ -1,0 +1,652 @@
+[
+  {
+    "id": 118,
+    "name": "Neon Pothos",
+    "image_url": "/images/pothos-neon.jpg"
+  },
+  {
+    "id": 119,
+    "name": "Jade Pothos",
+    "image_url": "/images/pothos-jade.jpg"
+  },
+  {
+    "id": 120,
+    "name": "Marble Queen Pothos",
+    "image_url": "/images/pothos-marble.jpg"
+  },
+  {
+    "id": 121,
+    "name": "Hawaiian Pothos",
+    "image_url": "/images/pothos-hawaiian.jpg"
+  },
+  {
+    "id": 122,
+    "name": "Golden Pothos",
+    "image_url": "/images/pothos-golden.jpg"
+  },
+  {
+    "id": 123,
+    "name": "Manjula Pothos",
+    "image_url": "/images/pothos-manjula.jpg"
+  },
+  {
+    "id": 124,
+    "name": "Pearls and Jade Pothos",
+    "image_url": "/images/pothos-pearls-jade.jpg"
+  },
+  {
+    "id": 125,
+    "name": "N'Joy Pothos",
+    "image_url": "/images/pothos-njoy.jpg"
+  },
+  {
+    "id": 126,
+    "name": "Global Green Pothos",
+    "image_url": "/images/pothos-global-green.jpg"
+  },
+  {
+    "id": 127,
+    "name": "Snow Queen Pothos",
+    "image_url": "/images/pothos-snow-queen.jpg"
+  },
+  {
+    "id": 128,
+    "name": "Cebu Blue Pothos",
+    "image_url": "/images/pothos-cebu-blue.jpg"
+  },
+  {
+    "id": 129,
+    "name": "Jessenia Pothos",
+    "image_url": "/images/pothos-jessenia.jpg"
+  },
+  {
+    "id": 130,
+    "name": "Baltic Blue Pothos",
+    "image_url": "/images/pothos-baltic-blue.jpg"
+  },
+  {
+    "id": 131,
+    "name": "Sleeping Pothos",
+    "image_url": "/images/pothos-shangri-la.jpg"
+  },
+  {
+    "id": 132,
+    "name": "Siam Aurora",
+    "image_url": "/images/aglaonema-siam-aurora.jpg"
+  },
+  {
+    "id": 133,
+    "name": "Red Anjamani",
+    "image_url": "/images/aglaonema-red-anjamani.jpg"
+  },
+  {
+    "id": 134,
+    "name": "Red Star",
+    "image_url": "/images/aglaonema-red-star.jpg"
+  },
+  {
+    "id": 135,
+    "name": "Red Zircon",
+    "image_url": "/images/aglaonema-red-zircon.jpg"
+  },
+  {
+    "id": 136,
+    "name": "Red Gold",
+    "image_url": "/images/aglaonema-red-gold.jpg"
+  },
+  {
+    "id": 137,
+    "name": "Red King",
+    "image_url": "/images/aglaonema-red-king.jpg"
+  },
+  {
+    "id": 138,
+    "name": "Red Sunkist",
+    "image_url": "/images/aglaonema-red-sunkist.jpg"
+  },
+  {
+    "id": 139,
+    "name": "Red Valentine",
+    "image_url": "/images/aglaonema-red-valentine.jpg"
+  },
+  {
+    "id": 140,
+    "name": "Red Master",
+    "image_url": "/images/aglaonema-red-master.jpg"
+  },
+  {
+    "id": 141,
+    "name": "Red Peacock",
+    "image_url": "/images/aglaonema-red-peacock.jpg"
+  },
+  {
+    "id": 142,
+    "name": "Red Emerald",
+    "image_url": "/images/aglaonema-red-emerald.jpg"
+  },
+  {
+    "id": 143,
+    "name": "Firecracker",
+    "image_url": "/images/aglaonema-firecracker.jpg"
+  },
+  {
+    "id": 144,
+    "name": "Lady Valentine",
+    "image_url": "/images/aglaonema-lady-valentine.jpg"
+  },
+  {
+    "id": 145,
+    "name": "Pink Dalmatian",
+    "image_url": "/images/aglaonema-pink-dalmatian.jpg"
+  },
+  {
+    "id": 146,
+    "name": "Pink Beauty",
+    "image_url": "/images/aglaonema-pink-beauty.jpg"
+  },
+  {
+    "id": 147,
+    "name": "Pink Passion",
+    "image_url": "/images/aglaonema-pink-passion.jpg"
+  },
+  {
+    "id": 148,
+    "name": "Pink Moon",
+    "image_url": "/images/aglaonema-pink-moon.jpg"
+  },
+  {
+    "id": 149,
+    "name": "Rosy",
+    "image_url": "/images/aglaonema-rosy.jpg"
+  },
+  {
+    "id": 150,
+    "name": "Pink Aurora",
+    "image_url": "/images/aglaonema-pink-aurora.jpg"
+  },
+  {
+    "id": 151,
+    "name": "Pink Kiss",
+    "image_url": "/images/aglaonema-pink-kiss.jpg"
+  },
+  {
+    "id": 152,
+    "name": "Legacy",
+    "image_url": "/images/aglaonema-legacy.jpg"
+  },
+  {
+    "id": 153,
+    "name": "Super Pink",
+    "image_url": "/images/aglaonema-super-pink.jpg"
+  },
+  {
+    "id": 154,
+    "name": "Pink Princess",
+    "image_url": "/images/aglaonema-pink-princess.jpg"
+  },
+  {
+    "id": 155,
+    "name": "Pink Champagne",
+    "image_url": "/images/aglaonema-pink-champagne.jpg"
+  },
+  {
+    "id": 156,
+    "name": "Silver Queen",
+    "image_url": "/images/aglaonema-silver-queen.jpg"
+  },
+  {
+    "id": 157,
+    "name": "Silver King",
+    "image_url": "/images/aglaonema-silver-king.jpg"
+  },
+  {
+    "id": 158,
+    "name": "Snow White",
+    "image_url": "/images/aglaonema-snow-white.jpg"
+  },
+  {
+    "id": 159,
+    "name": "First Diamond",
+    "image_url": "/images/aglaonema-first-diamond.jpg"
+  },
+  {
+    "id": 160,
+    "name": "White Rain",
+    "image_url": "/images/aglaonema-white-rain.jpg"
+  },
+  {
+    "id": 161,
+    "name": "Diamond Bay",
+    "image_url": "/images/aglaonema-diamond-bay.jpg"
+  },
+  {
+    "id": 162,
+    "name": "Silver Bay",
+    "image_url": "/images/aglaonema-silver-bay.jpg"
+  },
+  {
+    "id": 163,
+    "name": "White Joy",
+    "image_url": "/images/aglaonema-white-joy.jpg"
+  },
+  {
+    "id": 164,
+    "name": "Stardust",
+    "image_url": "/images/aglaonema-stardust.jpg"
+  },
+  {
+    "id": 165,
+    "name": "Spring Snow",
+    "image_url": "/images/aglaonema-spring-snow.jpg"
+  },
+  {
+    "id": 166,
+    "name": "Modestum",
+    "image_url": "/images/aglaonema-modestum.jpg"
+  },
+  {
+    "id": 167,
+    "name": "Black Lance",
+    "image_url": "/images/aglaonema-black-lance.jpg"
+  },
+  {
+    "id": 168,
+    "name": "Maria",
+    "image_url": "/images/aglaonema-maria.jpg"
+  },
+  {
+    "id": 169,
+    "name": "Emerald Bay",
+    "image_url": "/images/aglaonema-emerald-bay.jpg"
+  },
+  {
+    "id": 170,
+    "name": "Green Papaya",
+    "image_url": "/images/aglaonema-green-papaya.jpg"
+  },
+  {
+    "id": 171,
+    "name": "Black Panther",
+    "image_url": "/images/aglaonema-black-panther.jpg"
+  },
+  {
+    "id": 172,
+    "name": "Tigress",
+    "image_url": "/images/aglaonema-tigress.jpg"
+  },
+  {
+    "id": 173,
+    "name": "Cutlass",
+    "image_url": "/images/aglaonema-cutlass.jpg"
+  },
+  {
+    "id": 174,
+    "name": "Jade",
+    "image_url": "/images/aglaonema-jade.jpg"
+  },
+  {
+    "id": 175,
+    "name": "Abidjan",
+    "image_url": "/images/aglaonema-abidjan.jpg"
+  },
+  {
+    "id": 176,
+    "name": "Pictum Tricolor",
+    "image_url": "/images/aglaonema-pictum-tricolor.jpg"
+  },
+  {
+    "id": 177,
+    "name": "Anyanmanee",
+    "image_url": "/images/aglaonema-anyanmanee.jpg"
+  },
+  {
+    "id": 178,
+    "name": "Khanza",
+    "image_url": "/images/aglaonema-khanza.jpg"
+  },
+  {
+    "id": 179,
+    "name": "Suksom Jaiprang",
+    "image_url": "/images/aglaonema-suksom-jaiprang.jpg"
+  },
+  {
+    "id": 180,
+    "name": "Lotus Delight",
+    "image_url": "/images/aglaonema-lotus-delight.jpg"
+  },
+  {
+    "id": 181,
+    "name": "Golden Fluorite",
+    "image_url": "/images/aglaonema-golden-fluorite.jpg"
+  },
+  {
+    "id": 182,
+    "name": "Harlequin",
+    "image_url": "/images/aglaonema-harlequin.jpg"
+  },
+  {
+    "id": 183,
+    "name": "Chocolate",
+    "image_url": "/images/aglaonema-chocolate.jpg"
+  },
+  {
+    "id": 184,
+    "name": "Monstera Deliciosa",
+    "image_url": "/images/monstera-deliciosa.jpg"
+  },
+  {
+    "id": 185,
+    "name": "Monstera Adansonii",
+    "image_url": "/images/monstera-adansonii.jpg"
+  },
+  {
+    "id": 186,
+    "name": "Monstera Deliciosa \u2018Borsigiana\u2019",
+    "image_url": "/images/monstera-deliciosa-borsigiana.jpg"
+  },
+  {
+    "id": 187,
+    "name": "Monstera Adansonii \u2018Narrow Form\u2019",
+    "image_url": "/images/monstera-adansonii-narrow-form.jpg"
+  },
+  {
+    "id": 188,
+    "name": "Monstera Adansonii \u2018Wide Form\u2019",
+    "image_url": "/images/monstera-adansonii-wide-form.jpg"
+  },
+  {
+    "id": 189,
+    "name": "Monstera Standleyana",
+    "image_url": "/images/monstera-standleyana.jpg"
+  },
+  {
+    "id": 190,
+    "name": "Monstera Dubia",
+    "image_url": "/images/monstera-dubia.jpg"
+  },
+  {
+    "id": 191,
+    "name": "Monstera Siltepecana",
+    "image_url": "/images/monstera-siltepecana.jpg"
+  },
+  {
+    "id": 192,
+    "name": "Monstera Pinnatipartita",
+    "image_url": "/images/monstera-pinnatipartita.jpg"
+  },
+  {
+    "id": 193,
+    "name": "Monstera Deliciosa \u2018Albo Variegata\u2019",
+    "image_url": "/images/monstera-deliciosa-albo-variegata.jpg"
+  },
+  {
+    "id": 194,
+    "name": "Monstera Deliciosa \u2018Thai Constellation\u2019",
+    "image_url": "/images/monstera-deliciosa-thai-constellation.jpg"
+  },
+  {
+    "id": 195,
+    "name": "Monstera Deliciosa \u2018Aurea\u2019 (Marmorata)",
+    "image_url": "/images/monstera-deliciosa-aurea-marmorata.jpg"
+  },
+  {
+    "id": 196,
+    "name": "Monstera Deliciosa \u2018Mint Variegata\u2019",
+    "image_url": "/images/monstera-deliciosa-mint-variegata.jpg"
+  },
+  {
+    "id": 197,
+    "name": "Monstera Deliciosa \u2018White Monster\u2019",
+    "image_url": "/images/monstera-deliciosa-white-monster.jpg"
+  },
+  {
+    "id": 198,
+    "name": "Monstera Adansonii \u2018Albo Variegata\u2019",
+    "image_url": "/images/monstera-adansonii-albo-variegata.jpg"
+  },
+  {
+    "id": 199,
+    "name": "Monstera Adansonii \u2018Aurea Variegata\u2019",
+    "image_url": "/images/monstera-adansonii-aurea-variegata.jpg"
+  },
+  {
+    "id": 200,
+    "name": "Monstera Standleyana \u2018Albo Variegata\u2019",
+    "image_url": "/images/monstera-standleyana-albo-variegata.jpg"
+  },
+  {
+    "id": 201,
+    "name": "Monstera Obliqua",
+    "image_url": "/images/monstera-obliqua.jpg"
+  },
+  {
+    "id": 202,
+    "name": "Monstera Karstenianum (Peru)",
+    "image_url": "/images/monstera-karstenianum-peru.jpg"
+  },
+  {
+    "id": 203,
+    "name": "Monstera Lechleriana",
+    "image_url": "/images/monstera-lechleriana.jpg"
+  },
+  {
+    "id": 204,
+    "name": "Monstera Acuminata",
+    "image_url": "/images/monstera-acuminata.jpg"
+  },
+  {
+    "id": 205,
+    "name": "Monstera Subpinnata",
+    "image_url": "/images/monstera-subpinnata.jpg"
+  },
+  {
+    "id": 206,
+    "name": "Monstera Epipremnoides",
+    "image_url": "/images/monstera-epipremnoides.jpg"
+  },
+  {
+    "id": 207,
+    "name": "Monstera Spruceana",
+    "image_url": "/images/monstera-spruceana.jpg"
+  },
+  {
+    "id": 208,
+    "name": "Monstera Deliciosa \u2018Compacta\u2019",
+    "image_url": "/images/monstera-deliciosa-compacta.jpg"
+  },
+  {
+    "id": 209,
+    "name": "Sansevieria Laurentii",
+    "image_url": "/images/sansevieria-laurentii.jpg"
+  },
+  {
+    "id": 210,
+    "name": "Sansevieria Zeylanica",
+    "image_url": "/images/sansevieria-zeylanica.jpg"
+  },
+  {
+    "id": 211,
+    "name": "Echeveria",
+    "image_url": "/images/succulent-echeveria.jpg"
+  },
+  {
+    "id": 212,
+    "name": "Jade Plant",
+    "image_url": "/images/succulent-jade.jpg"
+  },
+  {
+    "id": 213,
+    "name": "Aloe Vera",
+    "image_url": "/images/succulent-aloe.jpg"
+  },
+  {
+    "id": 214,
+    "name": "Calathea Medallion",
+    "image_url": "/images/calathea-medallion.jpg"
+  },
+  {
+    "id": 215,
+    "name": "Rattlesnake Plant (Calathea lancifolia)",
+    "image_url": "/images/calathea-rattlesnake.jpg"
+  },
+  {
+    "id": 216,
+    "name": "Calathea Ornata (Pinstripe Plant)",
+    "image_url": "/images/calathea-ornata.jpg"
+  },
+  {
+    "id": 217,
+    "name": "Heartleaf Philodendron",
+    "image_url": "/images/philodendron-heartleaf.jpg"
+  },
+  {
+    "id": 218,
+    "name": "Philodendron Brasil",
+    "image_url": "/images/philodendron-brasil.jpg"
+  },
+  {
+    "id": 219,
+    "name": "Pink Princess Philodendron",
+    "image_url": "/images/philodendron-pink-princess.jpg"
+  },
+  {
+    "id": 220,
+    "name": "Watermelon Peperomia",
+    "image_url": "/images/peperomia-watermelon.jpg"
+  },
+  {
+    "id": 221,
+    "name": "Peperomia Hope",
+    "image_url": "/images/peperomia-hope.jpg"
+  },
+  {
+    "id": 222,
+    "name": "Raindrop Peperomia",
+    "image_url": "/images/peperomia-raindrop.jpg"
+  },
+  {
+    "id": 223,
+    "name": "Fiddle Leaf Fig",
+    "image_url": "/images/ficus-lyrata.jpg"
+  },
+  {
+    "id": 224,
+    "name": "Rubber Plant (Ficus elastica)",
+    "image_url": "/images/ficus-elastica.jpg"
+  },
+  {
+    "id": 225,
+    "name": "Ficus Audrey",
+    "image_url": "/images/ficus-audrey.jpg"
+  },
+  {
+    "id": 226,
+    "name": "Dracaena Marginata (Dragon Tree)",
+    "image_url": "/images/dracaena-marginata.jpg"
+  },
+  {
+    "id": 227,
+    "name": "Dracaena Lemon Lime",
+    "image_url": "/images/dracaena-lemon-lime.jpg"
+  },
+  {
+    "id": 228,
+    "name": "Rex Begonia",
+    "image_url": "/images/begonia-rex.jpg"
+  },
+  {
+    "id": 229,
+    "name": "Begonia Maculata (Polka Dot)",
+    "image_url": "/images/begonia-maculata.jpg"
+  },
+  {
+    "id": 230,
+    "name": "Alocasia Polly",
+    "image_url": "/images/alocasia-polly.jpg"
+  },
+  {
+    "id": 231,
+    "name": "Alocasia Black Velvet",
+    "image_url": "/images/alocasia-black-velvet.jpg"
+  },
+  {
+    "id": 232,
+    "name": "Alocasia Zebrina",
+    "image_url": "/images/alocasia-zebrina.jpg"
+  },
+  {
+    "id": 233,
+    "name": "Tradescantia Zebrina",
+    "image_url": "/images/tradescantia-zebrina.jpg"
+  },
+  {
+    "id": 234,
+    "name": "Tradescantia Nanouk",
+    "image_url": "/images/tradescantia-nanouk.jpg"
+  },
+  {
+    "id": 235,
+    "name": "philo",
+    "image_url": ""
+  },
+  {
+    "id": 236,
+    "name": "brasil",
+    "image_url": ""
+  },
+  {
+    "id": 237,
+    "name": "golden pothos",
+    "image_url": ""
+  },
+  {
+    "id": 238,
+    "name": "nanouk",
+    "image_url": ""
+  },
+  {
+    "id": 239,
+    "name": "ficus",
+    "image_url": ""
+  },
+  {
+    "id": 240,
+    "name": "nanouk",
+    "image_url": ""
+  },
+  {
+    "id": 241,
+    "name": "monstera",
+    "image_url": ""
+  },
+  {
+    "id": 242,
+    "name": "Old Man",
+    "image_url": "plants/Old_Man_Cactus.jpg"
+  },
+  {
+    "id": 243,
+    "name": "Silver Dragon",
+    "image_url": "plants/Silver_Dragon.avif"
+  },
+  {
+    "id": 244,
+    "name": "Red Bunny",
+    "image_url": "plants/Red_Bunny.webp"
+  },
+  {
+    "id": 245,
+    "name": "Old Man cactus",
+    "image_url": "plants/Old_Man_Cactus_VpmuqRH.jpg"
+  },
+  {
+    "id": 246,
+    "name": "White Bunny",
+    "image_url": "plants/White_Bunny.jpg"
+  },
+  {
+    "id": 247,
+    "name": "White Bunny",
+    "image_url": "plants/White_Bunny_9uQWjwf.jpg"
+  }
+]

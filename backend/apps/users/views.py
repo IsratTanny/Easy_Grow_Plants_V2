@@ -1,11 +1,61 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as auth_login
 from django.contrib import messages
-from rest_framework import generics, permissions
-from .serializers import UserSerializer
+from rest_framework import generics, permissions, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
+from .serializers import UserSerializer, PublicUserSerializer, BotanistApplicationSerializer
+from .models import BotanistApplication
 from django.contrib.auth import get_user_model
+import os
+
+# Optional imports to prevent server crash
+try:
+    import cv2
+    import numpy as np
+    CV2_AVAILABLE = True
+except ImportError:
+    CV2_AVAILABLE = False
+    print("WARNING: opencv-python not installed. Face verification will use demo fallback.")
 
 User = get_user_model()
+
+# Attempt to import face_recognition
+try:
+    import face_recognition
+    FACE_REC_AVAILABLE = True
+except ImportError:
+    FACE_REC_AVAILABLE = False
+
+class FaceVerificationView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        face_image = request.FILES.get('face_image')
+        nid_front = request.FILES.get('nid_front')
+        nid_back = request.FILES.get('nid_back')
+        is_frontend_verified = request.data.get('is_verified') == 'true'
+
+        user = request.user
+        if face_image:
+            user.face_captured = face_image
+        if nid_front:
+            user.nid_front = nid_front
+        if nid_back:
+            user.nid_back = nid_back
+        
+        if is_frontend_verified:
+            user.is_verified = True
+        
+        user.save()
+
+        return Response({
+            'success': True,
+            'is_verified': user.is_verified,
+            'message': 'NID data saved successfully.'
+        })
 
 # API Views
 class RegisterView(generics.CreateAPIView):
@@ -20,6 +70,95 @@ class UserDetailView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+    def patch(self, request, *args, **kwargs):
+        # Explicitly support PATCH for multipart file uploads
+        return self.partial_update(request, *args, **kwargs)
+
+class SellerProfileView(generics.RetrieveAPIView):
+    queryset = User.objects.filter(role='seller')
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = PublicUserSerializer
+    lookup_field = 'username'
+
+class AdminSellersView(generics.ListAPIView):
+    queryset = User.objects.filter(role='seller')
+    permission_classes = (permissions.IsAuthenticated,)
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        if self.request.user.role == 'admin':
+            return User.objects.filter(role='seller')
+        return User.objects.none()
+
+class BotanistApplicationListCreateView(generics.ListCreateAPIView):
+    queryset = BotanistApplication.objects.all()
+    serializer_class = BotanistApplicationSerializer
+    permission_classes = (permissions.AllowAny,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
+
+class BotanistApplicationActionView(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def patch(self, request, pk, action):
+        try:
+            app = BotanistApplication.objects.get(pk=pk)
+            if action == 'approve':
+                app.status = 'approved'
+                # Find the user by phone and verify them
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                try:
+                    # Use filter().first() instead of get() to handle multiple users with same phone
+                    user = User.objects.filter(phone=app.phone).first()
+                    if user:
+                        user.is_verified = True
+                        user.save()
+                        
+                        # Send Automated Notification
+                        try:
+                            from backend.apps.plant_care.models import Notification
+                            Notification.objects.create(
+                                user=user,
+                                message=f"Your application to join as an Expert Botanist has been Approved. Congratulations {app.name}!"
+                            )
+                        except Exception as notify_err:
+                            print(f"Notification error: {notify_err}")
+                    else:
+                        print(f"No user found with phone {app.phone}")
+                except User.DoesNotExist:
+                    print(f"User with phone {app.phone} not found for verification.")
+            
+            elif action == 'reject':
+                app.status = 'rejected'
+                # Send Rejection Notification if user exists
+                from django.contrib.auth import get_user_model
+                User = get_user_model()
+                try:
+                    user = User.objects.filter(phone=app.phone).first()
+                    if user:
+                        try:
+                            from backend.apps.plant_care.models import Notification
+                            Notification.objects.create(
+                                user=user,
+                                message=f"Your application to join as an Expert Botanist has been Rejected."
+                            )
+                        except Exception as notify_err:
+                            print(f"Notification error: {notify_err}")
+                except Exception as e:
+                    print(f"Error in rejection: {e}")
+            
+            app.save()
+            return Response({'success': True, 'message': f'Botanist {action.capitalize()}ed Successfully'})
+        except BotanistApplication.DoesNotExist:
+            return Response({'error': 'Application not found'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
 
 
 # HTML Views

@@ -8,22 +8,24 @@ export const api = axios.create({
     }
 });
 
-// Add interceptor to attach JWT token
-api.interceptors.request.use((config) => {
+// Unified API Client (IoT and Main)
+export const iotApi = axios.create({
+    baseURL: '/api',
+    headers: {
+        'Content-Type': 'application/json',
+    }
+});
+
+const authInterceptor = (config) => {
     const token = localStorage.getItem('access_token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
-});
+};
 
-// FastAPI Client (IoT)
-export const iotApi = axios.create({
-    baseURL: '/iot', // Proxied and rewritten by Vite
-    headers: {
-        'Content-Type': 'application/json',
-    }
-});
+api.interceptors.request.use(authInterceptor);
+iotApi.interceptors.request.use(authInterceptor);
 
 // Auth Helpers
 export const setAuthToken = (access, refresh) => {

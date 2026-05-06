@@ -1,0 +1,52 @@
+[
+    {
+        "name": "Silver Queen",
+        "category": "Silver Varieties",
+        "description": "The classic Aglaonema with long, lance-shaped leaves that are predominantly silver with green margins."
+    },
+    {
+        "name": "Silver Bay",
+        "category": "Silver Varieties",
+        "description": "A robust variety featuring broad, oval leaves with a solid silver center and irregular green borders."
+    },
+    {
+        "name": "Siam Aurora",
+        "category": "Red Varieties",
+        "description": "Also known as the Red Aglaonema, it has vibrant red stems and leaf edges outlining green centers."
+    },
+    {
+        "name": "Crete",
+        "category": "Red Varieties",
+        "description": "Features broad green leaves heavily splashed with deep red and pink variegation."
+    },
+    {
+        "name": "Maria",
+        "category": "Green Varieties",
+        "description": "A tough variety with dark green leaves patterned with silvery-green chevrons. Very tolerant of low light."
+    },
+    {
+        "name": "Sparkling Sarah",
+        "category": "Pink Varieties",
+        "description": "Eye-catching foliage with pink stems and midribs, and leaves speckled with pink and green."
+    },
+    {
+        "name": "Lady Valentine",
+        "category": "Pink Varieties",
+        "description": "Stunning leaves that start pink and develop green spotting as they mature, often mostly pink."
+    },
+    {
+        "name": "Cutlass",
+        "category": "Silver Varieties",
+        "description": "Distinctive long, narrow, blade-like leaves that are silvery-green with darker green edges."
+    },
+    {
+        "name": "Emerald Bay",
+        "category": "Silver Varieties",
+        "description": "Similar to Silver Bay but often has a more distinct emerald green margin and silvery-feathered center."
+    },
+    {
+        "name": "First Diamond",
+        "category": "White Varieties",
+        "description": "Showy white foliage with green speckles and margins, brightening up any shady corner."
+    }
+]

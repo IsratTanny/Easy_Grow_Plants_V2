@@ -1,0 +1,212 @@
+[
+    {
+        "id": "pothos",
+        "name": "Pothos",
+        "type": "Vining",
+        "careType": "general",
+        "care": {
+            "water": "Allow the top inch of soil to dry out between waterings. Water less frequently in winter.",
+            "light": "Thrives in bright, indirect light but can tolerate low light conditions. Avoid direct sunlight which can scorch leaves.",
+            "soil": "Use a well-draining potting mix. Adding perlite can help with drainage.",
+            "toxicity": "Toxic to pets and humans if ingested. Keep out of reach of children and animals."
+        },
+        "varieties": [
+            {
+                "id": "neon",
+                "name": "Neon Pothos",
+                "group": "Standard Varieties",
+                "description": "Showstopping variety with bright, electric chartreuse-green leaves.",
+                "care": {
+                    "light": "Bright indirect light to maintain color. Turns darker green in low light.",
+                    "water": "Allow top inch of soil to dry out.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-neon.jpg"
+            },
+            {
+                "id": "jade",
+                "name": "Jade Pothos",
+                "group": "Standard Varieties",
+                "description": "The original Pothos with solid, deep green heart-shaped leaves.",
+                "care": {
+                    "light": "Low to Medium indirect light. Can tolerate lower light than variegated types.",
+                    "water": "Let soil dry out between waterings.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Fast",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-jade.jpg"
+            },
+            {
+                "id": "marble-queen",
+                "name": "Marble Queen Pothos",
+                "group": "Standard Varieties",
+                "description": "Highly speckled leaves with a mix of green and creamy white.",
+                "care": {
+                    "light": "Bright indirect light. variegation slows photosynthesis, so it needs more light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow to Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-marble.jpg"
+            },
+            {
+                "id": "hawaiian",
+                "name": "Hawaiian Pothos",
+                "group": "Standard Varieties",
+                "description": "Similar to golden pothos but with much larger leaves and intense yellow variegation.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Fast in ideal conditions",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-hawaiian.jpg"
+            },
+            {
+                "id": "golden",
+                "name": "Golden Pothos",
+                "group": "Standard Varieties",
+                "description": "The classic houseplant with green leaves splashed with golden yellow.",
+                "care": {
+                    "light": "Low to Bright indirect light. Adaptable.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Fast",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-golden.jpg"
+            },
+            {
+                "id": "manjula",
+                "name": "Manjula Pothos",
+                "group": "Designer Varieties",
+                "description": "Patented variety with wide, wavy leaves featuring swirls of cream, silver, white, and green.",
+                "care": {
+                    "light": "Bright indirect light is essential to keep the white areas from browning.",
+                    "water": "Keep consistently moist but not soggy.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-manjula.jpg"
+            },
+            {
+                "id": "pearls-and-jade",
+                "name": "Pearls and Jade Pothos",
+                "group": "Designer Varieties",
+                "description": "Smaller leaves with white edges and green centers, speckled with grey and green.",
+                "care": {
+                    "light": "Bright indirect light.",
+                    "water": "Allow top inch to dry. Sensitive to overwatering.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-pearls-jade.jpg"
+            },
+            {
+                "id": "njoy",
+                "name": "N'Joy Pothos",
+                "group": "Designer Varieties",
+                "description": "Distinct white and green patches. Unlike Pearls and Jade, the white parts are usually solid without speckling.",
+                "care": {
+                    "light": "Bright indirect light.",
+                    "water": "Let dry out slightly more than other varieties.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-njoy.jpg"
+            },
+            {
+                "id": "global-green",
+                "name": "Global Green Pothos",
+                "group": "Designer Varieties",
+                "description": "Green-on-green variegation with a dark green border and lighter lime center.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-global-green.jpg"
+            },
+            {
+                "id": "snow-queen",
+                "name": "Snow Queen Pothos",
+                "group": "Designer Varieties",
+                "description": "A highly variegated form of Marble Queen with more white than green.",
+                "care": {
+                    "light": "Bright indirect light required to maintain the white.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-snow-queen.jpg"
+            },
+            {
+                "id": "cebu-blue",
+                "name": "Cebu Blue Pothos",
+                "group": "Unique Varieties",
+                "description": "Silvery-blue, lance-shaped leaves that can fenestrate (split) as they mature and climb.",
+                "care": {
+                    "light": "Bright indirect light. Needs more light than standard pothos to maintain blue hue.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Aroid mix",
+                    "growthRate": "Fast climber",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-cebu-blue.jpg"
+            },
+            {
+                "id": "jessenia",
+                "name": "Jessenia Pothos",
+                "group": "Unique Varieties",
+                "description": "Similar to Marble Queen but with lime green variegation instead of white.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-jessenia.jpg"
+            },
+            {
+                "id": "baltic-blue",
+                "name": "Baltic Blue Pothos",
+                "group": "Unique Varieties",
+                "description": "Dark blue-green leaves that fenestrate earlier than Cebu Blue.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Aroid mix",
+                    "growthRate": "Fast",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-baltic-blue.jpg"
+            },
+            {
+                "id": "shangri-la",
+                "name": "Shangri-La Pothos",
+                "group": "Unique Varieties",
+                "description": "Unusual 'sleeping' pothos with curled, spinach-like leaves.",
+                "care": {
+                    "light": "Bright indirect light.",
+                    "water": "Keep consistently moist.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-shangri-la.jpg"
+            }
+        ]
+    }
+]

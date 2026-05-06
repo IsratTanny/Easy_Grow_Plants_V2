@@ -6,12 +6,38 @@ body {
     @apply bg-nature-50 text-gray-800;
 }
 
+.bg-mint-fresh {
+    background-color: #f7fdfa;
+}
+
 .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-colors duration-200;
 }
 
+.btn-pill {
+    @apply rounded-full px-10 py-4 font-bold tracking-wide transition-all duration-300;
+}
+
+.service-card {
+    @apply bg-white p-8 rounded-[20px] shadow-lg shadow-nature-100/30 border border-nature-100/50 hover:shadow-xl hover:shadow-nature-200/40 hover:-translate-y-2 transition-all duration-500 flex flex-col items-center text-center;
+}
+
+.carousel-container {
+    @apply flex overflow-x-auto gap-6 pb-6 snap-x;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.carousel-container::-webkit-scrollbar {
+    display: none;
+}
+
+.plant-card-mini {
+    @apply flex-none w-64 snap-start bg-white rounded-3xl overflow-hidden shadow-sm border border-nature-100 hover:shadow-md transition-shadow;
+}
+
 .btn-primary {
-    @apply bg-nature-600 text-white hover:bg-nature-700;
+    @apply bg-nature-600 text-white hover:bg-nature-700 shadow-lg shadow-nature-200;
 }
 
 .btn-secondary {
@@ -19,5 +45,88 @@ body {
 }
 
 .card {
-    @apply bg-white rounded-xl shadow-lg border border-nature-100 overflow-hidden;
+    @apply bg-[#fbfcfc] rounded-[15px] shadow-sm border border-nature-100/50 overflow-hidden;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slideDown {
+    animation: slideDown 0.4s ease-out forwards;
+}
+
+.animate-scaleUp {
+    animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Sidebar Animations */
+.sidebar-overlay {
+    @apply fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm transition-opacity duration-300;
+}
+
+.sidebar-overlay-hidden {
+    @apply opacity-0 pointer-events-none;
+}
+
+.sidebar-overlay-visible {
+    @apply opacity-100 pointer-events-auto;
+}
+
+.sidebar-drawer {
+    @apply fixed top-0 left-0 h-full w-72 bg-white shadow-2xl z-[70] transform transition-transform duration-300 ease-in-out;
+}
+
+.sidebar-drawer-hidden {
+    @apply -translate-x-full;
+}
+
+.sidebar-drawer-visible {
+    @apply translate-x-0;
+}
+
+.sidebar-link {
+    @apply flex items-center gap-3 p-3 rounded-xl text-gray-700 font-medium transition-all duration-200 hover:bg-nature-50 hover:text-nature-600;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }

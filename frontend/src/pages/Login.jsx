@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api, setAuthToken } from '../api/axios';
 import { Leaf } from 'lucide-react';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 export default function Login() {
     const [formData, setFormData] = useState({ username: '', password: '' });
@@ -10,12 +12,54 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
+
         try {
+            // 1. Django Authentication Flow
             const res = await api.post('/auth/login/', formData);
+
+            // 2. Set Django tokens
             setAuthToken(res.data.access, res.data.refresh);
-            navigate('/dashboard');
+
+            // 3. Fetch user profile to get complete details (role, email)
+            const userRes = await api.get('/auth/me/');
+            const userRole = userRes.data.role;
+            const userEmail = userRes.data.email;
+
+            // 4. Persistence: Output token and role string
+            localStorage.setItem('user_role', userRole);
+
+            // 5. Email Verification Check for Buyers
+            if (userRole === 'buyer' && userEmail) {
+                try {
+                    // Sign into Firebase strictly to check email verification status
+                    const fbCred = await signInWithEmailAndPassword(auth, userEmail, formData.password);
+                    if (!fbCred.user.emailVerified) {
+                        await signOut(auth);
+                        setError('Please verify your email first!');
+                        return; // Halt login if not verified
+                    }
+                } catch (fbErr) {
+                    console.error("Firebase Login Error: ", fbErr);
+                    // Handle specific password mismatch vs Firebase mismatch or missing records gracefully
+                    setError('Verification check failed. Please ensure your email is verified.');
+                    return;
+                }
+            }
+
+            // 6. Role-Based Navigation
+            if (userRole === 'buyer') {
+                navigate('/marketplace');
+            } else if (userRole === 'seller') {
+                navigate('/seller-dashboard');
+            } else if (userRole === 'admin') {
+                navigate('/admin-dashboard');
+            } else {
+                navigate('/dashboard');
+            }
+
         } catch (err) {
-            setError('Invalid credentials');
+            setError(err.response?.data?.error || err.response?.data?.detail || 'Invalid username or password');
         }
     };
 

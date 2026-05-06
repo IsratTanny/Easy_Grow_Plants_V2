@@ -10,10 +10,27 @@ export default defineConfig({
             '@': path.resolve(__dirname, './src'),
         },
     },
+    base: '/static/',  // Django serves from /static/
+    build: {
+        outDir: 'dist',
+        emptyOutDir: true,
+        manifest: true,
+        rollupOptions: {
+            output: {
+                entryFileNames: 'assets/[name].[hash].js',
+                chunkFileNames: 'assets/[name].[hash].js',
+                assetFileNames: 'assets/[name].[hash].[ext]'
+            }
+        }
+    },
     server: {
         port: 5173,
         proxy: {
             '/api': {
+                target: 'http://127.0.0.1:8000',
+                changeOrigin: true,
+            },
+            '/media': {
                 target: 'http://127.0.0.1:8000',
                 changeOrigin: true,
             },

@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-change-me-in-production'
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'localhost:8000', '127.0.0.1:8000']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'backend.apps.marketplace',
     'backend.apps.iot',
     'backend.apps.plant_care',
+    'backend.apps.support',
 ]
 
 MIDDLEWARE = [
@@ -108,13 +109,24 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
-
-STATIC_URL = 'static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+LANGUAGES = [
+    ('en', 'English'),
+    ('bn', 'Bengali'),
 ]
 
+USE_TZ = True
+
+# Static files configuration
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR.parent / 'staticfiles'
+
+STATICFILES_DIRS = [
+    BASE_DIR.parent / 'frontend' / 'dist',
+]
+
+# Media files configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR.parent / 'media'
 
 AUTH_USER_MODEL = 'users.CustomUser'
 
@@ -132,9 +144,17 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:5173",
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = True  # Enable for development ease
+CORS_ALLOW_CREDENTIALS = True
+
+# CSRF settings for same-origin requests
+CSRF_TRUSTED_ORIGINS = [
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
 ]
+
+
+# Force reload at 04/08/2026 11:21:28
+# Reload
+# Emergency Reload

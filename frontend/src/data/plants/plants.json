@@ -1,0 +1,1634 @@
+[
+    {
+        "id": "pothos",
+        "name": "Pothos",
+        "type": "Vining",
+        "careType": "general",
+        "care": {
+            "water": "Allow the top inch of soil to dry out between waterings. Water less frequently in winter.",
+            "light": "Thrives in bright, indirect light but can tolerate low light conditions. Avoid direct sunlight which can scorch leaves.",
+            "soil": "Use a well-draining potting mix. Adding perlite can help with drainage.",
+            "toxicity": "Toxic to pets and humans if ingested. Keep out of reach of children and animals."
+        },
+        "varieties": [
+            {
+                "id": "neon",
+                "name": "Neon Pothos",
+                "group": "Standard Varieties",
+                "description": "Showstopping variety with bright, electric chartreuse-green leaves.",
+                "care": {
+                    "light": "Bright indirect light to maintain color. Turns darker green in low light.",
+                    "water": "Allow top inch of soil to dry out.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-neon.jpg"
+            },
+            {
+                "id": "jade",
+                "name": "Jade Pothos",
+                "group": "Standard Varieties",
+                "description": "The original Pothos with solid, deep green heart-shaped leaves.",
+                "care": {
+                    "light": "Low to Medium indirect light. Can tolerate lower light than variegated types.",
+                    "water": "Let soil dry out between waterings.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Fast",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-jade.jpg"
+            },
+            {
+                "id": "marble-queen",
+                "name": "Marble Queen Pothos",
+                "group": "Standard Varieties",
+                "description": "Highly speckled leaves with a mix of green and creamy white.",
+                "care": {
+                    "light": "Bright indirect light. variegation slows photosynthesis, so it needs more light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow to Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-marble.jpg"
+            },
+            {
+                "id": "hawaiian",
+                "name": "Hawaiian Pothos",
+                "group": "Standard Varieties",
+                "description": "Similar to golden pothos but with much larger leaves and intense yellow variegation.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Fast in ideal conditions",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-hawaiian.jpg"
+            },
+            {
+                "id": "golden",
+                "name": "Golden Pothos",
+                "group": "Standard Varieties",
+                "description": "The classic houseplant with green leaves splashed with golden yellow.",
+                "care": {
+                    "light": "Low to Bright indirect light. Adaptable.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Fast",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-golden.jpg"
+            },
+            {
+                "id": "manjula",
+                "name": "Manjula Pothos",
+                "group": "Designer Varieties",
+                "description": "Patented variety with wide, wavy leaves featuring swirls of cream, silver, white, and green.",
+                "care": {
+                    "light": "Bright indirect light is essential to keep the white areas from browning.",
+                    "water": "Keep consistently moist but not soggy.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-manjula.jpg"
+            },
+            {
+                "id": "pearls-and-jade",
+                "name": "Pearls and Jade Pothos",
+                "group": "Designer Varieties",
+                "description": "Smaller leaves with white edges and green centers, speckled with grey and green.",
+                "care": {
+                    "light": "Bright indirect light.",
+                    "water": "Allow top inch to dry. Sensitive to overwatering.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-pearls-jade.jpg"
+            },
+            {
+                "id": "njoy",
+                "name": "N'Joy Pothos",
+                "group": "Designer Varieties",
+                "description": "Distinct white and green patches. Unlike Pearls and Jade, the white parts are usually solid without speckling.",
+                "care": {
+                    "light": "Bright indirect light.",
+                    "water": "Let dry out slightly more than other varieties.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-njoy.jpg"
+            },
+            {
+                "id": "global-green",
+                "name": "Global Green Pothos",
+                "group": "Designer Varieties",
+                "description": "Green-on-green variegation with a dark green border and lighter lime center.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-global-green.jpg"
+            },
+            {
+                "id": "snow-queen",
+                "name": "Snow Queen Pothos",
+                "group": "Designer Varieties",
+                "description": "A highly variegated form of Marble Queen with more white than green.",
+                "care": {
+                    "light": "Bright indirect light required to maintain the white.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-snow-queen.jpg"
+            },
+            {
+                "id": "cebu-blue",
+                "name": "Cebu Blue Pothos",
+                "group": "Unique Varieties",
+                "description": "Silvery-blue, lance-shaped leaves that can fenestrate (split) as they mature and climb.",
+                "care": {
+                    "light": "Bright indirect light. Needs more light than standard pothos to maintain blue hue.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Aroid mix",
+                    "growthRate": "Fast climber",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-cebu-blue.jpg"
+            },
+            {
+                "id": "jessenia",
+                "name": "Jessenia Pothos",
+                "group": "Unique Varieties",
+                "description": "Similar to Marble Queen but with lime green variegation instead of white.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Standard potting mix",
+                    "growthRate": "Moderate",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-jessenia.jpg"
+            },
+            {
+                "id": "baltic-blue",
+                "name": "Baltic Blue Pothos",
+                "group": "Unique Varieties",
+                "description": "Dark blue-green leaves that fenestrate earlier than Cebu Blue.",
+                "care": {
+                    "light": "Medium to Bright indirect light.",
+                    "water": "Allow top inch to dry.",
+                    "soil": "Aroid mix",
+                    "growthRate": "Fast",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-baltic-blue.jpg"
+            },
+            {
+                "id": "shangri-la",
+                "name": "Sleeping Pothos",
+                "group": "Unique Varieties",
+                "description": "Unusual 'sleeping' pothos with curled, spinach-like leaves.",
+                "care": {
+                    "light": "Bright indirect light.",
+                    "water": "Keep consistently moist.",
+                    "soil": "Well-draining mix",
+                    "growthRate": "Slow",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/pothos-shangri-la.jpg"
+            }
+        ]
+    },
+    {
+        "id": "aglonema",
+        "name": "Aglonema",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "siam-aurora",
+                "name": "Siam Aurora",
+                "description": "Also known as the 'Red Aglaonema', it features stunning red edges and stems.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-siam-aurora.jpg"
+            },
+            {
+                "id": "red-anjamani",
+                "name": "Red Anjamani",
+                "description": "A vibrant Aglaonema variety ('Red Anjamani') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-anjamani.jpg"
+            },
+            {
+                "id": "red-star",
+                "name": "Red Star",
+                "description": "A vibrant Aglaonema variety ('Red Star') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-star.jpg"
+            },
+            {
+                "id": "red-zircon",
+                "name": "Red Zircon",
+                "description": "A vibrant Aglaonema variety ('Red Zircon') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-zircon.jpg"
+            },
+            {
+                "id": "red-gold",
+                "name": "Red Gold",
+                "description": "A vibrant Aglaonema variety ('Red Gold') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-gold.jpg"
+            },
+            {
+                "id": "red-king",
+                "name": "Red King",
+                "description": "A vibrant Aglaonema variety ('Red King') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-king.jpg"
+            },
+            {
+                "id": "red-sunkist",
+                "name": "Red Sunkist",
+                "description": "A vibrant Aglaonema variety ('Red Sunkist') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-sunkist.jpg"
+            },
+            {
+                "id": "red-valentine",
+                "name": "Red Valentine",
+                "description": "A vibrant Aglaonema variety ('Red Valentine') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-valentine.jpg"
+            },
+            {
+                "id": "red-master",
+                "name": "Red Master",
+                "description": "A vibrant Aglaonema variety ('Red Master') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-master.jpg"
+            },
+            {
+                "id": "red-peacock",
+                "name": "Red Peacock",
+                "description": "A vibrant Aglaonema variety ('Red Peacock') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-peacock.jpg"
+            },
+            {
+                "id": "red-emerald",
+                "name": "Red Emerald",
+                "description": "A vibrant Aglaonema variety ('Red Emerald') showcasing striking red variegation.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-red-emerald.jpg"
+            },
+            {
+                "id": "firecracker",
+                "name": "Firecracker",
+                "description": "An attractive Aglaonema variety ('Firecracker') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-firecracker.jpg"
+            },
+            {
+                "id": "lady-valentine",
+                "name": "Lady Valentine",
+                "description": "An attractive Aglaonema variety ('Lady Valentine') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-lady-valentine.jpg"
+            },
+            {
+                "id": "pink-dalmatian",
+                "name": "Pink Dalmatian",
+                "description": "Beautiful Pink Dalmatian features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-dalmatian.jpg"
+            },
+            {
+                "id": "pink-beauty",
+                "name": "Pink Beauty",
+                "description": "Beautiful Pink Beauty features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-beauty.jpg"
+            },
+            {
+                "id": "pink-passion",
+                "name": "Pink Passion",
+                "description": "Beautiful Pink Passion features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-passion.jpg"
+            },
+            {
+                "id": "pink-moon",
+                "name": "Pink Moon",
+                "description": "Beautiful Pink Moon features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-moon.jpg"
+            },
+            {
+                "id": "rosy",
+                "name": "Rosy",
+                "description": "Beautiful Rosy features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-rosy.jpg"
+            },
+            {
+                "id": "pink-aurora",
+                "name": "Pink Aurora",
+                "description": "Beautiful Pink Aurora features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-aurora.jpg"
+            },
+            {
+                "id": "pink-kiss",
+                "name": "Pink Kiss",
+                "description": "Beautiful Pink Kiss features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-kiss.jpg"
+            },
+            {
+                "id": "legacy",
+                "name": "Legacy",
+                "description": "An attractive Aglaonema variety ('Legacy') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-legacy.jpg"
+            },
+            {
+                "id": "super-pink",
+                "name": "Super Pink",
+                "description": "Beautiful Super Pink features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-super-pink.jpg"
+            },
+            {
+                "id": "pink-princess",
+                "name": "Pink Princess",
+                "description": "Beautiful Pink princess features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-princess.jpg"
+            },
+            {
+                "id": "pink-champagne",
+                "name": "Pink Champagne",
+                "description": "Beautiful Pink Champagne features soft to bright pink hues on its foliage.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pink-champagne.jpg"
+            },
+            {
+                "id": "silver-queen",
+                "name": "Silver Queen",
+                "description": "The Silver Queen offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-silver-queen.jpg"
+            },
+            {
+                "id": "silver-king",
+                "name": "Silver King",
+                "description": "The Silver King offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-silver-king.jpg"
+            },
+            {
+                "id": "snow-white",
+                "name": "Snow White",
+                "description": "The Snow White offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-snow-white.jpg"
+            },
+            {
+                "id": "first-diamond",
+                "name": "First Diamond",
+                "description": "The First Diamond offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-first-diamond.jpg"
+            },
+            {
+                "id": "white-rain",
+                "name": "White Rain",
+                "description": "Features crisp white variegation resembling fresh snow.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-white-rain.jpg"
+            },
+            {
+                "id": "diamond-bay",
+                "name": "Diamond Bay",
+                "description": "The Diamond Bay offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-diamond-bay.jpg"
+            },
+            {
+                "id": "silver-bay",
+                "name": "Silver Bay",
+                "description": "The Silver Bay offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-silver-bay.jpg"
+            },
+            {
+                "id": "white-joy",
+                "name": "White Joy",
+                "description": "Features crisp white variegation resembling fresh snow.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-white-joy.jpg"
+            },
+            {
+                "id": "stardust",
+                "name": "Stardust",
+                "description": "An attractive Aglaonema variety ('Stardust') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-stardust.jpg"
+            },
+            {
+                "id": "spring-snow",
+                "name": "Spring Snow",
+                "description": "The Spring Snow offers elegant silvery-white patterns that brighten up low-light spaces.",
+                "care": {
+                    "water": "Keep soil evenly moist but not waterlogged. Allow the top inch to dry slightly.",
+                    "light": "Tolerates low light well, but prefers medium indirect light to maintain silver coloration.",
+                    "soil": "Peat-based potting mix with good aeration.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-spring-snow.jpg"
+            },
+            {
+                "id": "modestum",
+                "name": "Modestum",
+                "description": "An attractive Aglaonema variety ('Modestum') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-modestum.jpg"
+            },
+            {
+                "id": "black-lance",
+                "name": "Black Lance",
+                "description": "A dramatic variety with dark, rich foliage often bordering on black or deep chocolate.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-black-lance.jpg"
+            },
+            {
+                "id": "maria",
+                "name": "Maria",
+                "description": "An attractive Aglaonema variety ('Maria') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-maria.jpg"
+            },
+            {
+                "id": "emerald-bay",
+                "name": "Emerald Bay",
+                "description": "An attractive Aglaonema variety ('Emerald Bay') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-emerald-bay.jpg"
+            },
+            {
+                "id": "green-papaya",
+                "name": "Green Papaya",
+                "description": "An attractive Aglaonema variety ('Green Papaya') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-green-papaya.jpg"
+            },
+            {
+                "id": "black-panther",
+                "name": "Black Panther",
+                "description": "A dramatic variety with dark, rich foliage often bordering on black or deep chocolate.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-black-panther.jpg"
+            },
+            {
+                "id": "tigress",
+                "name": "Tigress",
+                "description": "An attractive Aglaonema variety ('Tigress') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-tigress.jpg"
+            },
+            {
+                "id": "cutlass",
+                "name": "Cutlass",
+                "description": "An attractive Aglaonema variety ('Cutlass') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-cutlass.jpg"
+            },
+            {
+                "id": "jade",
+                "name": "Jade",
+                "description": "An attractive Aglaonema variety ('Jade') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-jade.jpg"
+            },
+            {
+                "id": "abidjan",
+                "name": "Abidjan",
+                "description": "An attractive Aglaonema variety ('Abidjan') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-abidjan.jpg"
+            },
+            {
+                "id": "pictum-tricolor",
+                "name": "Pictum Tricolor",
+                "description": "Famous for its camouflage-like pattern of light green, dark green, and silver-white.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-pictum-tricolor.jpg"
+            },
+            {
+                "id": "anyanmanee",
+                "name": "Anyanmanee",
+                "description": "Broad leaves speckled with three colors: pink, green, and white.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-anyanmanee.jpg"
+            },
+            {
+                "id": "khanza",
+                "name": "Khanza",
+                "description": "An attractive Aglaonema variety ('Khanza') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-khanza.jpg"
+            },
+            {
+                "id": "suksom-jaiprang",
+                "name": "Suksom Jaiprang",
+                "description": "An extremely vibrant red variety that is highly sought after by collectors.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-suksom-jaiprang.jpg"
+            },
+            {
+                "id": "lotus-delight",
+                "name": "Lotus Delight",
+                "description": "An attractive Aglaonema variety ('Lotus Delight') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-lotus-delight.jpg"
+            },
+            {
+                "id": "golden-fluorite",
+                "name": "Golden Fluorite",
+                "description": "An attractive Aglaonema variety ('Golden Fluorite') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-golden-fluorite.jpg"
+            },
+            {
+                "id": "harlequin",
+                "name": "Harlequin",
+                "description": "An attractive Aglaonema variety ('Harlequin') known for its easy care and beautiful leaf patterns.",
+                "care": {
+                    "water": "Water deeply when the top 2 inches of soil are dry.",
+                    "light": "Can tolerate lower light conditions than variegated varieties. Avoid direct sun.",
+                    "soil": "Standard well-draining houseplant mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-harlequin.jpg"
+            },
+            {
+                "id": "chocolate",
+                "name": "Chocolate",
+                "description": "A dramatic variety with dark, rich foliage often bordering on black or deep chocolate.",
+                "care": {
+                    "water": "Allow soil to dry out slightly more than green varieties. Avoid overwatering to prevent root rot.",
+                    "light": "Needs medium to bright indirect light to maintain vibrant red colors. Low light causes color fading.",
+                    "soil": "Well-draining, slightly acidic potting mix.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/aglaonema-chocolate.jpg"
+            }
+        ]
+    },
+    {
+        "id": "monstera",
+        "name": "Monstera",
+        "type": "Vining/Climbing",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "deliciosa",
+                "name": "Monstera Deliciosa",
+                "description": "The classic 'Swiss Cheese Plant' with large, fenestrated leaves.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa.jpg"
+            },
+            {
+                "id": "adansonii",
+                "name": "Monstera Adansonii",
+                "description": "Also known as the 'Monkey Mask', this vining Monstera has holes within the leaf rather than splits.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-adansonii.jpg"
+            },
+            {
+                "id": "deliciosa-borsigiana",
+                "name": "Monstera Deliciosa \u2018Borsigiana\u2019",
+                "description": "A distinct variety of the classic Monstera Deliciosa, known for its iconic split leaves.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-borsigiana.jpg"
+            },
+            {
+                "id": "adansonii-narrow-form",
+                "name": "Monstera Adansonii \u2018Narrow Form\u2019",
+                "description": "A unique form of the Swiss Cheese Vine (Adansonii \u2018Narrow Form\u2019) with characteristic holes in the leaves.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-adansonii-narrow-form.jpg"
+            },
+            {
+                "id": "adansonii-wide-form",
+                "name": "Monstera Adansonii \u2018Wide Form\u2019",
+                "description": "A unique form of the Swiss Cheese Vine (Adansonii \u2018Wide Form\u2019) with characteristic holes in the leaves.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-adansonii-wide-form.jpg"
+            },
+            {
+                "id": "standleyana",
+                "name": "Monstera Standleyana",
+                "description": "An elegant climber with lance-shaped, dark green leaves often splashed with white or yellow.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-standleyana.jpg"
+            },
+            {
+                "id": "dubia",
+                "name": "Monstera Dubia",
+                "description": "Known for its shingling habit, leaves lie flat against the climbing surface when young.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-dubia.jpg"
+            },
+            {
+                "id": "siltepecana",
+                "name": "Monstera Siltepecana",
+                "description": "A beautiful Monstera species (Siltepecana) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-siltepecana.jpg"
+            },
+            {
+                "id": "pinnatipartita",
+                "name": "Monstera Pinnatipartita",
+                "description": "A beautiful Monstera species (Pinnatipartita) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-pinnatipartita.jpg"
+            },
+            {
+                "id": "deliciosa-albo-variegata",
+                "name": "Monstera Deliciosa \u2018Albo Variegata\u2019",
+                "description": "A highly sought-after variegated form of Monstera Deliciosa causing a sensation in the plant world.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-albo-variegata.jpg"
+            },
+            {
+                "id": "deliciosa-thai-constellation",
+                "name": "Monstera Deliciosa \u2018Thai Constellation\u2019",
+                "description": "A highly sought-after variegated form of Monstera Deliciosa causing a sensation in the plant world.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-thai-constellation.jpg"
+            },
+            {
+                "id": "deliciosa-aurea-marmorata",
+                "name": "Monstera Deliciosa \u2018Aurea\u2019 (Marmorata)",
+                "description": "A distinct variety of the classic Monstera Deliciosa, known for its iconic split leaves.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-aurea-marmorata.jpg"
+            },
+            {
+                "id": "deliciosa-mint-variegata",
+                "name": "Monstera Deliciosa \u2018Mint Variegata\u2019",
+                "description": "A highly sought-after variegated form of Monstera Deliciosa causing a sensation in the plant world.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-mint-variegata.jpg"
+            },
+            {
+                "id": "deliciosa-white-monster",
+                "name": "Monstera Deliciosa \u2018White Monster\u2019",
+                "description": "A distinct variety of the classic Monstera Deliciosa, known for its iconic split leaves.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-white-monster.jpg"
+            },
+            {
+                "id": "adansonii-albo-variegata",
+                "name": "Monstera Adansonii \u2018Albo Variegata\u2019",
+                "description": "A rare, variegated version of the Swiss Cheese Vine with stunning coloration.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-adansonii-albo-variegata.jpg"
+            },
+            {
+                "id": "adansonii-aurea-variegata",
+                "name": "Monstera Adansonii \u2018Aurea Variegata\u2019",
+                "description": "A rare, variegated version of the Swiss Cheese Vine with stunning coloration.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-adansonii-aurea-variegata.jpg"
+            },
+            {
+                "id": "standleyana-albo-variegata",
+                "name": "Monstera Standleyana \u2018Albo Variegata\u2019",
+                "description": "An elegant climber with lance-shaped, dark green leaves often splashed with white or yellow.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-standleyana-albo-variegata.jpg"
+            },
+            {
+                "id": "obliqua",
+                "name": "Monstera Obliqua",
+                "description": "The unicorn of the aroid world, featuring extremely fenestrated leaves that are more hole than leaf.",
+                "care": {
+                    "water": "Keep soil consistently moist but not soggy. Mist frequently for humidity.",
+                    "light": "Bright, indirect light. Avoid direct sun which can burn leaves.",
+                    "soil": "Peat-based potting mix with plenty of perlite.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/monstera-obliqua.jpg"
+            },
+            {
+                "id": "karstenianum-peru",
+                "name": "Monstera Karstenianum (Peru)",
+                "description": "Features rigid, puckered, dark green leaves with a unique texture.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-karstenianum-peru.jpg"
+            },
+            {
+                "id": "lechleriana",
+                "name": "Monstera Lechleriana",
+                "description": "A beautiful Monstera species (Lechleriana) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-lechleriana.jpg"
+            },
+            {
+                "id": "acuminata",
+                "name": "Monstera Acuminata",
+                "description": "A beautiful Monstera species (Acuminata) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-acuminata.jpg"
+            },
+            {
+                "id": "subpinnata",
+                "name": "Monstera Subpinnata",
+                "description": "A beautiful Monstera species (Subpinnata) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-subpinnata.jpg"
+            },
+            {
+                "id": "epipremnoides",
+                "name": "Monstera Epipremnoides",
+                "description": "A beautiful Monstera species (Epipremnoides) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-epipremnoides.jpg"
+            },
+            {
+                "id": "spruceana",
+                "name": "Monstera Spruceana",
+                "description": "A beautiful Monstera species (Spruceana) that adds tropical flair to any indoor garden.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-spruceana.jpg"
+            },
+            {
+                "id": "deliciosa-compacta",
+                "name": "Monstera Deliciosa \u2018Compacta\u2019",
+                "description": "A distinct variety of the classic Monstera Deliciosa, known for its iconic split leaves.",
+                "care": {
+                    "water": "Water every 1-2 weeks, allowing soil to dry out between waterings. Expect to water more often in brighter light.",
+                    "light": "Thrives in bright to medium indirect light. Not suited for intense, direct sun.",
+                    "soil": "A rich, nutrient-dense potting soil that retains moisture but drains well. A mix of peat, perlite, and pine bark is ideal.",
+                    "toxicity": "Toxic to cats and dogs if ingested."
+                },
+                "image": "/images/monstera-deliciosa-compacta.jpg"
+            }
+        ]
+    },
+    {
+        "id": "sansevieria",
+        "name": "Sansevieria (Snake Plant)",
+        "type": "Succulent",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "laurentii",
+                "name": "Sansevieria Laurentii",
+                "description": "The most popular Snake Plant variety with yellow margins on its upright green leaves.",
+                "care": {
+                    "water": "Allow soil to dry out completely between waterings. Very drought tolerant.",
+                    "light": "Can tolerate low light to direct sunlight.",
+                    "soil": "Cactus or succulent potting mix.",
+                    "toxicity": "Mildly toxic to pets."
+                },
+                "image": "/images/sansevieria-laurentii.jpg"
+            },
+            {
+                "id": "zeylanica",
+                "name": "Sansevieria Zeylanica",
+                "description": "Features dark green leaves with light gray-green horizontal stripes.",
+                "care": {
+                    "water": "Water sparingly. Let soil dry completely. Susceptible to root rot if overwatered.",
+                    "light": "Adaptable to almost all light conditions, from low light to full sun.",
+                    "soil": "Free-draining succulent mix.",
+                    "toxicity": "Mildly toxic to pets."
+                },
+                "image": "/images/sansevieria-zeylanica.jpg"
+            }
+        ]
+    },
+    {
+        "id": "succulents",
+        "name": "Succulents",
+        "type": "Succulent",
+        "careType": "general",
+        "care": {
+            "water": "Soak and dry method: Water thoroughly until water drains out, then let soil dry completely before watering again.",
+            "light": "Most require at least 6 hours of bright, direct sunlight daily.",
+            "soil": "Use a specialized cactus or succulent mix that drains very quickly.",
+            "toxicity": "Varies by species. Research specific plants if you have pets."
+        },
+        "varieties": [
+            {
+                "id": "echeveria",
+                "name": "Echeveria",
+                "description": "Rose-shaped succulents available in many colors.",
+                "image": "/images/succulent-echeveria.jpg"
+            },
+            {
+                "id": "jade",
+                "name": "Jade Plant",
+                "description": "Tree-like succulent symbolizing good luck.",
+                "image": "/images/succulent-jade.jpg"
+            },
+            {
+                "id": "aloe-vera",
+                "name": "Aloe Vera",
+                "description": "Medicinal succulent known for soothing skin burns.",
+                "image": "/images/succulent-aloe.jpg"
+            }
+        ]
+    },
+    {
+        "id": "calathea",
+        "name": "Calathea",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "medallion",
+                "name": "Calathea Medallion",
+                "description": "Known for its large, round, medallion-like leaves with intricate patterns of green and silver.",
+                "care": {
+                    "water": "Keep soil consistently moist but never soggy. Use distilled or filtered water to avoid leaf tip burn.",
+                    "light": "Low to Medium indirect light. Direct sun will fade the patterns.",
+                    "soil": "Peat-based potting mix that holds moisture but drains well.",
+                    "humidity": "High humidity (60%+) is essential. Use a humidifier or pebble tray.",
+                    "toxicity": "Non-toxic to pets and humans."
+                },
+                "image": "/images/calathea-medallion.jpg"
+            },
+            {
+                "id": "rattlesnake",
+                "name": "Rattlesnake Plant (Calathea lancifolia)",
+                "description": "Features long, slender leaves with dark green spots and wavy edges, resembling a rattlesnake's markings.",
+                "care": {
+                    "water": "Water when top inch of soil is dry. Sensitive to fluoride in tap water.",
+                    "light": "Low to Medium indirect light.",
+                    "soil": "Well-draining, fertile potting mix.",
+                    "humidity": "Requires high humidity.",
+                    "toxicity": "Non-toxic to pets and humans."
+                },
+                "image": "/images/calathea-rattlesnake.jpg"
+            },
+            {
+                "id": "ornata",
+                "name": "Calathea Ornata (Pinstripe Plant)",
+                "description": "Dark green leaves with thin pink stripes that look like they were painted on.",
+                "care": {
+                    "water": "Keep moist. Do not let dry out completely.",
+                    "light": "Medium indirect light. Too little light fades the pink stripes.",
+                    "soil": " airy, peat-rich mix.",
+                    "humidity": "Very high humidity needed to prevent crisping edges.",
+                    "toxicity": "Non-toxic to pets and humans."
+                },
+                "image": "/images/calathea-ornata.jpg"
+            }
+        ]
+    },
+    {
+        "id": "philodendron",
+        "name": "Philodendron",
+        "type": "Vining/Climbing",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "heartleaf",
+                "name": "Heartleaf Philodendron",
+                "description": "A classic vining plant with heart-shaped dark green leaves. Very easy to care for.",
+                "care": {
+                    "water": "Allow top 50% of soil to dry out between waterings.",
+                    "light": "Low to Bright indirect light. Very adaptable.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Tolerates average home humidity.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/philodendron-heartleaf.jpg"
+            },
+            {
+                "id": "brasil",
+                "name": "Philodendron Brasil",
+                "description": "A cultivar of the heartleaf philodendron with lime green and yellow variegation down the center of the leaf.",
+                "care": {
+                    "water": "Water when top inch is dry.",
+                    "light": "Medium to Bright indirect light to maintain variegation.",
+                    "soil": "Well-draining potting soil.",
+                    "humidity": "Average to high humidity.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/philodendron-brasil.jpg"
+            },
+            {
+                "id": "pink-princess",
+                "name": "Pink Princess Philodendron",
+                "description": "Rare and stunning climbing philodendron with dark leaves splashed with bright pink variegation.",
+                "care": {
+                    "water": "Allow top inch to dry. Do not overwater.",
+                    "light": "Bright indirect light is crucial for pink color.",
+                    "soil": "Aroid mix (chunky, airy soil with orchid bark and perlite).",
+                    "humidity": "Prefers high humidity.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/philodendron-pink-princess.jpg"
+            }
+        ]
+    },
+    {
+        "id": "peperomia",
+        "name": "Peperomia",
+        "type": "Succulent-like",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "watermelon",
+                "name": "Watermelon Peperomia",
+                "description": "Leaves resemble the rind of a watermelon with silver and green stripes.",
+                "care": {
+                    "water": "Allow soil to dry out almost completely. Stores water in leaves.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Peat-based mix with extra perlite.",
+                    "humidity": "Average household humidity.",
+                    "toxicity": "Non-toxic to pets."
+                },
+                "image": "/images/peperomia-watermelon.jpg"
+            },
+            {
+                "id": "hope",
+                "name": "Peperomia Hope",
+                "description": "A trailing variety with small, round, succulent-like leaves.",
+                "care": {
+                    "water": "Let dry out between waterings.",
+                    "light": "Low to Medium indirect light.",
+                    "soil": "Well-draining mix.",
+                    "humidity": "Average.",
+                    "toxicity": "Non-toxic to pets."
+                },
+                "image": "/images/peperomia-hope.jpg"
+            },
+            {
+                "id": "raindrop",
+                "name": "Raindrop Peperomia",
+                "description": "Features large, glossy, raindrop-shaped leaves.",
+                "care": {
+                    "water": "Water sparingly when soil is dry.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining.",
+                    "humidity": "Average.",
+                    "toxicity": "Non-toxic to pets."
+                },
+                "image": "/images/peperomia-raindrop.jpg"
+            }
+        ]
+    },
+    {
+        "id": "ficus",
+        "name": "Ficus",
+        "type": "Tree",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "fiddle-leaf-fig",
+                "name": "Fiddle Leaf Fig",
+                "description": "Popular indoor tree with large, violin-shaped leaves.",
+                "care": {
+                    "water": "Water when top inch is dry. Consistent watering schedule is key.",
+                    "light": "Bright indirect light to some direct morning sun.",
+                    "soil": "Well-draining, nutrient-rich soil.",
+                    "humidity": "Prefers humidity above 50%.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/ficus-lyrata.jpg"
+            },
+            {
+                "id": "rubber-plant",
+                "name": "Rubber Plant (Ficus elastica)",
+                "description": "Sturdy plant with thick, glossy, dark green or burgundy leaves.",
+                "care": {
+                    "water": "Keep soil moist but not soggy.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Average.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/ficus-elastica.jpg"
+            },
+            {
+                "id": "audrey",
+                "name": "Ficus Audrey",
+                "description": "The national tree of India, featuring velvety green leaves and white veins. Easier than the Fiddle Leaf.",
+                "care": {
+                    "water": "Allow top inch to dry out.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining soil.",
+                    "humidity": "Average to high.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/ficus-audrey.jpg"
+            }
+        ]
+    },
+    {
+        "id": "dracaena",
+        "name": "Dracaena",
+        "type": "Tree/Shrub",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "marginata",
+                "name": "Dracaena Marginata (Dragon Tree)",
+                "description": "Spiky, upright leaves with red edges on slender canes.",
+                "care": {
+                    "water": "Allow top 50% of soil to dry. Sensitive to fluoride.",
+                    "light": "Low to Bright indirect light.",
+                    "soil": "Loose, well-draining soil.",
+                    "humidity": "Average.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/dracaena-marginata.jpg"
+            },
+            {
+                "id": "lemon-lime",
+                "name": "Dracaena Lemon Lime",
+                "description": "Vibrant neon yellow and green striped leaves.",
+                "care": {
+                    "water": "Water when top inch is dry.",
+                    "light": "Medium to Bright indirect light for best color.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Average.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/dracaena-lemon-lime.jpg"
+            }
+        ]
+    },
+    {
+        "id": "begonia",
+        "name": "Begonia",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "rex",
+                "name": "Rex Begonia",
+                "description": "Grown for its stunning, multicolored, textured foliage.",
+                "care": {
+                    "water": "Keep soil slightly moist. Avoid getting water on leaves.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Light, airy mix.",
+                    "humidity": "High humidity is crucial.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/begonia-rex.jpg"
+            },
+            {
+                "id": "maculata",
+                "name": "Begonia Maculata (Polka Dot)",
+                "description": "Angel wing shaped leaves with silver polka dots and red undersides.",
+                "care": {
+                    "water": "Allow top inch to dry.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining.",
+                    "humidity": "High humidity preferred.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/begonia-maculata.jpg"
+            }
+        ]
+    },
+    {
+        "id": "alocasia",
+        "name": "Alocasia",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "polly",
+                "name": "Alocasia Polly",
+                "description": "Arrowhead-shaped dark green leaves with bold white veins.",
+                "care": {
+                    "water": "Keep soil consistently moist but never soggy.",
+                    "light": "Bright indirect light.",
+                    "soil": "Chunky, well-draining aroid mix.",
+                    "humidity": "High humidity required.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/alocasia-polly.jpg"
+            },
+            {
+                "id": "black-velvet",
+                "name": "Alocasia Black Velvet",
+                "description": "Small, velvety, almost black leaves with white veins.",
+                "care": {
+                    "water": "Allow top inch to dry. Susceptible to root rot.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Very well-draining mix.",
+                    "humidity": "High humidity.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/alocasia-black-velvet.jpg"
+            },
+            {
+                "id": "zebrina",
+                "name": "Alocasia Zebrina",
+                "description": "Known for its zebra-striped stems and arrowhead leaves.",
+                "care": {
+                    "water": "Keep moist, not wet.",
+                    "light": "Bright indirect light.",
+                    "soil": "Aroid mix.",
+                    "humidity": "High humidity.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/alocasia-zebrina.jpg"
+            }
+        ]
+    },
+    {
+        "id": "tradescantia",
+        "name": "Tradescantia",
+        "type": "Vining",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "zebrina",
+                "name": "Tradescantia Zebrina",
+                "description": "Fast-growing trailing plant with purple and silver striped leaves.",
+                "care": {
+                    "water": "Water when top inch is dry.",
+                    "light": "Bright indirect light to maintain purple color.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Average to high.",
+                    "toxicity": "Mildly toxic to pets."
+                },
+                "image": "/images/tradescantia-zebrina.jpg"
+            },
+            {
+                "id": "nanouk",
+                "name": "Tradescantia Nanouk",
+                "description": "Compact variety with thick leaves featuring pink, white, and green stripes.",
+                "care": {
+                    "water": "Water from bottom to avoid leaf rot. Allow to dry slightly.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining.",
+                    "humidity": "Average.",
+                    "toxicity": "Mildly toxic to pets."
+                },
+                "image": "/images/tradescantia-nanouk.jpg"
+            }
+        ]
+    },
+    {
+        "id": "anthurium",
+        "name": "Anthurium",
+        "type": "Herbaceous",
+        "careType": "general",
+        "care": {
+            "water": "Allow top inch of soil to dry out. Do not overwater.",
+            "light": "Bright indirect light.",
+            "soil": "Coarse, well-draining orchid mix.",
+            "humidity": "High humidity required (60%+).",
+            "toxicity": "Toxic to pets."
+        },
+        "varieties": []
+    },
+    {
+        "id": "syngonium",
+        "name": "Syngonium (Arrowhead Plant)",
+        "type": "Vining",
+        "careType": "general",
+        "care": {
+            "water": "Keep soil lightly moist during growing season.",
+            "light": "Low to Bright indirect light.",
+            "soil": "Standard well-draining potting mix.",
+            "humidity": "High humidity preferred.",
+            "toxicity": "Toxic to pets."
+        },
+        "varieties": []
+    },
+    {
+        "id": "dieffenbachia",
+        "name": "Dieffenbachia (Dumb Cane)",
+        "type": "Herbaceous",
+        "careType": "general",
+        "care": {
+            "water": "Allow top inch to dry out.",
+            "light": "Low to Bright indirect light.",
+            "soil": "Standard potting mix.",
+            "humidity": "Average to High.",
+            "toxicity": "Highly toxic to pets and humans if ingested."
+        },
+        "varieties": []
+    },
+    {
+        "id": "zz-plant",
+        "name": "Zamioculcas (ZZ Plant)",
+        "type": "Rhizomatous",
+        "careType": "general",
+        "care": {
+            "water": "Allow soil to dry out completely. Very drought tolerant.",
+            "light": "Low to bright indirect light.",
+            "soil": "Fast-draining cactus mix.",
+            "humidity": "Tolerates low humidity well.",
+            "toxicity": "Toxic to pets and humans."
+        },
+        "varieties": []
+    },
+    {
+        "id": "fittonia",
+        "name": "Fittonia (Nerve Plant)",
+        "type": "Herbaceous",
+        "careType": "general",
+        "care": {
+            "water": "Keep soil constantly moist. Wilts dramatically if dry.",
+            "light": "Low to Medium indirect light.",
+            "soil": "Standard potting soil.",
+            "humidity": "High humidity is essential.",
+            "toxicity": "Non-toxic to pets."
+        },
+        "varieties": []
+    }
+]

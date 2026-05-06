@@ -11,7 +11,7 @@ cd /d "%~dp0"
 :: ============================================
 :: STEP 1: Check Python Installation
 :: ============================================
-echo [1/5] Checking Python installation...
+echo [1/6] Checking Python installation...
 python --version >nul 2>&1
 if %errorlevel% neq 0 (
     echo ERROR: Python is not installed or not in PATH.
@@ -25,7 +25,7 @@ echo.
 :: ============================================
 :: STEP 2: Activate Virtual Environment
 :: ============================================
-echo [2/5] Activating virtual environment...
+echo [2/6] Activating virtual environment...
 if not exist ".venv\Scripts\activate.bat" (
     echo Virtual environment not found. Creating one...
     python -m venv .venv
@@ -48,7 +48,7 @@ echo.
 :: ============================================
 :: STEP 3: Install Dependencies
 :: ============================================
-echo [3/5] Installing/Updating dependencies...
+echo [3/6] Installing/Updating dependencies...
 pip install --upgrade pip >nul 2>&1
 pip install -r requirements.txt
 if %errorlevel% neq 0 (
@@ -62,7 +62,7 @@ echo.
 :: ============================================
 :: STEP 4: Run Migrations
 :: ============================================
-echo [4/5] Running database migrations...
+echo [4/6] Running database migrations...
 python manage.py makemigrations
 python manage.py migrate
 if %errorlevel% neq 0 (
@@ -74,17 +74,70 @@ echo Database is up to date!
 echo.
 
 :: ============================================
-:: STEP 5: Start Django Server
+:: STEP 5: Import Initial Data
 :: ============================================
-echo [5/5] Starting Django development server...
+echo [5/7] Importing plant data...
+python scripts/import_plants.py
+if %errorlevel% neq 0 (
+    echo WARNING: Data import failed. You can run it manually later.
+)
+echo Data imported!
+echo.
+
+:: ============================================
+:: STEP 6: Build React Frontend
+:: ============================================
+echo [6/7] Building React frontend...
+cd frontend
+
+:: Check if Node.js is installed
+where npm >nul 2>&1
+if %errorlevel% neq 0 (
+    echo WARNING: Node.js/npm is not installed or not in PATH.
+    echo Skipping frontend build. Install Node.js to build the frontend.
+    cd ..
+    goto :skip_frontend
+)
+
+:: Install dependencies if node_modules doesn't exist
+if not exist "node_modules" (
+    echo Installing frontend dependencies... This may take a minute.
+    call npm install
+    if %errorlevel% neq 0 (
+        echo ERROR: Failed to install frontend dependencies.
+        cd ..
+        pause
+        exit /b 1
+    )
+)
+
+:: Build the frontend
+echo Building production frontend...
+call npm run build
+if %errorlevel% neq 0 (
+    echo ERROR: Frontend build failed.
+    cd ..
+    pause
+    exit /b 1
+)
+echo Frontend built successfully!
+cd ..
+
+:skip_frontend
+echo.
+
+:: ============================================
+:: STEP 7: Start Django Server
+:: ============================================
+echo [7/7] Starting Django server...
 echo.
 echo ========================================================
-echo    Server will start at: http://127.0.0.1:8000
+echo    Application running at: http://127.0.0.1:8000
 echo    Press CTRL+C to stop the server
 echo ========================================================
 echo.
 
-python manage.py runserver 8000
+python manage.py runserver 127.0.0.1:8000
 
 :: If server stops, pause to show any error messages
 if %errorlevel% neq 0 (

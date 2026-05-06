@@ -1,0 +1,417 @@
+[
+    {
+        "id": "calathea",
+        "name": "Calathea",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "medallion",
+                "name": "Calathea Medallion",
+                "description": "Known for its large, round, medallion-like leaves with intricate patterns of green and silver.",
+                "care": {
+                    "water": "Keep soil consistently moist but never soggy. Use distilled or filtered water to avoid leaf tip burn.",
+                    "light": "Low to Medium indirect light. Direct sun will fade the patterns.",
+                    "soil": "Peat-based potting mix that holds moisture but drains well.",
+                    "humidity": "High humidity (60%+) is essential. Use a humidifier or pebble tray.",
+                    "toxicity": "Non-toxic to pets and humans."
+                },
+                "image": "/images/calathea-medallion.jpg"
+            },
+            {
+                "id": "rattlesnake",
+                "name": "Rattlesnake Plant (Calathea lancifolia)",
+                "description": "Features long, slender leaves with dark green spots and wavy edges, resembling a rattlesnake's markings.",
+                "care": {
+                    "water": "Water when top inch of soil is dry. Sensitive to fluoride in tap water.",
+                    "light": "Low to Medium indirect light.",
+                    "soil": "Well-draining, fertile potting mix.",
+                    "humidity": "Requires high humidity.",
+                    "toxicity": "Non-toxic to pets and humans."
+                },
+                "image": "/images/calathea-rattlesnake.jpg"
+            },
+            {
+                "id": "ornata",
+                "name": "Calathea Ornata (Pinstripe Plant)",
+                "description": "Dark green leaves with thin pink stripes that look like they were painted on.",
+                "care": {
+                    "water": "Keep moist. Do not let dry out completely.",
+                    "light": "Medium indirect light. Too little light fades the pink stripes.",
+                    "soil": " airy, peat-rich mix.",
+                    "humidity": "Very high humidity needed to prevent crisping edges.",
+                    "toxicity": "Non-toxic to pets and humans."
+                },
+                "image": "/images/calathea-ornata.jpg"
+            }
+        ]
+    },
+    {
+        "id": "philodendron",
+        "name": "Philodendron",
+        "type": "Vining/Climbing",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "heartleaf",
+                "name": "Heartleaf Philodendron",
+                "description": "A classic vining plant with heart-shaped dark green leaves. Very easy to care for.",
+                "care": {
+                    "water": "Allow top 50% of soil to dry out between waterings.",
+                    "light": "Low to Bright indirect light. Very adaptable.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Tolerates average home humidity.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/philodendron-heartleaf.jpg"
+            },
+            {
+                "id": "brasil",
+                "name": "Philodendron Brasil",
+                "description": "A cultivar of the heartleaf philodendron with lime green and yellow variegation down the center of the leaf.",
+                "care": {
+                    "water": "Water when top inch is dry.",
+                    "light": "Medium to Bright indirect light to maintain variegation.",
+                    "soil": "Well-draining potting soil.",
+                    "humidity": "Average to high humidity.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/philodendron-brasil.jpg"
+            },
+            {
+                "id": "pink-princess",
+                "name": "Pink Princess Philodendron",
+                "description": "Rare and stunning climbing philodendron with dark leaves splashed with bright pink variegation.",
+                "care": {
+                    "water": "Allow top inch to dry. Do not overwater.",
+                    "light": "Bright indirect light is crucial for pink color.",
+                    "soil": "Aroid mix (chunky, airy soil with orchid bark and perlite).",
+                    "humidity": "Prefers high humidity.",
+                    "toxicity": "Toxic to pets if ingested."
+                },
+                "image": "/images/philodendron-pink-princess.jpg"
+            }
+        ]
+    },
+    {
+        "id": "peperomia",
+        "name": "Peperomia",
+        "type": "Succulent-like",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "watermelon",
+                "name": "Watermelon Peperomia",
+                "description": "Leaves resemble the rind of a watermelon with silver and green stripes.",
+                "care": {
+                    "water": "Allow soil to dry out almost completely. Stores water in leaves.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Peat-based mix with extra perlite.",
+                    "humidity": "Average household humidity.",
+                    "toxicity": "Non-toxic to pets."
+                },
+                "image": "/images/peperomia-watermelon.jpg"
+            },
+            {
+                "id": "hope",
+                "name": "Peperomia Hope",
+                "description": "A trailing variety with small, round, succulent-like leaves.",
+                "care": {
+                    "water": "Let dry out between waterings.",
+                    "light": "Low to Medium indirect light.",
+                    "soil": "Well-draining mix.",
+                    "humidity": "Average.",
+                    "toxicity": "Non-toxic to pets."
+                },
+                "image": "/images/peperomia-hope.jpg"
+            },
+            {
+                "id": "raindrop",
+                "name": "Raindrop Peperomia",
+                "description": "Features large, glossy, raindrop-shaped leaves.",
+                "care": {
+                    "water": "Water sparingly when soil is dry.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining.",
+                    "humidity": "Average.",
+                    "toxicity": "Non-toxic to pets."
+                },
+                "image": "/images/peperomia-raindrop.jpg"
+            }
+        ]
+    },
+    {
+        "id": "ficus",
+        "name": "Ficus",
+        "type": "Tree",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "fiddle-leaf-fig",
+                "name": "Fiddle Leaf Fig",
+                "description": "Popular indoor tree with large, violin-shaped leaves.",
+                "care": {
+                    "water": "Water when top inch is dry. Consistent watering schedule is key.",
+                    "light": "Bright indirect light to some direct morning sun.",
+                    "soil": "Well-draining, nutrient-rich soil.",
+                    "humidity": "Prefers humidity above 50%.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/ficus-lyrata.jpg"
+            },
+            {
+                "id": "rubber-plant",
+                "name": "Rubber Plant (Ficus elastica)",
+                "description": "Sturdy plant with thick, glossy, dark green or burgundy leaves.",
+                "care": {
+                    "water": "Keep soil moist but not soggy.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Average.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/ficus-elastica.jpg"
+            },
+            {
+                "id": "audrey",
+                "name": "Ficus Audrey",
+                "description": "The national tree of India, featuring velvety green leaves and white veins. Easier than the Fiddle Leaf.",
+                "care": {
+                    "water": "Allow top inch to dry out.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining soil.",
+                    "humidity": "Average to high.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/ficus-audrey.jpg"
+            }
+        ]
+    },
+    {
+        "id": "dracaena",
+        "name": "Dracaena",
+        "type": "Tree/Shrub",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "marginata",
+                "name": "Dracaena Marginata (Dragon Tree)",
+                "description": "Spiky, upright leaves with red edges on slender canes.",
+                "care": {
+                    "water": "Allow top 50% of soil to dry. Sensitive to fluoride.",
+                    "light": "Low to Bright indirect light.",
+                    "soil": "Loose, well-draining soil.",
+                    "humidity": "Average.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/dracaena-marginata.jpg"
+            },
+            {
+                "id": "lemon-lime",
+                "name": "Dracaena Lemon Lime",
+                "description": "Vibrant neon yellow and green striped leaves.",
+                "care": {
+                    "water": "Water when top inch is dry.",
+                    "light": "Medium to Bright indirect light for best color.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Average.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/dracaena-lemon-lime.jpg"
+            }
+        ]
+    },
+    {
+        "id": "begonia",
+        "name": "Begonia",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "rex",
+                "name": "Rex Begonia",
+                "description": "Grown for its stunning, multicolored, textured foliage.",
+                "care": {
+                    "water": "Keep soil slightly moist. Avoid getting water on leaves.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Light, airy mix.",
+                    "humidity": "High humidity is crucial.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/begonia-rex.jpg"
+            },
+            {
+                "id": "maculata",
+                "name": "Begonia Maculata (Polka Dot)",
+                "description": "Angel wing shaped leaves with silver polka dots and red undersides.",
+                "care": {
+                    "water": "Allow top inch to dry.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining.",
+                    "humidity": "High humidity preferred.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/begonia-maculata.jpg"
+            }
+        ]
+    },
+    {
+        "id": "alocasia",
+        "name": "Alocasia",
+        "type": "Herbaceous",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "polly",
+                "name": "Alocasia Polly",
+                "description": "Arrowhead-shaped dark green leaves with bold white veins.",
+                "care": {
+                    "water": "Keep soil consistently moist but never soggy.",
+                    "light": "Bright indirect light.",
+                    "soil": "Chunky, well-draining aroid mix.",
+                    "humidity": "High humidity required.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/alocasia-polly.jpg"
+            },
+            {
+                "id": "black-velvet",
+                "name": "Alocasia Black Velvet",
+                "description": "Small, velvety, almost black leaves with white veins.",
+                "care": {
+                    "water": "Allow top inch to dry. Susceptible to root rot.",
+                    "light": "Medium to Bright indirect light.",
+                    "soil": "Very well-draining mix.",
+                    "humidity": "High humidity.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/alocasia-black-velvet.jpg"
+            },
+            {
+                "id": "zebrina",
+                "name": "Alocasia Zebrina",
+                "description": "Known for its zebra-striped stems and arrowhead leaves.",
+                "care": {
+                    "water": "Keep moist, not wet.",
+                    "light": "Bright indirect light.",
+                    "soil": "Aroid mix.",
+                    "humidity": "High humidity.",
+                    "toxicity": "Toxic to pets."
+                },
+                "image": "/images/alocasia-zebrina.jpg"
+            }
+        ]
+    },
+    {
+        "id": "tradescantia",
+        "name": "Tradescantia",
+        "type": "Vining",
+        "careType": "variety-specific",
+        "care": null,
+        "varieties": [
+            {
+                "id": "zebrina",
+                "name": "Tradescantia Zebrina",
+                "description": "Fast-growing trailing plant with purple and silver striped leaves.",
+                "care": {
+                    "water": "Water when top inch is dry.",
+                    "light": "Bright indirect light to maintain purple color.",
+                    "soil": "Standard potting mix.",
+                    "humidity": "Average to high.",
+                    "toxicity": "Mildly toxic to pets."
+                },
+                "image": "/images/tradescantia-zebrina.jpg"
+            },
+            {
+                "id": "nanouk",
+                "name": "Tradescantia Nanouk",
+                "description": "Compact variety with thick leaves featuring pink, white, and green stripes.",
+                "care": {
+                    "water": "Water from bottom to avoid leaf rot. Allow to dry slightly.",
+                    "light": "Bright indirect light.",
+                    "soil": "Well-draining.",
+                    "humidity": "Average.",
+                    "toxicity": "Mildly toxic to pets."
+                },
+                "image": "/images/tradescantia-nanouk.jpg"
+            }
+        ]
+    },
+    {
+        "id": "anthurium",
+        "name": "Anthurium",
+        "type": "Herbaceous",
+        "careType": "general",
+        "care": {
+            "water": "Allow top inch of soil to dry out. Do not overwater.",
+            "light": "Bright indirect light.",
+            "soil": "Coarse, well-draining orchid mix.",
+            "humidity": "High humidity required (60%+).",
+            "toxicity": "Toxic to pets."
+        },
+        "varieties": []
+    },
+    {
+        "id": "syngonium",
+        "name": "Syngonium (Arrowhead Plant)",
+        "type": "Vining",
+        "careType": "general",
+        "care": {
+            "water": "Keep soil lightly moist during growing season.",
+            "light": "Low to Bright indirect light.",
+            "soil": "Standard well-draining potting mix.",
+            "humidity": "High humidity preferred.",
+            "toxicity": "Toxic to pets."
+        },
+        "varieties": []
+    },
+    {
+        "id": "dieffenbachia",
+        "name": "Dieffenbachia (Dumb Cane)",
+        "type": "Herbaceous",
+        "careType": "general",
+        "care": {
+            "water": "Allow top inch to dry out.",
+            "light": "Low to Bright indirect light.",
+            "soil": "Standard potting mix.",
+            "humidity": "Average to High.",
+            "toxicity": "Highly toxic to pets and humans if ingested."
+        },
+        "varieties": []
+    },
+    {
+        "id": "zz-plant",
+        "name": "Zamioculcas (ZZ Plant)",
+        "type": "Rhizomatous",
+        "careType": "general",
+        "care": {
+            "water": "Allow soil to dry out completely. Very drought tolerant.",
+            "light": "Low to bright indirect light.",
+            "soil": "Fast-draining cactus mix.",
+            "humidity": "Tolerates low humidity well.",
+            "toxicity": "Toxic to pets and humans."
+        },
+        "varieties": []
+    },
+    {
+        "id": "fittonia",
+        "name": "Fittonia (Nerve Plant)",
+        "type": "Herbaceous",
+        "careType": "general",
+        "care": {
+            "water": "Keep soil constantly moist. Wilts dramatically if dry.",
+            "light": "Low to Medium indirect light.",
+            "soil": "Standard potting soil.",
+            "humidity": "High humidity is essential.",
+            "toxicity": "Non-toxic to pets."
+        },
+        "varieties": []
+    }
+]
