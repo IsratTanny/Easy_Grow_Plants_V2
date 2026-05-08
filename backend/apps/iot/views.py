@@ -4,8 +4,9 @@ import requests
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Device, DeviceReading, ChatLog
+from .models import Device, DeviceReading, ChatLog, WateringLog
 from .serializers import DeviceSerializer, DeviceReadingSerializer, ChatLogSerializer
+from django.utils import timezone
 class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -30,37 +31,83 @@ class DeviceViewSet(viewsets.ModelViewSet):
     def status(self, request, device_id=None):
         device = self.get_object()
         if not device.ip_address:
-            return Response({"error": "No IP address"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": False, "message": "No IP address configured.", "data": {}}, status=status.HTTP_400_BAD_REQUEST)
         try:
-            r = requests.get(f"http://{device.ip_address}/data", timeout=5)
-            return Response(r.json())
+            r = requests.get(f"http://{device.ip_address}/data", timeout=3)
+            r.raise_for_status()
+            data = r.json()
+            
+            # Update heartbeat since we got a valid response
+            device.last_seen = timezone.now()
+            device.save(update_fields=['last_seen'])
+            
+            return Response({"success": True, "message": "Device status retrieved", "data": data})
+        except requests.exceptions.Timeout:
+            return Response({"success": False, "message": "Connection timed out. Device might be offline.", "data": {}}, status=status.HTTP_504_GATEWAY_TIMEOUT)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+            return Response({"success": False, "message": f"Device unreachable: {str(e)}", "data": {}}, status=status.HTTP_502_BAD_GATEWAY)
 
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['post'])
     def water(self, request, device_id=None):
         device = self.get_object()
         if not device.ip_address:
-            return Response({"error": "No IP address"}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            r = requests.get(f"http://{device.ip_address}/water", timeout=5)
-            return Response({"status": "command sent", "device_response": r.status_code})
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_502_BAD_GATEWAY)
+            return Response({"success": False, "message": "No IP address configured.", "data": {}}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if not device.is_online:
+            return Response({"success": False, "message": "Device is offline. Cannot send command.", "data": {}}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-    @action(detail=True, methods=['post'], url_path='sensor-data')
+        duration = request.data.get('duration', device.pump_duration_seconds)
+        try:
+            duration = int(duration)
+            duration = max(1, min(10, duration))  # Clamp between 1 and 10 seconds
+        except ValueError:
+            duration = device.pump_duration_seconds
+
+        try:
+            r = requests.get(f"http://{device.ip_address}/water?duration={duration}", timeout=3)
+            r.raise_for_status()
+            
+            device.last_watered_at = timezone.now()
+            device.save(update_fields=['last_watered_at'])
+            
+            WateringLog.objects.create(
+                device=device,
+                trigger_type='manual',
+                duration_seconds=duration,
+                success=True,
+                response=f"HTTP {r.status_code}"
+            )
+            return Response({"success": True, "message": f"Watering command sent for {duration} seconds.", "data": {"duration": duration}})
+            
+        except requests.exceptions.Timeout:
+            WateringLog.objects.create(device=device, trigger_type='manual', duration_seconds=duration, success=False, response="Timeout")
+            return Response({"success": False, "message": "Connection timed out. Pump may not have started.", "data": {}}, status=status.HTTP_504_GATEWAY_TIMEOUT)
+        except Exception as e:
+            WateringLog.objects.create(device=device, trigger_type='manual', duration_seconds=duration, success=False, response=str(e)[:250])
+            return Response({"success": False, "message": f"Command failed: {str(e)}", "data": {}}, status=status.HTTP_502_BAD_GATEWAY)
+
+    @action(detail=True, methods=['post'], url_path='sensor-data', permission_classes=[permissions.AllowAny])
     def receive_sensor_data(self, request, device_id=None):
-        device = self.get_object()
+        try:
+            device = Device.objects.get(device_id=device_id)
+        except Device.DoesNotExist:
+            return Response({"success": False, "message": "Device not found"}, status=status.HTTP_404_NOT_FOUND)
         data = request.data
+        
+        # Update heartbeat
+        device.last_seen = timezone.now()
+        device.save(update_fields=['last_seen'])
         
         reading = DeviceReading.objects.create(
             device=device,
             soil_moisture=data.get('moisture', 0),
+            soil_raw=data.get('soil_raw', 0),
             temperature=data.get('temp', 0),
-            water_level=data.get('water_level', 0)
+            water_level=data.get('water_level', 0),
+            pump_status=data.get('pump_status', False)
         )
         
-        return Response({"status": "success", "id": reading.id}, status=status.HTTP_201_CREATED)
+        return Response({"success": True, "message": "Telemetry saved", "data": {"id": reading.id}}, status=status.HTTP_201_CREATED)
 
 class ChatViewSet(viewsets.ViewSet):
     permission_classes = [permissions.IsAuthenticated]

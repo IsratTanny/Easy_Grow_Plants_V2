@@ -7,6 +7,7 @@ export default function DeviceManager() {
     const { t } = useLanguage();
     const [devices, setDevices] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState({});
     const [showAddModal, setShowAddModal] = useState(false);
     const [newDevice, setNewDevice] = useState({
         device_id: '',
@@ -15,51 +16,52 @@ export default function DeviceManager() {
         nickname: '',
         ip_address: '',
         schedule_time: '20:00',
-        moisture_threshold: 30
+        moisture_threshold: 30,
+        pump_duration_seconds: 5,
+        auto_watering_enabled: false
     });
-    const [readings, setReadings] = useState({});
-
+    
+    // Initial fetch
     useEffect(() => {
         fetchDevices();
         
-        // Start polling for real-time updates every 5 seconds
+        // Poll for updates from backend every 5 seconds
+        // This allows real-time monitoring during calibration
         const pollInterval = setInterval(() => {
-            devices.forEach(device => {
-                fetchDeviceData(device);
-            });
+            fetchDevices();
         }, 5000);
 
         return () => clearInterval(pollInterval);
-    }, [devices]);
+    }, []);
 
     const fetchDevices = async () => {
         try {
             const res = await api.get('/devices/');
             setDevices(res.data);
             setLoading(false);
-            // Fetch initial readings for all devices
-            res.data.forEach(device => {
-                fetchDeviceData(device);
-            });
         } catch (err) {
             console.error('Error fetching devices:', err);
             setLoading(false);
         }
     };
 
-    const fetchDeviceData = async (device) => {
+    const refreshDeviceStatus = async (device) => {
+        if (refreshing[device.device_id]) return;
+        
+        setRefreshing(prev => ({ ...prev, [device.device_id]: true }));
         try {
-            // Using backend proxy to avoid CORS and reachable issues
+            // This endpoint still calls Arduino directly, so we keep it manual only
             const res = await api.get(`/devices/${device.device_id}/status/`);
-            setReadings(prev => ({
-                ...prev,
-                [device.device_id]: {
-                    ...res.data,
-                    timestamp: new Date().toLocaleTimeString()
-                }
-            }));
+            if (res.data.success) {
+                // Refresh list to get the newly saved telemetry in latest_reading
+                await fetchDevices();
+            } else {
+                alert(`Refresh failed: ${res.data.message}`);
+            }
         } catch (err) {
-            console.warn(`Could not reach device ${device.device_id} via backend`);
+            console.error('Refresh error:', err);
+        } finally {
+            setRefreshing(prev => ({ ...prev, [device.device_id]: false }));
         }
     };
 
@@ -80,7 +82,9 @@ export default function DeviceManager() {
                 nickname: '',
                 ip_address: '',
                 schedule_time: '20:00',
-                moisture_threshold: 30
+                moisture_threshold: 30,
+                pump_duration_seconds: 5,
+                auto_watering_enabled: false
             });
         } catch (err) {
             alert('Error adding device. Check if Device ID is unique.');
@@ -99,13 +103,15 @@ export default function DeviceManager() {
 
     const handleWaterNow = async (device) => {
         try {
-            const res = await api.get(`/devices/${device.device_id}/water/`);
-            if (res.data.status === 'command sent') {
-                alert(`Watering command sent to ${device.plant_name || device.name}`);
-                fetchDeviceData(device); // Refresh data
+            const res = await api.post(`/devices/${device.device_id}/water/`);
+            if (res.data.success) {
+                alert(`Watering command sent: ${res.data.message}`);
+                await fetchDevices(); // Refresh to get updated stats
+            } else {
+                alert(`Watering failed: ${res.data.message}`);
             }
         } catch (err) {
-            alert(`Failed to reach device. Backend error: ${err.response?.data?.error || err.message}`);
+            alert(`Failed to reach device. Backend error: ${err.response?.data?.message || err.message}`);
         }
     };
 
@@ -147,7 +153,10 @@ export default function DeviceManager() {
                             <div className="bg-nature-600 p-4 text-white">
                                 <div className="flex justify-between items-start">
                                     <div>
-                                        <h3 className="font-bold text-lg truncate">{device.plant_name || device.name}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-2 h-2 rounded-full ${device.is_online ? 'bg-green-400 animate-pulse' : 'bg-red-400'}`}></div>
+                                            <h3 className="font-bold text-lg truncate">{device.plant_name || device.name}</h3>
+                                        </div>
                                         <p className="text-nature-100 text-xs opacity-80">{device.nickname || 'Living Room'}</p>
                                     </div>
                                     <button 
@@ -168,8 +177,8 @@ export default function DeviceManager() {
                                             </div>
                                             <span className="text-sm font-medium">Moisture</span>
                                         </div>
-                                        <span className={`text-lg font-bold ${readings[device.device_id]?.percent < device.moisture_threshold ? 'text-red-500' : 'text-nature-700'}`}>
-                                            {readings[device.device_id]?.percent ?? '--'}%
+                                        <span className={`text-lg font-bold ${device.latest_reading?.soil_moisture < device.moisture_threshold ? 'text-red-500' : 'text-nature-700'}`}>
+                                            {device.latest_reading?.soil_moisture ?? '--'}%
                                         </span>
                                     </div>
                                     
@@ -181,7 +190,19 @@ export default function DeviceManager() {
                                             <span className="text-sm font-medium">Temperature</span>
                                         </div>
                                         <span className="text-lg font-bold text-nature-700">
-                                            {readings[device.device_id]?.temp ?? '--'}°C
+                                            {device.latest_reading?.temperature ?? 'N/A'}°C
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <div className="bg-blue-50 p-2 rounded-lg">
+                                                <Wind className="w-5 h-5 text-blue-500" />
+                                            </div>
+                                            <span className="text-sm font-medium">Pump Status</span>
+                                        </div>
+                                        <span className={`text-sm font-bold ${device.latest_reading?.pump_status ? 'text-blue-600 animate-pulse' : 'text-gray-400'}`}>
+                                            {device.latest_reading?.pump_status ? 'RUNNING' : 'IDLE'}
                                         </span>
                                     </div>
 
@@ -196,11 +217,35 @@ export default function DeviceManager() {
                                             {device.schedule_time || 'No Schedule'}
                                         </span>
                                     </div>
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-3 text-gray-600">
+                                            <div className="bg-purple-50 p-2 rounded-lg">
+                                                <AlertCircle className="w-5 h-5 text-purple-500" />
+                                            </div>
+                                            <span className="text-sm font-medium">Auto Watering</span>
+                                        </div>
+                                        <span className={`text-sm font-bold ${device.auto_watering_enabled ? 'text-green-600' : 'text-gray-400'}`}>
+                                            {device.auto_watering_enabled ? 'ON' : 'OFF'}
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Removed stale error display from background polling */}
                                 </div>
 
-                                <div className="flex items-center gap-2 text-[10px] text-gray-400 mb-4">
-                                    <Clock className="w-3 h-3" />
-                                    Last Updated: {readings[device.device_id]?.timestamp || 'Never'}
+                                <div className="space-y-1 mb-4">
+                                    <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                        <Clock className="w-3 h-3" />
+                                        Last Sync: {device.latest_reading?.timestamp ? new Date(device.latest_reading.timestamp).toLocaleTimeString() : 'Never'}
+                                        <span className="ml-auto opacity-60">(Auto sync 5s)</span>
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                        <Droplets className="w-3 h-3" />
+                                        Last Auto: {device.last_auto_water_date || 'Never'}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                        <Clock className="w-3 h-3" />
+                                        Last Watered (Any): {device.last_watered_at ? new Date(device.last_watered_at).toLocaleString() : 'Never'}
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-2">
@@ -212,9 +257,10 @@ export default function DeviceManager() {
                                         Water Now
                                     </button>
                                     <button 
-                                        onClick={() => fetchDeviceData(device)}
-                                        className="p-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors"
-                                        title="Refresh Data"
+                                        onClick={() => refreshDeviceStatus(device)}
+                                        disabled={refreshing[device.device_id]}
+                                        className={`p-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-colors ${refreshing[device.device_id] ? 'animate-spin' : ''}`}
+                                        title="Sync Now (Ping Arduino)"
                                     >
                                         <Repeat className="w-4 h-4" />
                                     </button>
@@ -313,6 +359,32 @@ export default function DeviceManager() {
                                         value={newDevice.moisture_threshold}
                                         onChange={(e) => setNewDevice({...newDevice, moisture_threshold: parseInt(e.target.value)})}
                                     />
+                                </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Pump Duration (s)</label>
+                                    <input 
+                                        type="number"
+                                        required
+                                        min="1"
+                                        max="10"
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nature-500 outline-none"
+                                        value={newDevice.pump_duration_seconds}
+                                        onChange={(e) => setNewDevice({...newDevice, pump_duration_seconds: parseInt(e.target.value)})}
+                                    />
+                                </div>
+                                <div className="flex items-center">
+                                    <label className="flex items-center cursor-pointer gap-2 mt-4">
+                                        <input 
+                                            type="checkbox"
+                                            className="w-5 h-5 rounded border-gray-300 text-nature-600 focus:ring-nature-500"
+                                            checked={newDevice.auto_watering_enabled}
+                                            onChange={(e) => setNewDevice({...newDevice, auto_watering_enabled: e.target.checked})}
+                                        />
+                                        <span className="text-sm font-medium text-gray-700">Enable Auto Watering</span>
+                                    </label>
                                 </div>
                             </div>
 

@@ -165,25 +165,42 @@ export default function Register() {
         try {
             if (formData.role === 'Plant Buyer') {
                 try {
-                    const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-                    await sendEmailVerification(userCredential.user);
+                    let user;
+                    try {
+                        const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+                        user = userCredential.user;
+                        console.log("Firebase user created:", user.email);
+                    } catch (fbCreateErr) {
+                        if (fbCreateErr.code === 'auth/email-already-in-use') {
+                            console.log("Firebase user already exists, proceeding to Django registration.");
+                            // We don't have the user object here easily without signing in, 
+                            // but we can proceed to Django and let Login handle verification resend if needed.
+                        } else {
+                            throw fbCreateErr;
+                        }
+                    }
+
+                    if (user) {
+                        await sendEmailVerification(user);
+                        console.log("Verification email sent to:", user.email);
+                    }
 
                     // Save to localStorage for synchronization during login
                     localStorage.setItem('pendingRegistration', JSON.stringify({
                         username: formData.username,
                         email: formData.email,
                         password: formData.password,
-                        phone: formData.phone || '', // Allow empty
+                        phone: formData.phone || '',
                         whatsapp_number: formData.whatsapp_number,
                         address: formData.address,
                         role: 'buyer'
                     }));
 
                     setSuccess('A verification link has been sent to your email. Please verify your email to complete your registration.');
-                    // Proceed to Django save...
                 } catch (firebaseErr) {
+                    console.error("Firebase Registration Error:", firebaseErr);
                     setError(firebaseErr.message || 'Firebase Registration failed.');
-                    return; // Stop if Firebase fails
+                    return; 
                 }
             }
 

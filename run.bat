@@ -87,7 +87,7 @@ echo.
 :: ============================================
 :: STEP 6: Build React Frontend
 :: ============================================
-echo [6/7] Building React frontend...
+echo [6/8] Building React frontend...
 cd frontend
 
 :: Check if Node.js is installed
@@ -111,11 +111,17 @@ if not exist "node_modules" (
     )
 )
 
+:: Clear Vite cache to fix stale module resolution errors
+if exist "node_modules\.vite" (
+    echo Clearing Vite cache...
+    rmdir /s /q "node_modules\.vite"
+)
+
 :: Build the frontend
 echo Building production frontend...
 call npm run build
 if %errorlevel% neq 0 (
-    echo ERROR: Frontend build failed.
+    echo ERROR: Frontend build failed. Check the output above for details.
     cd ..
     pause
     exit /b 1
@@ -127,17 +133,53 @@ cd ..
 echo.
 
 :: ============================================
-:: STEP 7: Start Django Server
+:: STEP 7: Collect Static Files
 :: ============================================
-echo [7/7] Starting Django server...
+echo [7/8] Collecting static files...
+python manage.py collectstatic --noinput
+if %errorlevel% neq 0 (
+    echo WARNING: collectstatic failed. Some images/styles may not load correctly.
+)
+echo Static files collected!
+echo.
+
+:: ============================================
+:: STEP 8: Start Django Server (IoT Enabled)
+:: ============================================
+echo [8/8] Starting Django server...
+
+:: Detect Local IPv4 Address
+set LOCAL_IP=127.0.0.1
+for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4 Address"') do (
+    set LOCAL_IP=%%a
+    goto :found_ip
+)
+:found_ip
+:: Trim leading space
+set LOCAL_IP=%LOCAL_IP: =%
+
 echo.
 echo ========================================================
-echo    Application running at: http://127.0.0.1:8000
+echo    Easy Grow Plants - System Status
+echo ========================================================
+echo.
+echo    [1] Local URL:   http://127.0.0.1:8000
+echo    [2] LAN/IoT URL: http://%LOCAL_IP%:8000
+echo.
+echo    IMPORTANT REMINDERS:
+echo    - Arduino serverAddress: "%LOCAL_IP%"
+echo    - Arduino IP in Dashboard: (check Serial Monitor)
+echo    - Firewall: Ensure port 8000 is open for Python
+echo.
 echo    Press CTRL+C to stop the server
 echo ========================================================
 echo.
 
-python manage.py runserver 127.0.0.1:8000
+:: Open browser after a short delay to allow server to start
+start /b "" cmd /c "timeout /t 5 >nul && start "" http://127.0.0.1:8000"
+
+:: Run on 0.0.0.0 to allow LAN access from Arduino
+python manage.py runserver 0.0.0.0:8000
 
 :: If server stops, pause to show any error messages
 if %errorlevel% neq 0 (

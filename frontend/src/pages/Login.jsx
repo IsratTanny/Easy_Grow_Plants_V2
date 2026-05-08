@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { api, setAuthToken } from '../api/axios';
 import { Leaf } from 'lucide-react';
-import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { signInWithEmailAndPassword, signOut, sendEmailVerification } from 'firebase/auth';
 import { auth } from '../firebase';
 
 export default function Login() {
@@ -26,23 +26,35 @@ export default function Login() {
             const userRole = userRes.data.role;
             const userEmail = userRes.data.email;
 
-            // 4. Persistence: Output token and role string
-            localStorage.setItem('user_role', userRole);
+            // 4. Persistence: Sync with Navbar and other components
+            localStorage.setItem('userRole', userRole);
+            localStorage.setItem('user_role', userRole); // Legacy support
+            localStorage.setItem('username', userRes.data.username);
+            
+            // Dispatch event to update Navbar state immediately
+            window.dispatchEvent(new Event('authChange'));
 
             // 5. Email Verification Check for Buyers
-            if (userRole === 'buyer' && userEmail) {
+            if (userRole === 'buyer' && userEmail && !userRes.data.is_verified) {
                 try {
                     // Sign into Firebase strictly to check email verification status
                     const fbCred = await signInWithEmailAndPassword(auth, userEmail, formData.password);
                     if (!fbCred.user.emailVerified) {
+                        await sendEmailVerification(fbCred.user);
                         await signOut(auth);
-                        setError('Please verify your email first!');
-                        return; // Halt login if not verified
+                        setError('Your email is not verified. A new verification link has been sent to your email.');
+                        return;
                     }
                 } catch (fbErr) {
-                    console.error("Firebase Login Error: ", fbErr);
-                    // Handle specific password mismatch vs Firebase mismatch or missing records gracefully
-                    setError('Verification check failed. Please ensure your email is verified.');
+                    console.error("Firebase Auth Error: ", fbErr.code, fbErr.message);
+                    
+                    if (fbErr.code === 'auth/invalid-credential' || fbErr.code === 'auth/wrong-password') {
+                        setError('Firebase authentication failed. This usually happens if your password was reset in Django but not in Firebase. Please use "Forgot Password" or contact support.');
+                    } else if (fbErr.code === 'auth/user-not-found') {
+                        setError('Firebase account not found. Please contact support to sync your account.');
+                    } else {
+                        setError('Verification check failed. Please ensure your email is verified.');
+                    }
                     return;
                 }
             }

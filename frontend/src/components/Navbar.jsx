@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 
 export default function Navbar() {
-    const { t, changeLanguage, currentLanguage } = useLanguage();
+    const { t, changeLanguage, language } = useLanguage();
     const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -47,7 +47,9 @@ export default function Navbar() {
     const fetchNotifications = async () => {
         try {
             const res = await api.get('/notifications/');
-            setNotifications(res.data.filter(n => !n.is_read));
+            // Backend returns { unread_count: X, notifications: [...] }
+            const data = Array.isArray(res.data) ? res.data : (res.data.notifications || []);
+            setNotifications(data.filter(n => !n.is_read));
         } catch (err) {
             console.error('Error fetching notifications:', err);
         }
@@ -201,9 +203,19 @@ export default function Navbar() {
                             </div>
                         )}
 
-                        <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg">
-                            <button onClick={() => changeLanguage('en')} className={`px-2 py-0.5 rounded text-[10px] font-bold ${currentLanguage === 'en' ? 'bg-white text-nature-800 shadow-sm' : 'text-gray-400'}`}>EN</button>
-                            <button onClick={() => changeLanguage('bn')} className={`px-2 py-0.5 rounded text-[10px] font-bold ${currentLanguage === 'bn' ? 'bg-white text-nature-800 shadow-sm' : 'text-gray-400'}`}>BN</button>
+                        <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg border border-gray-200 shadow-inner">
+                            <button 
+                                onClick={() => changeLanguage('en')} 
+                                className={`px-3 py-1.5 rounded-md text-[10px] font-black transition-all duration-300 ${language === 'en' ? 'bg-nature-600 text-white shadow-sm scale-105' : 'text-gray-400 hover:text-nature-600 hover:bg-white/50'}`}
+                            >
+                                EN
+                            </button>
+                            <button 
+                                onClick={() => changeLanguage('bn')} 
+                                className={`px-3 py-1.5 rounded-md text-[10px] font-black transition-all duration-300 ${language === 'bn' ? 'bg-nature-600 text-white shadow-sm scale-105' : 'text-gray-400 hover:text-nature-600 hover:bg-white/50'}`}
+                            >
+                                BN
+                            </button>
                         </div>
                     </div>
                 </div>
