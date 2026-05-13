@@ -33,10 +33,12 @@ import { LanguageProvider } from './i18n/LanguageContext';
 import LanguageSelectionModal from './components/LanguageSelectionModal';
 
 import VoiceAssistant from './components/VoiceAssistant';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
     return (
         <LanguageProvider>
+            <Toaster position="top-center" reverseOrder={false} />
             <LanguageSelectionModal />
             <div className="min-h-screen bg-nature-50 text-gray-800 font-sans">
                 <Navbar />

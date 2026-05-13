@@ -56,6 +56,17 @@ class DeviceViewSet(viewsets.ModelViewSet):
         if not device.is_online:
             return Response({"success": False, "message": "Device is offline. Cannot send command.", "data": {}}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
+        # Implementation of 60-second cooldown
+        if device.last_watered_at:
+            seconds_since_last = (timezone.now() - device.last_watered_at).total_seconds()
+            if seconds_since_last < 60:
+                wait_time = int(60 - seconds_since_last)
+                return Response({
+                    "success": False, 
+                    "message": f"Cooldown active. Please wait {wait_time} seconds before watering again.",
+                    "data": {"wait_time": wait_time}
+                }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
         duration = request.data.get('duration', device.pump_duration_seconds)
         try:
             duration = int(duration)
@@ -94,9 +105,16 @@ class DeviceViewSet(viewsets.ModelViewSet):
             return Response({"success": False, "message": "Device not found"}, status=status.HTTP_404_NOT_FOUND)
         data = request.data
         
-        # Update heartbeat
+        # Update heartbeat and IP address
         device.last_seen = timezone.now()
-        device.save(update_fields=['last_seen'])
+        
+        # Automatically update IP address if it has changed
+        # We can get it from the request metadata or the payload
+        remote_ip = request.META.get('REMOTE_ADDR')
+        if remote_ip and remote_ip != '127.0.0.1' and device.ip_address != remote_ip:
+            device.ip_address = remote_ip
+            
+        device.save(update_fields=['last_seen', 'ip_address'])
         
         reading = DeviceReading.objects.create(
             device=device,

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { api } from '../api/axios';
 import { Cpu, Plus, Droplets, Thermometer, Wind, Clock, Trash2, ExternalLink, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
+import toast from 'react-hot-toast';
 
 export default function DeviceManager() {
     const { t } = useLanguage();
@@ -53,10 +54,11 @@ export default function DeviceManager() {
             // This endpoint still calls Arduino directly, so we keep it manual only
             const res = await api.get(`/devices/${device.device_id}/status/`);
             if (res.data.success) {
+                toast.success('Device status refreshed');
                 // Refresh list to get the newly saved telemetry in latest_reading
                 await fetchDevices();
             } else {
-                alert(`Refresh failed: ${res.data.message}`);
+                toast.error(`Refresh failed: ${res.data.message}`);
             }
         } catch (err) {
             console.error('Refresh error:', err);
@@ -86,8 +88,10 @@ export default function DeviceManager() {
                 pump_duration_seconds: 5,
                 auto_watering_enabled: false
             });
+            await fetchDevices();
+            toast.success('Device added successfully!');
         } catch (err) {
-            alert('Error adding device. Check if Device ID is unique.');
+            toast.error('Error adding device. Check if Device ID is unique.');
         }
     };
 
@@ -105,13 +109,14 @@ export default function DeviceManager() {
         try {
             const res = await api.post(`/devices/${device.device_id}/water/`);
             if (res.data.success) {
-                alert(`Watering command sent: ${res.data.message}`);
+                toast.success(res.data.message);
                 await fetchDevices(); // Refresh to get updated stats
             } else {
-                alert(`Watering failed: ${res.data.message}`);
+                toast.error(res.data.message);
             }
         } catch (err) {
-            alert(`Failed to reach device. Backend error: ${err.response?.data?.message || err.message}`);
+            const msg = err.response?.data?.message || err.message;
+            toast.error(msg);
         }
     };
 
@@ -235,6 +240,11 @@ export default function DeviceManager() {
                                 <div className="space-y-1 mb-4">
                                     <div className="flex items-center gap-2 text-[10px] text-gray-400">
                                         <Clock className="w-3 h-3" />
+                                        Last Seen: {device.last_seen ? new Date(device.last_seen).toLocaleTimeString() : 'Never'}
+                                        {!device.is_online && <span className="text-red-400 font-bold ml-1">(! OFFLINE)</span>}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                                        <Clock className="w-3 h-3" />
                                         Last Sync: {device.latest_reading?.timestamp ? new Date(device.latest_reading.timestamp).toLocaleTimeString() : 'Never'}
                                         <span className="ml-auto opacity-60">(Auto sync 5s)</span>
                                     </div>
@@ -246,6 +256,11 @@ export default function DeviceManager() {
                                         <Clock className="w-3 h-3" />
                                         Last Watered (Any): {device.last_watered_at ? new Date(device.last_watered_at).toLocaleString() : 'Never'}
                                     </div>
+                                    {!device.is_online && (
+                                        <div className="mt-2 p-2 bg-red-50 rounded-lg text-[9px] text-red-600 border border-red-100">
+                                            Tip: Start backend with <code>0.0.0.0:8000</code> and check Arduino IP.
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="flex gap-2">

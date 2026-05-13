@@ -40,8 +40,8 @@ class Device(models.Model):
     def is_online(self):
         if not self.last_seen:
             return False
-        # Consider online if seen within last 120 seconds
-        return (timezone.now() - self.last_seen).total_seconds() <= 120
+        # Consider online if seen within last 300 seconds (5 minutes)
+        return (timezone.now() - self.last_seen).total_seconds() <= 300
 
 class DeviceReading(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='readings')

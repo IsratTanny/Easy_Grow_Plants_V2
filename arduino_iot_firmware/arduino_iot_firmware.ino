@@ -9,7 +9,7 @@ char ssid[] = "Tanny";
 char pass[] = "israttan";
 
 // ===================== SERVER SETTINGS =====================
-char serverAddress[] = "10.47.85.220"; 
+char serverAddress[] = "10.220.107.220";
 int serverPort = 8000;
 
 WiFiServer server(80);
@@ -65,7 +65,8 @@ void loop() {
 
   // Debug Calibration Monitor
   if (millis() - lastDebugPrint >= DEBUG_PRINT_INTERVAL) {
-    Serial.print("MONITOR | Raw: "); Serial.print(soilRaw);
+    Serial.print("MONITOR | IP: "); Serial.print(WiFi.localIP());
+    Serial.print(" | Raw: "); Serial.print(soilRaw);
     Serial.print(" | Filtered: "); Serial.print(smoothedRaw);
     Serial.print(" | Moisture: "); Serial.print(moisturePercent);
     Serial.print("% | Pump: "); Serial.println(pumpActive ? "ON" : "OFF");
@@ -235,6 +236,7 @@ void pushDataToServer() {
     doc["pump_status"] = pumpActive;
     doc["temp"] = 25; 
     doc["water_level"] = 100;
+    doc["ip"] = WiFi.localIP().toString();
     
     String jsonBody;
     serializeJson(doc, jsonBody);
