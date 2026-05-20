@@ -69,6 +69,7 @@ export default function Navbar() {
         setIsAuth(false);
         setIsProfileOpen(false);
         setIsMenuOpen(false);
+        window.dispatchEvent(new Event('authChange'));
         navigate('/login');
     };
 
@@ -224,55 +225,121 @@ export default function Navbar() {
             {isMenuOpen && (
                 <div className="fixed inset-0 z-[100]">
                     <div className="absolute inset-0 bg-black/20" onClick={() => setIsMenuOpen(false)} />
-                    <div className="absolute top-0 left-0 w-64 h-full bg-white shadow-xl animate-slideRight">
-                        <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                    <div className="absolute top-0 left-0 w-64 h-full bg-white shadow-xl animate-slideRight flex flex-col">
+                        <div className="p-4 border-b border-gray-100 flex items-center justify-between shrink-0">
                             <span className="font-bold text-nature-800 uppercase tracking-wider">{t('menu')}</span>
                             <button onClick={() => setIsMenuOpen(false)} className="p-1 hover:bg-gray-100 rounded-lg">
                                 <X className="w-6 h-6 text-gray-400" />
                             </button>
                         </div>
 
-                        <div className="p-2 space-y-1">
-                            <Link to="/" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Activity className="w-5 h-5 text-nature-600" />
-                                <span>{t('home')}</span>
-                            </Link>
-                            <Link to="/marketplace" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Store className="w-5 h-5 text-nature-600" />
-                                <span>{t('marketplace')}</span>
-                            </Link>
-                            <Link to="/smart-finder" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Compass className="w-5 h-5 text-nature-600" />
-                                <span>{t('smartFinder')}</span>
-                            </Link>
-                            <Link to="/ar-decorator" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Box className="w-5 h-5 text-nature-600" />
-                                <span>AR Decorator</span>
-                            </Link>
-                            <Link to="/devices" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Cpu className="w-5 h-5 text-nature-600" />
-                                <span>{t('device')}</span>
-                            </Link>
-                            <Link to="/plant-care" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Sprout className="w-5 h-5 text-nature-600" />
-                                <span>{t('plantCare')}</span>
-                            </Link>
-                            <Link to="/nearby-sellers" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <MapPin className="w-5 h-5 text-nature-600" />
-                                <span>{t('nearbySellers')}</span>
-                            </Link>
-                            <Link to="/plant-doctor" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Stethoscope className="w-5 h-5 text-nature-600" />
-                                <span>{t('plantDoctor')}</span>
-                            </Link>
-                            <Link to="/detect-plant" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Camera className="w-5 h-5 text-nature-600" />
-                                <span>{t('plantDetection')}</span>
-                            </Link>
-                            <Link to="/community" className="flex items-center gap-3 p-3 rounded-lg hover:bg-nature-50 text-gray-700" onClick={() => setIsMenuOpen(false)}>
-                                <Users className="w-5 h-5 text-nature-600" />
-                                <span>{t('community')}</span>
-                            </Link>
+                        <div className="p-3 space-y-4 flex-1 overflow-y-auto custom-scrollbar">
+                            {/* Group 1: Explore & Buy */}
+                            <div className="space-y-1">
+                                <div className="px-3 mb-2 text-[10px] font-black text-nature-600 tracking-wider uppercase opacity-85">
+                                    {t('menuExplore')}
+                                </div>
+                                <Link to="/" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Activity className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('home')}</span>
+                                </Link>
+                                <Link to="/marketplace" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Store className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('marketplace')}</span>
+                                </Link>
+                                <Link to="/nearby-sellers" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <MapPin className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('nearbySellers')}</span>
+                                </Link>
+                            </div>
+
+                            <hr className="border-nature-100/50 my-1" />
+
+                            {/* Group 2: Smart Features */}
+                            <div className="space-y-1">
+                                <div className="px-3 mb-2 text-[10px] font-black text-nature-600 tracking-wider uppercase opacity-85">
+                                    {t('menuSmart')}
+                                </div>
+                                <Link to="/smart-finder" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Compass className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('smartFinder')}</span>
+                                </Link>
+                                <Link to="/ar-decorator" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Box className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>AR Decorator</span>
+                                </Link>
+                                <Link to="/devices" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Cpu className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('device')}</span>
+                                </Link>
+                                <Link to="/detect-plant" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Camera className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('detectPlant')}</span>
+                                </Link>
+                            </div>
+
+                            <hr className="border-nature-100/50 my-1" />
+
+                            {/* Group 3: Care & Maintenance */}
+                            <div className="space-y-1">
+                                <div className="px-3 mb-2 text-[10px] font-black text-nature-600 tracking-wider uppercase opacity-85">
+                                    {t('menuCare')}
+                                </div>
+                                <Link to="/plant-care" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Sprout className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('plantCare')}</span>
+                                </Link>
+                                <Link to="/plant-care?tab=subscription" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Package className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('subscriptionPlans')}</span>
+                                </Link>
+                                <Link to="/expert-potting" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Box className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('expertPotting')}</span>
+                                </Link>
+                                <Link to="/plant-doctor" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Stethoscope className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('plantDoctor')}</span>
+                                </Link>
+                            </div>
+
+                            <hr className="border-nature-100/50 my-1" />
+
+                            {/* Group 4: Plant Exchange */}
+                            <div className="space-y-1">
+                                <div className="px-3 mb-2 text-[10px] font-black text-nature-600 tracking-wider uppercase opacity-85">
+                                    {t('menuExchange')}
+                                </div>
+                                <Link to="/exchange" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Repeat className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('requestExchange')}</span>
+                                </Link>
+                                <Link to="/exchange-history" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Clock className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('myExchanges')}</span>
+                                </Link>
+                            </div>
+
+                            <hr className="border-nature-100/50 my-1" />
+
+                            {/* Group 5: Social & Support */}
+                            <div className="space-y-1 pb-4">
+                                <div className="px-3 mb-2 text-[10px] font-black text-nature-600 tracking-wider uppercase opacity-85">
+                                    {t('menuSupport')}
+                                </div>
+                                <Link to="/community" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Users className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('community')}</span>
+                                </Link>
+                                <Link to="/reviews" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <Star className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('productReviews')}</span>
+                                </Link>
+                                <Link to="/help-center" className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-nature-50 text-gray-700 text-sm font-medium transition-colors" onClick={() => setIsMenuOpen(false)}>
+                                    <HelpCircle className="w-[18px] h-[18px] text-nature-600" />
+                                    <span>{t('helpCenter')}</span>
+                                </Link>
+                            </div>
                         </div>
                     </div>
                 </div>

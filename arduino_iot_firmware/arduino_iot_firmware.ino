@@ -9,7 +9,7 @@ char ssid[] = "Tanny";
 char pass[] = "israttan";
 
 // ===================== SERVER SETTINGS =====================
-char serverAddress[] = "10.220.107.220";
+char serverAddress[] = "10.206.38.220";
 int serverPort = 8000;
 
 WiFiServer server(80);
@@ -175,9 +175,27 @@ void handleInboundRequests() {
   WiFiClient localClient = server.available();
   if (!localClient) return;
 
-  // Read request
+  // Read the first line of the request
   String request = localClient.readStringUntil('\r');
-  localClient.flush();
+  
+  // CRITICAL FIX: Read the rest of the HTTP headers to clear the buffer.
+  // If we don't do this, calling stop() with unread data in the buffer
+  // forces a TCP RST (Connection Reset) packet, crashing the Django request!
+  boolean currentLineIsBlank = true;
+  while (localClient.connected()) {
+    if (localClient.available()) {
+      char c = localClient.read();
+      if (c == '\n' && currentLineIsBlank) {
+        // End of HTTP headers
+        break;
+      }
+      if (c == '\n') {
+        currentLineIsBlank = true;
+      } else if (c != '\r') {
+        currentLineIsBlank = false;
+      }
+    }
+  }
 
   if (request.indexOf("GET /data") >= 0) {
     sendJsonResponse(localClient, "OK");

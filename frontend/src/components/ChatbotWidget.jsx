@@ -34,7 +34,7 @@ export default function ChatbotWidget() {
             if (event.results && event.results[0] && event.results[0][0]) {
                 const transcript = event.results[0][0].transcript;
                 setInputValue(transcript);
-                
+
                 // Automatically trigger search after state applies
                 setTimeout(() => {
                     const sendBtn = document.getElementById('chatbot-send-btn');
@@ -120,7 +120,7 @@ ROLE AWARENESS: User Role: ${userRole}.`;
             if (!response.ok) {
                 const errData = await response.json().catch(() => ({}));
                 const errMsg = errData.error?.message || response.statusText;
-                
+
                 if (response.status === 400 && payload.tools) {
                     console.warn("Google Search grounding unsupported or invalid. Retrying without tools...");
                     const fallbackPayload = { ...payload };
@@ -138,6 +138,31 @@ ROLE AWARENESS: User Role: ${userRole}.`;
             }
             throw error;
         }
+    };
+
+    const getOfflineBotanicalResponse = (promptText) => {
+        const t = promptText.toLowerCase();
+        let response = "";
+        if (t.includes('air plant') || t.includes('airplant') || t.includes('tillandsia')) {
+            response = "Air plants (Tillandsia) thrive in bright, indirect sunlight. Soak them in water for 20-30 minutes once a week, shake off excess water carefully, and let them dry completely in a well-ventilated area.";
+        } else if (t.includes('cactus') || t.includes('cacti') || t.includes('succulent')) {
+            response = "Succulents and Cacti need bright direct sunlight (5-6 hours daily). Water thoroughly only when the soil is 100% dry (about once every 2-3 weeks). Use a highly porous potting mix.";
+        } else if (t.includes('pothos') || t.includes('epipremnum')) {
+            response = "Pothos plants are very hardy! They thrive in low to bright indirect light. Water only when the top 2 inches of soil feel dry (about once a week).";
+        } else if (t.includes('monstera') || t.includes('cheese plant')) {
+            response = "Monsteras love bright, indirect light and a well-draining soil mix. Water when the top 50% of the soil is dry. Provide support like a moss pole as they grow.";
+        } else if (t.includes('water') || t.includes('watering') || t.includes('how often')) {
+            response = "Always check soil moisture before watering. Water thoroughly only when the top 2 inches of soil feel dry. Under-watering is safer than over-watering!";
+        } else if (t.includes('soil') || t.includes('potting') || t.includes('dirt')) {
+            response = "Use a well-draining potting mix: 50% peat moss or coco coir, 30% perlite for aeration, and 20% organic compost for nutrients.";
+        } else if (t.includes('yellow') || t.includes('brown') || t.includes('spot') || t.includes('sick')) {
+            response = "Yellowing leaves usually mean overwatering. Brown, crispy tips indicate low humidity or underwatering. Leaf spots suggest a fungal/bacterial infection.";
+        } else if (t.includes('fertil') || t.includes('feed') || t.includes('food')) {
+            response = "Fertilize houseplants monthly during spring and summer using a balanced, water-soluble liquid fertilizer diluted to half strength.";
+        } else {
+            response = "For plant success: place in bright indirect light, water only when the topsoil is dry, use drainage holes, and maintain stable room temperatures.";
+        }
+        return `${response}\n\n*(Note: Running in offline expert mode)*`;
     };
 
     const callGeminiAPI = async (textPrompt, base64Image = null) => {
@@ -161,16 +186,12 @@ ROLE AWARENESS: User Role: ${userRole}.`;
 
         const cleanModelName = modelName.startsWith('models/') ? modelName : `models/${modelName}`;
         const url = `https://generativelanguage.googleapis.com/v1beta/${cleanModelName}:generateContent?key=${apiKey}`;
-        
+
         const systemPromptLive = `IDENTITY: You are the "Easy Grow Expert," a professional botanist available 24/7.
-RULE 1 (Visual & Text Processing): Analyze the uploaded image (if any) and user text together. Identify plants accurately (do not call a Cactus a Philodendron).
-RULE 2 (Context Filtering):
-- If user asks for "Name" or identity: Reply with ONLY the name (e.g., "This is an Njoy Pothos").
-- If user asks for "Media" or "Procedure": Provide the specific soil mix and potting procedure for that plant. NEVER say "I don't know".
-- If user asks for "Care": Provide ONE expert paragraph on water, light, and humidity.
-- If user asks for "Disease": Give ONE single best solution for the disease.
-RULE 3 (Constraints): Provide one single, definitive answer. Do not give lists or multiple options. Do not use code blocks or JSON.
-RULE 4 (Dynamic Generation): Generate a fresh response every time based on your botanical training database. Do not use static templates.`;
+RULE 1: Provide short and moderate size answers (strictly under 2-3 sentences).
+RULE 2: Respond directly and concisely to save tokens. Do not use conversational filler or greetings.
+RULE 3: Analyze the uploaded image (if any) and user text. Identify plants and issues accurately.
+RULE 4: Provide one definitive care instruction or solution without code blocks or JSON.`;
 
         const contents = [{
             role: "user",
@@ -187,7 +208,10 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
 
         const payload = {
             contents,
-            tools: [{ googleSearch: {} }]
+            generationConfig: {
+                maxOutputTokens: 120, // Strict token limit to prevent quota overuse!
+                temperature: 0.7
+            }
         };
 
         const data = await fetchWithRetry(url, payload);
@@ -196,10 +220,10 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
 
     const handleSend = async () => {
         if (!inputValue.trim() && !pendingImage) return;
-        
+
         const textToProcess = inputValue.trim() || 'Please analyze this image.';
         const imageToProcess = pendingImage;
-        
+
         setMessages(prev => [...prev, { sender: 'user', text: inputValue.trim(), image: imageToProcess }]);
         setInputValue('');
         setPendingImage(null);
@@ -210,8 +234,10 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
             if (!isLoggedIn) botResponse += "\n\n*(Tip: Log in to save this advice to your profile.)*";
             setMessages(prev => [...prev, { sender: 'bot', text: botResponse }]);
         } catch (error) {
-            console.error(error);
-            setMessages(prev => [...prev, { sender: 'bot', text: `System error: ${error.message}` }]);
+            console.warn("Gemini API call failed, falling back to local botanical expert:", error.message);
+            let botResponse = getOfflineBotanicalResponse(textToProcess);
+            if (!isLoggedIn) botResponse += "\n\n*(Tip: Log in to save this advice to your profile.)*";
+            setMessages(prev => [...prev, { sender: 'bot', text: botResponse }]);
         } finally {
             setIsTyping(false);
         }
@@ -235,7 +261,7 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
     return (
         <div style={{ position: 'fixed', bottom: '25px', right: '25px', zIndex: 9999 }}>
             {!isOpen && (
-                <button 
+                <button
                     onClick={() => setIsOpen(true)}
                     style={{
                         backgroundColor: '#1B4332',
@@ -255,12 +281,12 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                     onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                 >
                     <Leaf color="white" size={32} />
-                    <div style={{ 
-                        position: 'absolute', 
-                        bottom: '10px', 
-                        right: '10px', 
-                        backgroundColor: '#F97316', 
-                        borderRadius: '50%', 
+                    <div style={{
+                        position: 'absolute',
+                        bottom: '10px',
+                        right: '10px',
+                        backgroundColor: '#F97316',
+                        borderRadius: '50%',
                         padding: '4px',
                         display: 'flex',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
@@ -304,8 +330,8 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                             <span style={{ fontSize: '12px', color: '#86EFAC' }}>Easy Grow Expert</span>
                         </div>
                         <button onClick={() => setIsOpen(false)} aria-label="Close Chatbot" style={{ background: '#EF4444', border: 'none', cursor: 'pointer', color: 'white', width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}
-                                onMouseOver={(e) => e.currentTarget.style.background = '#DC2626'}
-                                onMouseOut={(e) => e.currentTarget.style.background = '#EF4444'}>
+                            onMouseOver={(e) => e.currentTarget.style.background = '#DC2626'}
+                            onMouseOut={(e) => e.currentTarget.style.background = '#EF4444'}>
                             <X size={18} strokeWidth={3} />
                         </button>
                     </div>
@@ -338,9 +364,9 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                                 overflowWrap: 'break-word'
                             }}>
                                 {msg.image && (
-                                    <img 
-                                        src={msg.image} 
-                                        alt="Uploaded plant" 
+                                    <img
+                                        src={msg.image}
+                                        alt="Uploaded plant"
                                         style={{ maxWidth: '100%', borderRadius: '8px', marginBottom: msg.text ? '8px' : '0' }}
                                     />
                                 )}
@@ -367,7 +393,7 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                         {pendingImage && (
                             <div style={{ position: 'relative', width: 'fit-content' }}>
                                 <img src={pendingImage} alt="Pending" style={{ height: '60px', borderRadius: '8px', border: '1px solid #E2E8F0' }} />
-                                <button 
+                                <button
                                     onClick={() => setPendingImage(null)}
                                     style={{
                                         position: 'absolute', top: '-6px', right: '-6px',
@@ -381,20 +407,20 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                             </div>
                         )}
                         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <input 
-                                type="file" 
-                                ref={fileInputRef} 
-                                style={{ display: 'none' }} 
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                style={{ display: 'none' }}
                                 onChange={handleFileUpload}
                                 accept="image/*"
                             />
-                            <button 
+                            <button
                                 onClick={() => fileInputRef.current.click()}
-                                style={{ 
-                                    background: '#F1F5F9', 
-                                    border: 'none', 
-                                    cursor: 'pointer', 
-                                    padding: '10px', 
+                                style={{
+                                    background: '#F1F5F9',
+                                    border: 'none',
+                                    cursor: 'pointer',
+                                    padding: '10px',
                                     borderRadius: '50%',
                                     color: '#475569',
                                     display: 'flex',
@@ -406,10 +432,10 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                             >
                                 <Camera size={20} />
                             </button>
-                            
-                            <input 
-                                type="text" 
-                                placeholder={isListening ? "Listening..." : "Describe your plant's issue..."} 
+
+                            <input
+                                type="text"
+                                placeholder={isListening ? "Listening..." : "Describe your plant's issue..."}
                                 value={inputValue}
                                 onChange={(e) => setInputValue(e.target.value)}
                                 onKeyPress={handleKeyPress}
@@ -425,7 +451,7 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                                     transition: 'all 0.3s ease'
                                 }}
                             />
-                            
+
                             <div style={{ position: 'relative' }}>
                                 {isListening && (
                                     <span style={{
@@ -438,14 +464,14 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                                         zIndex: 0
                                     }}></span>
                                 )}
-                                <button 
+                                <button
                                     onClick={startListening}
                                     disabled={isTyping || isListening}
-                                    style={{ 
-                                        background: 'transparent', 
-                                        border: 'none', 
-                                        cursor: isTyping ? 'not-allowed' : 'pointer', 
-                                        padding: '10px', 
+                                    style={{
+                                        background: 'transparent',
+                                        border: 'none',
+                                        cursor: isTyping ? 'not-allowed' : 'pointer',
+                                        padding: '10px',
                                         borderRadius: '50%',
                                         color: isListening ? '#EF4444' : '#475569',
                                         display: 'flex',
@@ -458,16 +484,16 @@ RULE 4 (Dynamic Generation): Generate a fresh response every time based on your 
                                 </button>
                             </div>
 
-                            <button 
+                            <button
                                 id="chatbot-send-btn"
                                 onClick={handleSend}
                                 disabled={isTyping || (!inputValue.trim() && !pendingImage)}
-                                style={{ 
-                                    backgroundColor: (inputValue.trim() || pendingImage) && !isTyping ? '#1B4332' : '#94A3B8', 
-                                    border: 'none', 
-                                    cursor: (inputValue.trim() || pendingImage) && !isTyping ? 'pointer' : 'not-allowed', 
-                                    padding: '12px', 
-                                    borderRadius: '50%', 
+                                style={{
+                                    backgroundColor: (inputValue.trim() || pendingImage) && !isTyping ? '#1B4332' : '#94A3B8',
+                                    border: 'none',
+                                    cursor: (inputValue.trim() || pendingImage) && !isTyping ? 'pointer' : 'not-allowed',
+                                    padding: '12px',
+                                    borderRadius: '50%',
                                     color: 'white',
                                     display: 'flex',
                                     alignItems: 'center',

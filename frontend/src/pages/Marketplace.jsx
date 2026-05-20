@@ -148,10 +148,12 @@ export default function Marketplace() {
     const getImagePath = (plant) => {
         if (!plant.image_url) return BOTANICAL_PLACEHOLDER;
         if (plant.image_url.startsWith('http')) return plant.image_url;
-        if (plant.image_url.startsWith('/media/')) return plant.image_url;
-        if (plant.image_url.startsWith('/static/')) return plant.image_url;
-        if (plant.image_url.startsWith('/')) return `/static${plant.image_url}`;
-        return `/media/${plant.image_url}`;
+        let path = "";
+        if (plant.image_url.startsWith('/media/')) path = plant.image_url;
+        else if (plant.image_url.startsWith('/static/')) path = plant.image_url;
+        else if (plant.image_url.startsWith('/')) path = `/static${plant.image_url}`;
+        else path = `/media/${plant.image_url}`;
+        return `${path}?v=1779038000`;
     };
 
 

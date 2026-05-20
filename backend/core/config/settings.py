@@ -154,6 +154,9 @@ CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
 ]
 
+# Allow large image uploads for AI processing (50 MB limit)
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB
 
 # Force reload at 04/08/2026 11:21:28
 # Reload
