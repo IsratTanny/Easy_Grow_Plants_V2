@@ -5,6 +5,7 @@ django-cors-headers
 fastapi
 uvicorn
 python-multipart
+python-dotenv
 pillow
 requests
 opencv-python

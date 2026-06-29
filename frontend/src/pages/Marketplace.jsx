@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/axios';
 import { useLanguage } from '../i18n/LanguageContext';
-import { ShoppingBag, Search, Filter, Tag, MessageSquare, Send, X, MapPin } from 'lucide-react';
+import { ShoppingBag, Search, Filter, Tag, MessageSquare, Send, X, MapPin, Check } from 'lucide-react';
 import VoiceInput from '../components/VoiceInput';
+import toast from 'react-hot-toast';
 
 const CATEGORIES = [
     "All", "Aglonema", "Air Plant", "Alocasia", "Anthurium", "Begonia", "Bonsai", "Cactus", "Calathea",
@@ -34,30 +35,35 @@ const categoryMapping = {
     "ZZ Plant": "ZZ Plant"
 };
 
+// Static images live in frontend/public/images and are served at the Vite
+// base path: "/" in dev, "/static/" in a production build. Build the URLs from
+// BASE_URL so they resolve in both environments.
+const img = (file) => `${import.meta.env.BASE_URL}images/${file}`;
+
 // Fallback Botanical Placeholder
-const DEFAULT_PLANT_IMAGE = "/static/images/monstera.jpg";
+const DEFAULT_PLANT_IMAGE = img("monstera.jpg");
 const BOTANICAL_PLACEHOLDER = DEFAULT_PLANT_IMAGE;
 
 export const CATEGORY_IMAGES = {
-    "Aglonema": "/static/images/aglonema.jpg",
-    "Air Plant": "/static/images/airplant.jpg",
-    "Alocasia": "/static/images/alocasia.jpg",
-    "Anthurium": "/static/images/anthurium.jpg",
-    "Begonia": "/static/images/begonia.jpg",
-    "Bonsai": "/static/images/bonsai.jpg",
-    "Cactus": "/static/images/cactus.jpg",
-    "Calathea": "/static/images/calathea.jpg",
-    "Dracena": "/static/images/dracena.jpg",
-    "Ficus": "/static/images/ficus.jpg",
-    "Fittonia": "/static/images/fittonia.jpg",
-    "Monstera": "/static/images/monstera.jpg",
-    "Peperomia": "/static/images/peperomia.jpg",
-    "Philodendron": "/static/images/philodendron.jpg",
-    "Pothos": "/static/images/pothos.jpg",
-    "Sansevieria": "/static/images/sansevieria.jpg",
-    "Succulent": "/static/images/succulent.jpg",
-    "Syngonium": "/static/images/syngonium.jpg",
-    "ZZ Plant": "/static/images/zzplant.jpg"
+    "Aglonema": img("aglonema.jpg"),
+    "Air Plant": img("airplant.jpg"),
+    "Alocasia": img("alocasia.jpg"),
+    "Anthurium": img("anthurium.jpg"),
+    "Begonia": img("begonia.jpg"),
+    "Bonsai": img("bonsai.jpg"),
+    "Cactus": img("cactus.jpg"),
+    "Calathea": img("calathea.jpg"),
+    "Dracena": img("dracena.jpg"),
+    "Ficus": img("ficus.jpg"),
+    "Fittonia": img("fittonia.jpg"),
+    "Monstera": img("monstera.jpg"),
+    "Peperomia": img("peperomia.jpg"),
+    "Philodendron": img("philodendron.jpg"),
+    "Pothos": img("pothos.jpg"),
+    "Sansevieria": img("sansevieria.jpg"),
+    "Succulent": img("succulent.jpg"),
+    "Syngonium": img("syngonium.jpg"),
+    "ZZ Plant": img("zzplant.jpg")
 };
 
 
@@ -110,7 +116,38 @@ export default function Marketplace() {
         existingCart.push(plant);
         localStorage.setItem('cart', JSON.stringify(existingCart));
         window.dispatchEvent(new Event('cartUpdated'));
-        alert('Item added to cart!');
+        const count = existingCart.length;
+
+        // Professional dashboard-style notification (replaces the old alert()).
+        toast.custom((tst) => (
+            <div
+                className={`${tst.visible ? 'animate-slideIn' : 'opacity-0'} max-w-sm w-full bg-white shadow-2xl rounded-2xl pointer-events-auto flex items-center gap-3 p-3 pr-4 border border-nature-100 ring-1 ring-black/5`}
+            >
+                <img
+                    src={getImagePath(plant)}
+                    alt={plant.plant_name}
+                    onError={handleImageError}
+                    className="w-14 h-14 rounded-xl object-cover flex-shrink-0 bg-nature-50"
+                />
+                <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1.5 text-nature-600">
+                        <span className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-nature-500 text-white">
+                            <Check className="w-3 h-3" strokeWidth={3} />
+                        </span>
+                        <span className="text-[11px] font-black uppercase tracking-widest">Added to cart</span>
+                    </div>
+                    <p className="text-sm font-bold text-gray-900 truncate">{plant.plant_name}</p>
+                    <p className="text-xs text-gray-500 font-semibold">৳{parseFloat(plant.price || 0).toFixed(2)} · {count} item{count > 1 ? 's' : ''} in cart</p>
+                </div>
+                <Link
+                    to="/cart"
+                    onClick={() => toast.dismiss(tst.id)}
+                    className="flex-shrink-0 bg-nature-900 text-white text-xs font-bold px-4 py-2.5 rounded-xl hover:bg-nature-700 transition-colors"
+                >
+                    View
+                </Link>
+            </div>
+        ), { duration: 2600, position: 'top-center' });
     };
 
     useEffect(() => {
@@ -147,12 +184,19 @@ export default function Marketplace() {
 
     const getImagePath = (plant) => {
         if (!plant.image_url) return BOTANICAL_PLACEHOLDER;
-        if (plant.image_url.startsWith('http')) return plant.image_url;
+        const url = plant.image_url;
+        if (url.startsWith('http')) return url;
         let path = "";
-        if (plant.image_url.startsWith('/media/')) path = plant.image_url;
-        else if (plant.image_url.startsWith('/static/')) path = plant.image_url;
-        else if (plant.image_url.startsWith('/')) path = `/static${plant.image_url}`;
-        else path = `/media/${plant.image_url}`;
+        if (url.startsWith('/media/')) {
+            path = url; // uploaded media, served by Django (proxied in dev)
+        } else if (url.startsWith('/static/')) {
+            // Re-root onto the current Vite base ("/" in dev, "/static/" in prod).
+            path = `${import.meta.env.BASE_URL}${url.slice('/static/'.length)}`;
+        } else if (url.startsWith('/')) {
+            path = `${import.meta.env.BASE_URL}${url.slice(1)}`;
+        } else {
+            path = `/media/${url}`;
+        }
         return `${path}?v=1779038000`;
     };
 
@@ -338,7 +382,7 @@ export default function Marketplace() {
                             <button
                                 onClick={() => {
                                     if (messageText.trim()) {
-                                        alert(`Message sent to ${messagingSeller}!`);
+                                        toast.success(`Message sent to ${messagingSeller}!`);
                                         setMessageText('');
                                         setMessagingSeller(null);
                                     }

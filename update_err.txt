@@ -1,4 +1,0 @@
-Traceback (most recent call last):
-  File "C:\Users\Acer\Downloads\easy grow plants\Easy-Grow-Plants - Copy\update_seller_locations.py", line 3, in <module>
-    import django
-ModuleNotFoundError: No module named 'django'

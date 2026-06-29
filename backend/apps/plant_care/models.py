@@ -148,3 +148,77 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.user.username} on {self.post.id}"
+
+
+class BotanistAppointment(models.Model):
+    SERVICE_CHOICES = [('standard', 'Standard'), ('urgent', 'Urgent')]
+    STATUS_CHOICES = [
+        ('requested', 'Requested'),
+        ('assigned', 'Assigned'),
+        ('in_transit', 'In Transit'),
+        ('treating', 'Treating'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    PAYMENT_CHOICES = [('online', 'Online'), ('cash', 'Cash')]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='botanist_appointments')
+    service_type = models.CharField(max_length=20, choices=SERVICE_CHOICES, default='standard')
+    symptoms = models.TextField()
+    image = models.ImageField(upload_to='botanist_appointments/', null=True, blank=True)
+    visit_date = models.DateField(null=True, blank=True)
+    time_slot = models.CharField(max_length=20, blank=True)
+    address = models.TextField(blank=True)
+    distance = models.IntegerField(default=0)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='online')
+    preferred_botanist = models.CharField(max_length=100, blank=True)
+    assigned_botanist = models.CharField(max_length=100, default='Not Assigned')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='requested')
+    base_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    distance_charge = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    total_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    prescription_notes = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Appointment #{self.id} - {self.user.username}"
+
+
+class PottingRequest(models.Model):
+    STATUS_CHOICES = [
+        ('requested', 'Requested'),
+        ('scheduled', 'Scheduled'),
+        ('in_progress', 'In Progress'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    PAYMENT_CHOICES = [('online', 'Online'), ('cash', 'Cash')]
+
+    PACKAGE_CHOICES = [('labor', 'Labor Only'), ('soil', 'Soil & Fertilizer')]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='potting_requests')
+    pots = models.JSONField(default=dict, help_text="Breakdown of small/medium/large pot counts")
+    pots_summary = models.CharField(max_length=200, blank=True)
+    pot_count = models.IntegerField(default=0)
+    package_type = models.CharField(max_length=20, choices=PACKAGE_CHOICES, default='labor')
+    time_slot = models.CharField(max_length=50, blank=True)
+    address = models.TextField(blank=True)
+    distance = models.IntegerField(default=0)
+    visit_date = models.DateField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='cash')
+    assigned_expert = models.CharField(max_length=100, default='Not Assigned')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='requested')
+    service_fee = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    travel_charge = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    total_bill = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Potting #{self.id} - {self.user.username}"

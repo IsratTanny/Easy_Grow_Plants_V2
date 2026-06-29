@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { User, Phone, MapPin, Briefcase, GraduationCap, FileText, CheckCircle, ShieldCheck } from 'lucide-react';
 import { api } from '../api/axios';
@@ -28,12 +29,12 @@ export default function BotanistRegistration() {
         
         // Basic Validation
         if (!formData.name || !formData.phone || !formData.experience || !formData.specialty) {
-            alert("Please fill in all personal and expertise fields.");
+            toast("Please fill in all personal and expertise fields.");
             return;
         }
 
         if (!files.nid) {
-            alert("NID Copy is mandatory for security verification.");
+            toast("NID Copy is mandatory for security verification.");
             return;
         }
 
@@ -69,7 +70,7 @@ export default function BotanistRegistration() {
         } catch (error) {
             console.error("Error submitting application:", error);
             const errorMsg = error.response?.data ? JSON.stringify(error.response.data) : error.message;
-            alert(`[v2] Failed to submit application: ${errorMsg}`);
+            toast.error(`[v2] Failed to submit application: ${errorMsg}`);
         }
     };
 

@@ -347,3 +347,167 @@ class PostViewSet(viewsets.ModelViewSet):
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+
+
+from .models import BotanistAppointment, PottingRequest
+from .serializers import BotanistAppointmentSerializer, PottingRequestSerializer
+
+
+class BotanistAppointmentViewSet(viewsets.ModelViewSet):
+    """Book and track in-home botanist appointments (the Plant Doctor service)."""
+    serializer_class = BotanistAppointmentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = BotanistAppointment.objects.all()
+        if getattr(user, 'role', '') != 'admin' and not user.is_staff:
+            qs = qs.filter(user=user)
+        return qs
+
+    def perform_create(self, serializer):
+        data = serializer.validated_data
+        service = data.get('service_type', 'standard')
+        distance = data.get('distance', 0) or 0
+        base = 500 if service == 'urgent' else 300
+        dist_charge = max(0, distance - 5) * 20
+        botanist = data.get('preferred_botanist') or 'Not Assigned'
+        serializer.save(
+            user=self.request.user,
+            base_fee=base,
+            distance_charge=dist_charge,
+            total_fee=base + dist_charge,
+            assigned_botanist=botanist,
+            status='requested',
+        )
+
+    @action(detail=True, methods=['post'])
+    def advance_status(self, request, pk=None):
+        """Move an appointment to the next stage. Admin/staff only."""
+        user = request.user
+        if getattr(user, 'role', '') != 'admin' and not user.is_staff:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        appt = self.get_object()
+        stages = ['requested', 'assigned', 'in_transit', 'treating', 'completed']
+        try:
+            idx = stages.index(appt.status)
+        except ValueError:
+            idx = 0
+        if idx < len(stages) - 1:
+            appt.status = stages[idx + 1]
+        prescription = request.data.get('prescription_notes')
+        if prescription is not None:
+            appt.prescription_notes = prescription
+        botanist = request.data.get('assigned_botanist')
+        if botanist:
+            appt.assigned_botanist = botanist
+        appt.save()
+        return Response(self.get_serializer(appt).data)
+
+    @action(detail=True, methods=['post'])
+    def set_status(self, request, pk=None):
+        """Admin/staff set an arbitrary status and optionally assign a botanist."""
+        user = request.user
+        if getattr(user, 'role', '') != 'admin' and not user.is_staff:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        appt = self.get_object()
+        valid = {c[0] for c in BotanistAppointment.STATUS_CHOICES}
+        new_status = request.data.get('status')
+        if new_status in valid:
+            appt.status = new_status
+        botanist = request.data.get('assigned_botanist')
+        if botanist:
+            appt.assigned_botanist = botanist
+        prescription = request.data.get('prescription_notes')
+        if prescription is not None:
+            appt.prescription_notes = prescription
+        appt.save()
+        return Response(self.get_serializer(appt).data)
+
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        appt = self.get_object()
+        if appt.user != request.user and getattr(request.user, 'role', '') != 'admin':
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        appt.status = 'cancelled'
+        appt.save()
+        return Response(self.get_serializer(appt).data)
+
+
+class PottingRequestViewSet(viewsets.ModelViewSet):
+    """Book and track Expert Potting service requests."""
+    serializer_class = PottingRequestSerializer
+    permission_classes = [IsAuthenticated]
+
+    LABOR_FEE = 100   # per pot
+    SOIL_FEE = 250    # per pot (includes soil & fertilizer)
+    TRAVEL_FREE_KM = 5
+    TRAVEL_RATE = 20  # per km beyond the free radius
+
+    def get_queryset(self):
+        user = self.request.user
+        qs = PottingRequest.objects.all()
+        if getattr(user, 'role', '') != 'admin' and not user.is_staff:
+            qs = qs.filter(user=user)
+        return qs
+
+    def perform_create(self, serializer):
+        data = serializer.validated_data
+        pots = data.get('pots', {}) or {}
+        # Accept either a {small,medium,large} dict or a plain list.
+        if isinstance(pots, dict):
+            count = sum(int(v or 0) for v in pots.values())
+            parts = [f"{int(pots.get(k) or 0)} {label}" for k, label in
+                     (('small', 'Small'), ('medium', 'Medium'), ('large', 'Large')) if int(pots.get(k) or 0) > 0]
+            summary = ', '.join(parts)
+        else:
+            count = data.get('pot_count') or len(pots)
+            summary = f"{count} pots"
+
+        package = data.get('package_type', 'labor')
+        distance = data.get('distance', 0) or 0
+        per_pot = self.SOIL_FEE if package == 'soil' else self.LABOR_FEE
+        service_fee = count * per_pot
+        travel = max(0, distance - self.TRAVEL_FREE_KM) * self.TRAVEL_RATE
+        serializer.save(
+            user=self.request.user,
+            pot_count=count,
+            pots_summary=summary,
+            service_fee=service_fee,
+            travel_charge=travel,
+            total_bill=service_fee + travel,
+            status='requested',
+        )
+
+    @action(detail=True, methods=['post'])
+    def advance_status(self, request, pk=None):
+        user = request.user
+        if getattr(user, 'role', '') != 'admin' and not user.is_staff:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        req = self.get_object()
+        stages = ['requested', 'scheduled', 'in_progress', 'completed']
+        try:
+            idx = stages.index(req.status)
+        except ValueError:
+            idx = 0
+        if idx < len(stages) - 1:
+            req.status = stages[idx + 1]
+        req.save()
+        return Response(self.get_serializer(req).data)
+
+    @action(detail=True, methods=['post'])
+    def set_status(self, request, pk=None):
+        """Admin/staff set an arbitrary status and optionally assign an expert."""
+        user = request.user
+        if getattr(user, 'role', '') != 'admin' and not user.is_staff:
+            return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
+        req = self.get_object()
+        valid = {c[0] for c in PottingRequest.STATUS_CHOICES}
+        new_status = request.data.get('status')
+        if new_status in valid:
+            req.status = new_status
+        expert = request.data.get('assigned_expert')
+        if expert:
+            req.assigned_expert = expert
+        req.save()
+        return Response(self.get_serializer(req).data)

@@ -1,5 +1,7 @@
 # Python
+venv/
 .venv/
+env/
 __pycache__/
 *.pyc
 *.pyo
@@ -42,3 +44,18 @@ frontend/build/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Bundled Windows Node runtime (do not commit)
+node/
+node-v*/
+node.zip
+
+# Scratch / temp
+scratch/
+
+# Build/run log dumps occasionally produced by dev scripts
+build_log.txt
+build_status.txt
+*_err.txt
+*_out.txt
+error.txt

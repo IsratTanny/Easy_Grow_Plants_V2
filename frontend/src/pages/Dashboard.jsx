@@ -1,266 +1,309 @@
 import { useState, useEffect } from 'react';
-import { api, iotApi } from '../api/axios';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Droplets, Thermometer, Sun, Zap, MessageCircle, Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { api } from '../api/axios';
 import { useLanguage } from '../i18n/LanguageContext';
+import {
+    ShoppingBag, Leaf, CalendarCheck, Cpu, Sprout, Stethoscope, MapPin,
+    Users, RefreshCw, ArrowRight, Package, Droplets, Plus, ChevronRight,
+} from 'lucide-react';
+
+const STATUS_STYLES = {
+    pending: 'bg-amber-100 text-amber-700',
+    processing: 'bg-blue-100 text-blue-700',
+    shipped: 'bg-indigo-100 text-indigo-700',
+    out_for_delivery: 'bg-purple-100 text-purple-700',
+    delivered: 'bg-nature-100 text-nature-700',
+    completed: 'bg-nature-100 text-nature-700',
+    cancelled: 'bg-red-100 text-red-700',
+};
+
+const QUICK_ACTIONS = [
+    { to: '/marketplace', label: 'Shop Plants', icon: ShoppingBag, color: 'text-nature-600' },
+    { to: '/plant-doctor', label: 'Plant Doctor', icon: Stethoscope, color: 'text-rose-500' },
+    { to: '/smart-finder', label: 'Smart Finder', icon: Sprout, color: 'text-emerald-500' },
+    { to: '/nearby-sellers', label: 'Nearby Sellers', icon: MapPin, color: 'text-blue-500' },
+    { to: '/community', label: 'Community', icon: Users, color: 'text-violet-500' },
+    { to: '/exchange', label: 'Exchange', icon: RefreshCw, color: 'text-amber-500' },
+];
 
 export default function Dashboard() {
     const { t } = useLanguage();
-    const [devices, setDevices] = useState([]);
-    const [selectedDevice, setSelectedDevice] = useState(null);
-    const [readings, setReadings] = useState([]); 
-    const [realTimeReadings, setRealTimeReadings] = useState({});
-    const [pumpStatus, setPumpStatus] = useState('OFF');
-    const [chatOpen, setChatOpen] = useState(false);
-    const [chatMessages, setChatMessages] = useState([]);
-    const [inputMsg, setInputMsg] = useState('');
+    const [user, setUser] = useState(null);
+    const [orders, setOrders] = useState([]);
+    const [careCards, setCareCards] = useState([]);
     const [subscriptions, setSubscriptions] = useState([]);
-    const [pottingRequests, setPottingRequests] = useState([]);
+    const [devices, setDevices] = useState([]);
+    const [cartCount, setCartCount] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch User's Devices
-        const fetchDevices = async () => {
-            try {
-                const res = await api.get('/devices/');
-                setDevices(res.data);
-                if (res.data.length > 0) setSelectedDevice(res.data[0]);
-            } catch (err) { console.error(err); }
+        let mounted = true;
+        const safe = (p) => p.then((r) => r.data).catch(() => null);
+        const arr = (x) => (Array.isArray(x) ? x : x?.results || []);
+
+        (async () => {
+            const [me, ord, cards, subs, devs] = await Promise.all([
+                safe(api.get('/auth/me/')),
+                safe(api.get('/orders/')),
+                safe(api.get('/plant-care/care-cards/')),
+                safe(api.get('/plant-care/subscriptions/')),
+                safe(api.get('/devices/')),
+            ]);
+            if (!mounted) return;
+            setUser(me);
+            setOrders(arr(ord));
+            setCareCards(arr(cards));
+            setSubscriptions(arr(subs));
+            setDevices(arr(devs));
+            setLoading(false);
+        })();
+
+        const readCart = () => setCartCount(JSON.parse(localStorage.getItem('cart') || '[]').length);
+        readCart();
+        window.addEventListener('cartUpdated', readCart);
+        return () => {
+            mounted = false;
+            window.removeEventListener('cartUpdated', readCart);
         };
-        fetchDevices();
-
-        // ... subscriptions and potting requests ...
-        const fetchSubscriptions = async () => {
-            try {
-                const res = await api.get('/plant-care/subscriptions/');
-                setSubscriptions(Array.isArray(res.data) ? res.data : (res.data.results || []));
-            } catch (err) { console.error(err); }
-        };
-        fetchSubscriptions();
-
-        const savedPotting = localStorage.getItem('local_potting_requests');
-        if (savedPotting) setPottingRequests(JSON.parse(savedPotting));
-
-        const mockData = Array.from({ length: 10 }, (_, i) => ({
-            name: `${i}:00`,
-            moisture: Math.floor(Math.random() * 40) + 30,
-            temp: Math.floor(Math.random() * 10) + 20,
-        }));
-        setReadings(mockData);
     }, []);
 
-    useEffect(() => {
-        if (!selectedDevice) return;
+    const greeting = (() => {
+        const h = new Date().getHours();
+        if (h < 12) return 'Good morning';
+        if (h < 18) return 'Good afternoon';
+        return 'Good evening';
+    })();
 
-        const fetchStatus = async () => {
-            try {
-                const res = await api.get(`/devices/${selectedDevice.device_id}/status/`);
-                setRealTimeReadings(prev => ({
-                    ...prev,
-                    [selectedDevice.device_id]: res.data
-                }));
-                setPumpStatus(res.data.pump === 1 ? 'ON' : 'OFF');
-            } catch (err) { console.warn("Device status fetch failed"); }
-        };
+    const displayName = user?.full_name || user?.username || 'Gardener';
+    const recentOrders = [...orders]
+        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        .slice(0, 4);
 
-        fetchStatus();
-        const interval = setInterval(fetchStatus, 10000);
-        return () => clearInterval(interval);
-    }, [selectedDevice]);
-
-    const togglePump = async () => {
-        if (!selectedDevice) return;
-        try {
-            const action = pumpStatus === 'ON' ? 'control-pump' : 'water'; // Simple toggle logic or specific endpoint
-            const res = await api.get(`/devices/${selectedDevice.device_id}/${action}/`);
-            // The water endpoint returns command sent, we rely on polling to update status
-            if (action === 'control-pump') setPumpStatus(res.data.pump_status);
-        } catch (err) { console.error(err); }
+    const nextWatering = (card) => {
+        if (!card.last_watered_date) return null;
+        const d = new Date(card.last_watered_date);
+        d.setDate(d.getDate() + (card.watering_frequency || 7));
+        return d;
+    };
+    const relativeDays = (date) => {
+        const diff = Math.round((date - new Date()) / (1000 * 60 * 60 * 24));
+        if (diff < 0) return { label: `${Math.abs(diff)}d overdue`, urgent: true };
+        if (diff === 0) return { label: 'Today', urgent: true };
+        if (diff === 1) return { label: 'Tomorrow', urgent: false };
+        return { label: `In ${diff} days`, urgent: false };
     };
 
-    const sendChat = async () => {
-        if (!inputMsg.trim()) return;
-        const newMsgs = [...chatMessages, { role: 'user', content: inputMsg }];
-        setChatMessages(newMsgs);
-        setInputMsg('');
+    const STATS = [
+        { label: 'Orders', value: orders.length, icon: Package, to: '/track-order', color: 'bg-blue-50 text-blue-600' },
+        { label: 'Care Plans', value: careCards.length, icon: Leaf, to: '/plant-care', color: 'bg-nature-50 text-nature-600' },
+        { label: 'Subscriptions', value: subscriptions.length, icon: CalendarCheck, to: '/plant-care?tab=subscription', color: 'bg-violet-50 text-violet-600' },
+        { label: 'Cart Items', value: cartCount, icon: ShoppingBag, to: '/cart', color: 'bg-amber-50 text-amber-600' },
+    ];
 
-        try {
-            const res = await iotApi.post('/iot/chat/', { message: inputMsg });
-            setChatMessages([...newMsgs, { role: 'bot', content: res.data.response }]);
-        } catch (err) { console.error(err); }
-    };
+    if (loading) {
+        return (
+            <div className="space-y-6 animate-pulse">
+                <div className="h-10 w-72 bg-gray-100 rounded-xl" />
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4].map((i) => <div key={i} className="h-28 bg-gray-100 rounded-2xl" />)}
+                </div>
+                <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 h-80 bg-gray-100 rounded-2xl" />
+                    <div className="h-80 bg-gray-100 rounded-2xl" />
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <div className="space-y-8 relative">
-            <h1 className="text-3xl font-bold text-nature-900">{t('mySmartGarden')}</h1>
+        <div className="space-y-8">
+            {/* Header */}
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                <div>
+                    <p className="text-sm font-bold text-nature-600 uppercase tracking-widest">{greeting}</p>
+                    <h1 className="text-3xl md:text-4xl font-black text-nature-900 tracking-tight">{displayName}</h1>
+                    <p className="text-gray-500 font-medium mt-1">Here's what's happening in your garden today.</p>
+                </div>
+                <Link to="/marketplace" className="inline-flex items-center gap-2 bg-nature-900 text-white px-5 py-3 rounded-2xl font-bold text-sm hover:bg-nature-700 transition-colors shadow-lg shadow-nature-900/10 w-fit">
+                    <Plus className="w-4 h-4" /> Shop Plants
+                </Link>
+            </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
-                {/* Device Status Card / Main Area */}
-                <div className="md:col-span-2 space-y-6">
+            {/* KPI Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {STATS.map((s) => (
+                    <Link key={s.label} to={s.to} className="card p-5 hover:shadow-md hover:-translate-y-0.5 transition-all group">
+                        <div className="flex items-center justify-between">
+                            <div className={`w-11 h-11 rounded-2xl flex items-center justify-center ${s.color}`}>
+                                <s.icon className="w-5 h-5" />
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+                        </div>
+                        <p className="text-3xl font-black text-gray-900 mt-4">{s.value}</p>
+                        <p className="text-sm text-gray-500 font-semibold">{s.label}</p>
+                    </Link>
+                ))}
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-6">
+                {/* Main column */}
+                <div className="lg:col-span-2 space-y-6">
+                    {/* Recent Orders */}
                     <div className="card p-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold flex items-center gap-2">
-                                <ActivityIcon className="text-blue-500" /> {t('liveMonitor')}
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                                <Package className="w-5 h-5 text-nature-600" /> Recent Orders
                             </h2>
-                            <select
-                                className="border rounded-lg p-2"
-                                onChange={(e) => setSelectedDevice(devices.find(d => d.id === parseInt(e.target.value)))}
-                            >
-                                {devices.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
-                            </select>
+                            <Link to="/track-order" className="text-xs font-bold text-nature-600 uppercase tracking-widest hover:underline flex items-center gap-1">
+                                Track <ArrowRight className="w-3 h-3" />
+                            </Link>
                         </div>
-
-                        <div className="h-64">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={readings}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                    <Line type="monotone" dataKey="moisture" stroke="#34ae6f" strokeWidth={2} />
-                                    <Line type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={2} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-                        <StatCard 
-                            icon={<Droplets className="text-blue-500" />} 
-                            label={t('soilMoisture')} 
-                            value={selectedDevice && realTimeReadings[selectedDevice.device_id] ? `${realTimeReadings[selectedDevice.device_id].percent}%` : '--'} 
-                        />
-                        <StatCard 
-                            icon={<Thermometer className="text-red-500" />} 
-                            label={t('temperature')} 
-                            value={selectedDevice && realTimeReadings[selectedDevice.device_id] ? `${realTimeReadings[selectedDevice.device_id].temp}°C` : '--'} 
-                        />
-                    </div>
-
-                    {/* Subscriptions Section */}
-                    {subscriptions.length > 0 && (
-                        <div className="card p-6 border-l-4 border-l-nature-600 bg-nature-50/30">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                    <Zap className="w-5 h-5 text-nature-600" /> {t('activeSubscriptions')}
-                                </h3>
+                        {recentOrders.length === 0 ? (
+                            <div className="text-center py-10">
+                                <ShoppingBag className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                                <p className="text-gray-500 font-medium">No orders yet.</p>
+                                <Link to="/marketplace" className="text-nature-600 font-bold text-sm hover:underline">Browse the marketplace →</Link>
                             </div>
-                            <div className="space-y-4">
-                                {subscriptions.map(sub => (
-                                    <div key={sub.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-xl border border-nature-100 shadow-sm gap-4">
-                                        <div>
-                                            <p className="font-bold text-nature-900 text-lg capitalize">{(sub.plan_type || '').replace('_', ' ')}</p>
-                                            <p className="text-sm text-gray-500">Started on {new Date(sub.start_date).toLocaleDateString()}</p>
+                        ) : (
+                            <div className="divide-y divide-gray-50">
+                                {recentOrders.map((o) => (
+                                    <div key={o.id} className="flex items-center justify-between py-3.5">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="w-10 h-10 rounded-xl bg-nature-50 text-nature-600 flex items-center justify-center font-black text-sm flex-shrink-0">
+                                                #{o.id}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="font-bold text-gray-900 truncate">৳{parseFloat(o.total_bill || 0).toFixed(2)}</p>
+                                                <p className="text-xs text-gray-400 font-medium">{new Date(o.created_at).toLocaleDateString()}</p>
+                                            </div>
                                         </div>
-                                        <div className="bg-nature-100 px-4 py-2 rounded-lg">
-                                            <p className="text-[10px] uppercase font-bold text-nature-600 tracking-wider">{t('nextDelivery')}</p>
-                                            <p className="font-bold text-nature-800">{new Date(sub.next_delivery_date).toLocaleDateString()}</p>
-                                        </div>
+                                        <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full ${STATUS_STYLES[o.status] || 'bg-gray-100 text-gray-600'}`}>
+                                            {(o.status || 'pending').replace(/_/g, ' ')}
+                                        </span>
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    )}
+                        )}
+                    </div>
 
-                    {/* Potting Requests Section */}
-                    {pottingRequests.some(r => r.status !== 'completed') && (
-                        <div className="card p-6 border-l-4 border-l-amber-600 bg-amber-50/30">
-                            <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                                    <Activity className="w-5 h-5 text-amber-600" /> Active Potting Service
-                                </h3>
-                                <Link to="/expert-potting" className="text-[10px] font-black text-amber-700 uppercase tracking-widest hover:underline">View History</Link>
-                            </div>
-                            <div className="space-y-4">
-                                {pottingRequests.filter(r => r.status !== 'completed').map(req => (
-                                    <div key={req.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-white rounded-xl border border-amber-100 shadow-sm gap-4">
-                                        <div>
-                                            <p className="font-black text-gray-900">Potting #{req.id}</p>
-                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mt-1">{req.pots}</p>
-                                        </div>
-                                        <div className="px-4 py-2 rounded-lg bg-amber-900 text-white text-center">
-                                            <p className="text-[8px] uppercase font-black tracking-widest opacity-70">Status</p>
-                                            <p className="font-black text-[10px] uppercase">{req.status.replace('_', ' ')}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
+                    {/* Plant Care Reminders */}
+                    <div className="card p-6">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                                <Droplets className="w-5 h-5 text-blue-500" /> Care Reminders
+                            </h2>
+                            <Link to="/plant-care" className="text-xs font-bold text-nature-600 uppercase tracking-widest hover:underline flex items-center gap-1">
+                                Manage <ArrowRight className="w-3 h-3" />
+                            </Link>
                         </div>
-                    )}
+                        {careCards.length === 0 ? (
+                            <div className="text-center py-10">
+                                <Leaf className="w-10 h-10 text-gray-200 mx-auto mb-3" />
+                                <p className="text-gray-500 font-medium">No plants being tracked yet.</p>
+                                <Link to="/plant-care" className="text-nature-600 font-bold text-sm hover:underline">Add a care plan →</Link>
+                            </div>
+                        ) : (
+                            <div className="grid sm:grid-cols-2 gap-3">
+                                {careCards.slice(0, 6).map((c) => {
+                                    const due = nextWatering(c);
+                                    const rel = due ? relativeDays(due) : null;
+                                    return (
+                                        <div key={c.id} className="flex items-center gap-3 p-3 rounded-2xl border border-gray-100 bg-gray-50/50">
+                                            <div className="w-10 h-10 rounded-xl bg-white border border-nature-100 text-nature-600 flex items-center justify-center flex-shrink-0">
+                                                <Sprout className="w-5 h-5" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <p className="font-bold text-gray-900 text-sm truncate">{c.plant_name}</p>
+                                                <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">{c.category || 'Plant'}</p>
+                                            </div>
+                                            {rel && (
+                                                <span className={`text-[10px] font-black px-2 py-1 rounded-lg whitespace-nowrap ${rel.urgent ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                                    {rel.label}
+                                                </span>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Controls */}
+                {/* Side column */}
                 <div className="space-y-6">
-                    <div className="card p-6 text-center">
-                        <h3 className="text-lg font-bold mb-4">{t('pumpControl')}</h3>
-                        <div className={`text-2xl font-bold mb-4 ${pumpStatus === 'ON' ? 'text-green-500' : 'text-gray-400'}`}>
-                            {pumpStatus}
+                    {/* Quick actions */}
+                    <div className="card p-6">
+                        <h2 className="text-lg font-black text-gray-900 mb-4">Quick Actions</h2>
+                        <div className="grid grid-cols-3 gap-3">
+                            {QUICK_ACTIONS.map((a) => (
+                                <Link key={a.to} to={a.to} className="flex flex-col items-center gap-2 p-3 rounded-2xl border border-gray-100 hover:border-nature-200 hover:bg-nature-50/40 transition-all text-center">
+                                    <a.icon className={`w-6 h-6 ${a.color}`} />
+                                    <span className="text-[11px] font-bold text-gray-600 leading-tight">{a.label}</span>
+                                </Link>
+                            ))}
                         </div>
-                        <button
-                            onClick={togglePump}
-                            className={`w-full py-4 rounded-xl font-bold text-white transition-all ${pumpStatus === 'ON' ? 'bg-red-500 hover:bg-red-600' : 'bg-blue-500 hover:bg-blue-600'
-                                }`}
-                        >
-                            <Zap className="inline-block mr-2" />
-                            {pumpStatus === 'ON' ? t('stopWatering') : t('activatePump')}
-                        </button>
                     </div>
 
-                    <div className="card p-6 bg-nature-50 border-nature-200">
-                        <h3 className="font-bold text-nature-800 mb-2">{t('sustainableTip')}</h3>
-                        <p className="text-sm text-nature-600">{t('sustainableTipContent') || 'Water early in the morning to minimize evaporation and ensure your plants stay hydrated longer.'}</p>
+                    {/* Smart devices summary */}
+                    <div className="card p-6">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                                <Cpu className="w-5 h-5 text-nature-600" /> Smart Devices
+                            </h2>
+                            <Link to="/devices" className="text-xs font-bold text-nature-600 uppercase tracking-widest hover:underline">Manage</Link>
+                        </div>
+                        {devices.length === 0 ? (
+                            <div className="text-center py-4">
+                                <p className="text-gray-500 font-medium text-sm mb-3">No IoT devices connected.</p>
+                                <Link to="/devices" className="inline-flex items-center gap-2 bg-nature-50 text-nature-700 px-4 py-2.5 rounded-xl font-bold text-sm hover:bg-nature-100 transition-colors">
+                                    <Plus className="w-4 h-4" /> Connect a device
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="space-y-2">
+                                {devices.slice(0, 4).map((d) => (
+                                    <div key={d.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50/60 border border-gray-100">
+                                        <span className="font-bold text-gray-800 text-sm truncate">{d.name || `Device ${d.device_id}`}</span>
+                                        <span className="w-2 h-2 rounded-full bg-nature-500 flex-shrink-0" title="online" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Active subscriptions */}
+                    {subscriptions.length > 0 && (
+                        <div className="card p-6 border-l-4 border-l-nature-500">
+                            <h2 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2">
+                                <CalendarCheck className="w-5 h-5 text-nature-600" /> Subscriptions
+                            </h2>
+                            <div className="space-y-3">
+                                {subscriptions.slice(0, 3).map((sub) => (
+                                    <div key={sub.id} className="flex items-center justify-between">
+                                        <div className="min-w-0">
+                                            <p className="font-bold text-gray-900 text-sm capitalize truncate">{(sub.plan_type || 'Plan').replace(/_/g, ' ')}</p>
+                                            <p className="text-[11px] text-gray-400 font-semibold">
+                                                {sub.next_delivery_date ? `Next: ${new Date(sub.next_delivery_date).toLocaleDateString()}` : 'Active'}
+                                            </p>
+                                        </div>
+                                        <span className="w-2.5 h-2.5 rounded-full bg-nature-500" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Tip */}
+                    <div className="p-6 rounded-[15px] shadow-sm overflow-hidden bg-nature-900 text-white">
+                        <h3 className="font-black mb-1.5 flex items-center gap-2 text-nature-50">
+                            <Leaf className="w-4 h-4" /> Sustainable Tip
+                        </h3>
+                        <p className="text-sm text-nature-100/80 leading-relaxed">
+                            {t('sustainableTipContent') || 'Water early in the morning to minimize evaporation and keep your plants hydrated longer.'}
+                        </p>
                     </div>
                 </div>
             </div>
-
-
-            {/* Chatbot Bubble */}
-            <div className={`fixed bottom-8 right-8 w-80 bg-white shadow-2xl rounded-2xl overflow-hidden border border-gray-100 transition-all transform ${chatOpen ? 'scale-100' : 'scale-0'}`}>
-                <div className="bg-nature-600 p-4 text-white font-bold flex justify-between items-center">
-                    <span>{t('aiExpert') || 'Plant Expert AI'}</span>
-                    <button onClick={() => setChatOpen(false)}>×</button>
-                </div>
-                <div className="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50">
-                    {chatMessages.map((m, i) => (
-                        <div key={i} className={`p-2 rounded-lg text-sm max-w-[80%] ${m.role === 'user' ? 'ml-auto bg-nature-500 text-white' : 'bg-white border'}`}>
-                            {m.content}
-                        </div>
-                    ))}
-                </div>
-                <div className="p-2 border-t flex gap-2">
-                    <input
-                        className="flex-1 border rounded px-2 py-1 text-sm"
-                        value={inputMsg}
-                        onChange={(e) => setInputMsg(e.target.value)}
-                        placeholder={t('askExpert') || 'Ask about plants...'}
-                    />
-                    <button onClick={sendChat} className="bg-nature-600 text-white px-3 rounded">{t('send') || 'Send'}</button>
-                </div>
-            </div>
-
-            {!chatOpen && (
-                <button
-                    onClick={() => setChatOpen(true)}
-                    className="fixed bottom-8 right-8 bg-nature-600 text-white p-4 rounded-full shadow-lg hover:bg-nature-700 transition-transform hover:scale-110"
-                >
-                    <MessageCircle className="w-6 h-6" />
-                </button>
-            )}
         </div>
     );
-}
-
-function StatCard({ icon, label, value }) {
-    return (
-        <div className="card p-4 flex items-center gap-4">
-            <div className="p-3 bg-gray-50 rounded-full">{icon}</div>
-            <div>
-                <p className="text-sm text-gray-500">{label}</p>
-                <p className="text-xl font-bold text-gray-800">{value}</p>
-            </div>
-        </div>
-    );
-}
-
-function ActivityIcon(props) {
-    return <Activity {...props} />
 }

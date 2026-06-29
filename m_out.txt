@@ -1,4 +1,0 @@
-Migrations for 'users':
-  backend\apps\users\migrations\0008_customuser_latitude_customuser_longitude.py
-    + Add field latitude to customuser
-    + Add field longitude to customuser

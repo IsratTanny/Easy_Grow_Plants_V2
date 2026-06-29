@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Leaf, MessageSquare, X, Camera, Send, Mic } from 'lucide-react';
 import { isAuthenticated, api } from '../api/axios'; // Import auth to check if user is logged in
 import { useNavigate } from 'react-router-dom';
@@ -17,7 +18,7 @@ export default function ChatbotWidget() {
     const startListening = () => {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert("Voice search is not supported in this browser. Please use Chrome or Edge.");
+            toast("Voice search is not supported in this browser. Please use Chrome or Edge.");
             return;
         }
 

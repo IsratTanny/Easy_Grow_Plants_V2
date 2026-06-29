@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
     Stethoscope, ArrowLeft, ArrowRight, Activity, Upload, Calendar, 
@@ -39,31 +40,19 @@ export default function PlantDoctor() {
 
     const STATUS_STAGES = ['requested', 'assigned', 'in_transit', 'treating', 'completed'];
 
-    // Load from LocalStorage (Mock DB)
-    useEffect(() => {
-        const saved = localStorage.getItem('local_botanist_appointments');
-        if (saved) {
-            setAppointments(JSON.parse(saved));
-        } else {
-            // Initial Mock Data if empty
-            const initial = [
-                { id: 'APP-1021', date: '2024-10-20', status: 'completed', botanist: 'Sarah Ahmed', symptoms: 'Yellow leaves on Monstera', prescription: true },
-                { id: 'APP-1105', date: '2024-10-25', status: 'requested', botanist: 'Not Assigned', symptoms: 'Root rot in Succulents', prescription: false }
-            ];
-            setAppointments(initial);
-            localStorage.setItem('local_botanist_appointments', JSON.stringify(initial));
+    const fetchAppointments = async () => {
+        try {
+            const res = await api.get('/plant-care/appointments/');
+            setAppointments(Array.isArray(res.data) ? res.data : res.data.results || []);
+        } catch (err) {
+            console.error('Error fetching appointments:', err);
         }
-    }, []);
+    };
 
-    // Listen for changes (e.g. from Admin Tab)
+    // Load real appointments from the backend.
     useEffect(() => {
-        const handleStorage = () => {
-            const saved = localStorage.getItem('local_botanist_appointments');
-            if (saved) setAppointments(JSON.parse(saved));
-        };
-        window.addEventListener('storage', handleStorage);
-        return () => window.removeEventListener('storage', handleStorage);
-    }, []);
+        if (isAuth) fetchAppointments();
+    }, [isAuth]);
 
     const BASE_FEES = { standard: 300, urgent: 500 };
     const prices = {
@@ -74,39 +63,52 @@ export default function PlantDoctor() {
 
     const handleNext = () => {
         if (step === 1 && !bookingData.symptoms) {
-            alert("Please describe the plant's symptoms");
+            toast("Please describe the plant's symptoms");
             return;
         }
         if (step === 2 && (!bookingData.date || !bookingData.timeSlot)) {
-            alert("Please select both date and time slot");
+            toast("Please select both date and time slot");
             return;
         }
         if (step === 3 && !bookingData.address) {
-            alert("Please enter the visit address");
+            toast("Please enter the visit address");
             return;
         }
         setStep(step + 1);
     };
 
-    const handleConfirmBooking = () => {
-        const newApp = {
-            id: `APP-${Math.floor(1000 + Math.random() * 9000)}`,
-            date: bookingData.date,
-            status: 'requested',
-            botanist: bookingData.preferredBotanist ? BOTANISTS.find(b => b.id === bookingData.preferredBotanist).name : 'Not Assigned',
-            symptoms: bookingData.symptoms,
-            prescription: false,
-            timestamp: new Date().toISOString()
-        };
+    const [booking, setBooking] = useState(false);
 
-        const updated = [newApp, ...appointments];
-        setAppointments(updated);
-        localStorage.setItem('local_botanist_appointments', JSON.stringify(updated));
-        
-        // Broadcast for other tabs
-        window.dispatchEvent(new Event('storage'));
+    const handleConfirmBooking = async () => {
+        if (!isAuth) { navigate('/login'); return; }
+        setBooking(true);
+        try {
+            const botanistName = bookingData.preferredBotanist
+                ? BOTANISTS.find(b => b.id === bookingData.preferredBotanist)?.name || ''
+                : '';
+            const payload = new FormData();
+            payload.append('service_type', bookingData.serviceType);
+            payload.append('symptoms', bookingData.symptoms);
+            payload.append('time_slot', bookingData.timeSlot);
+            payload.append('address', bookingData.address);
+            payload.append('distance', bookingData.distance || 0);
+            payload.append('payment_method', bookingData.paymentMethod === 'online' ? 'online' : 'cash');
+            payload.append('preferred_botanist', botanistName);
+            if (bookingData.date) payload.append('visit_date', bookingData.date);
+            if (bookingData.image) payload.append('image', bookingData.image);
 
-        setStep(5);
+            await api.post('/plant-care/appointments/', payload, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            await fetchAppointments();
+            toast.success('Appointment requested successfully!');
+            setStep(5);
+        } catch (err) {
+            console.error('Booking failed:', err);
+            toast.error('Could not book the appointment. Please try again.');
+        } finally {
+            setBooking(false);
+        }
     };
 
     const handleTrack = (id) => {
@@ -230,16 +232,19 @@ export default function PlantDoctor() {
                                         <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Select Preferred Botanist (Optional)</h3>
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             {BOTANISTS.map(bot => (
-                                                <div 
+                                                <div
                                                     key={bot.id}
                                                     onClick={() => setBookingData({...bookingData, preferredBotanist: bot.id})}
-                                                    className={`p-4 rounded-2xl border-2 transition-all cursor-pointer text-center ${bookingData.preferredBotanist === bot.id ? 'border-nature-900 bg-nature-50' : 'border-nature-50 hover:border-nature-100'}`}
+                                                    className={`p-5 rounded-2xl border-2 transition-all cursor-pointer text-center ${bookingData.preferredBotanist === bot.id ? 'border-nature-900 bg-nature-50' : 'border-nature-50 hover:border-nature-200'}`}
                                                 >
-                                                    <img src={bot.photo} className="w-12 h-12 rounded-full mx-auto mb-2 border border-white shadow-sm" />
-                                                    <p className="font-black text-[10px] text-gray-900 uppercase tracking-tighter">Botanist {bot.name}</p>
-                                                    <div className="flex items-center justify-center gap-1 text-amber-500 mt-1">
-                                                        <Star size={10} fill="currentColor" />
-                                                        <span className="text-[9px] font-black">{bot.rating}</span>
+                                                    <div className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center bg-nature-100 text-nature-700 font-black text-xl shadow-sm">
+                                                        {bot.name.charAt(0)}
+                                                    </div>
+                                                    <p className="font-black text-sm text-gray-900 leading-tight">{bot.name}</p>
+                                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wide mt-0.5">{bot.expertise}</p>
+                                                    <div className="flex items-center justify-center gap-1 text-amber-500 mt-2">
+                                                        <Star size={12} fill="currentColor" />
+                                                        <span className="text-xs font-black text-gray-700">{bot.rating}</span>
                                                     </div>
                                                 </div>
                                             ))}
@@ -369,8 +374,8 @@ export default function PlantDoctor() {
                                         </button>
                                     </div>
 
-                                    <button onClick={handleConfirmBooking} className="w-full bg-nature-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-2xl uppercase tracking-widest text-sm">
-                                        Confirm Appointment
+                                    <button onClick={handleConfirmBooking} disabled={booking} className="w-full bg-nature-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-2xl uppercase tracking-widest text-sm disabled:opacity-50">
+                                        {booking ? 'Booking…' : 'Confirm Appointment'}
                                     </button>
                                 </div>
                             )}
@@ -430,7 +435,7 @@ export default function PlantDoctor() {
                     {activeApp && activeApp.status !== 'completed' && (
                         <div className="space-y-6">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">Live Status: #{activeApp.id}</h2>
+                                <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase">Live Status: #APP-{activeApp.id}</h2>
                                 <button onClick={() => setActiveAppId(null)} className="text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-nature-700">Close Tracker</button>
                             </div>
                             <StatusTracker status={activeApp.status} />
@@ -456,7 +461,7 @@ export default function PlantDoctor() {
                                                 </div>
                                                 <div>
                                                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Appointment ID</p>
-                                                    <h3 className="text-xl font-black text-gray-900">#{app.id}</h3>
+                                                    <h3 className="text-xl font-black text-gray-900">#APP-{app.id}</h3>
                                                 </div>
                                             </div>
                                             <span className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest ${app.status === 'completed' ? 'bg-nature-100 text-nature-700' : 'bg-amber-100 text-amber-700'}`}>
@@ -467,13 +472,13 @@ export default function PlantDoctor() {
                                         <div className="grid md:grid-cols-3 gap-8 py-8 border-y border-dashed border-gray-100">
                                             <div>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Visit Date</p>
-                                                <p className="font-black text-gray-800">{app.date || 'N/A'}</p>
+                                                <p className="font-black text-gray-800">{app.visit_date || 'N/A'}</p>
                                             </div>
                                             <div>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Assigned Botanist</p>
                                                 <div className="flex items-center gap-2">
                                                     <User className="w-4 h-4 text-nature-600" />
-                                                    <p className="font-black text-gray-800">Botanist {app.botanist}</p>
+                                                    <p className="font-black text-gray-800">{app.assigned_botanist}</p>
                                                 </div>
                                             </div>
                                             <div>
@@ -492,7 +497,7 @@ export default function PlantDoctor() {
                                                         Track Live
                                                     </button>
                                                 )}
-                                                {app.prescription && (
+                                                {app.has_prescription && (
                                                     <button className="flex items-center gap-2 bg-nature-50 text-nature-900 px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-nature-100 transition-all border border-nature-100">
                                                         <FileText size={14} /> Download Care Plan
                                                     </button>

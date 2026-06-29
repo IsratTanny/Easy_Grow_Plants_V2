@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../api/axios';
 import { User, MapPin, Phone, ShoppingBag, Leaf, ExternalLink, Check, Star, Award, ShieldCheck, MessageSquare } from 'lucide-react';
@@ -36,7 +37,7 @@ export default function PublicProfile() {
             await api.delete(`/reviews/${id}/`);
             setReviews(reviews.filter(r => r.id !== id));
         } catch (err) {
-            alert("Failed to delete review.");
+            toast.error("Failed to delete review.");
         }
     };
 

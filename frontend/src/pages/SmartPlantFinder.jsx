@@ -27,13 +27,16 @@ class FinderErrorBoundary extends React.Component {
 function SmartPlantFinderContent() {
     const { language, t } = useLanguage();
 
+    // Static images are served at the Vite base ("/" in dev, "/static/" in prod).
+    const img = (file) => `${import.meta.env.BASE_URL}images/${file}`;
+
     const PLANT_DB = useMemo(() => [
-        { name: "Monstera Deliciosa", category: "Monstera", sunlight_pref: "4-6 Hrs", directions: ["East", "West"], image: "/static/images/monstera.jpg" },
-        { name: "Aglonema Red", category: "Aglonema", sunlight_pref: "2-4 Hrs", directions: ["North", "East"], image: "/static/images/aglonema.jpg" },
-        { name: "Golden Pothos", category: "Pothos", sunlight_pref: "2-4 Hrs", directions: ["North", "West"], image: "/static/images/pothos.jpg" },
-        { name: "Desert Cactus", category: "Cactus", sunlight_pref: "6+ Hrs", directions: ["South", "West"], image: "/static/images/cactus.jpg" },
-        { name: "Juniper Bonsai", category: "Bonsai", sunlight_pref: "6+ Hrs", directions: ["South", "East"], image: "/static/images/bonsai.jpg" },
-        { name: "Snake Plant", category: "Sansevieria", sunlight_pref: "2-4 Hrs", directions: ["North", "South", "East", "West"], image: "/static/images/sansevieria.jpg" }
+        { name: "Monstera Deliciosa", category: "Monstera", sunlight_pref: "4-6 Hrs", directions: ["East", "West"], image: img("monstera.jpg") },
+        { name: "Aglonema Red", category: "Aglonema", sunlight_pref: "2-4 Hrs", directions: ["North", "East"], image: img("aglonema.jpg") },
+        { name: "Golden Pothos", category: "Pothos", sunlight_pref: "2-4 Hrs", directions: ["North", "West"], image: img("pothos.jpg") },
+        { name: "Desert Cactus", category: "Cactus", sunlight_pref: "6+ Hrs", directions: ["South", "West"], image: img("cactus.jpg") },
+        { name: "Juniper Bonsai", category: "Bonsai", sunlight_pref: "6+ Hrs", directions: ["South", "East"], image: img("bonsai.jpg") },
+        { name: "Snake Plant", category: "Sansevieria", sunlight_pref: "2-4 Hrs", directions: ["North", "South", "East", "West"], image: img("sansevieria.jpg") }
     ], []);
 
     const [heading, setHeading] = useState(0);

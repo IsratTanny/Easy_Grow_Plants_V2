@@ -3,6 +3,14 @@ from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+# Load environment variables from a .env file at the repo root (if present).
+# This lets the project be cloned and configured without exporting vars by hand.
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR.parent / '.env')
+except ImportError:
+    pass
 # backend/core/config/settings.py -> backend/core/config -> backend/core -> backend -> BASE_DIR should be 'backend' usually project root.
 # Actually standard is BASE_DIR is where manage.py is.
 # My manage.py is in backend/core.
@@ -23,11 +31,26 @@ import os
 # if we do 'backend.apps.users', we need 'd:/Easy Grow Plants' in sys.path.
 sys.path.append(str(BASE_DIR.parent)) 
 
-SECRET_KEY = 'django-insecure-change-me-in-production'
+# Security-sensitive settings are read from the environment so production can
+# lock them down without code changes. The defaults keep local development
+# working out of the box.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-change-me-in-production',
+)
 
-DEBUG = True
+# DEBUG defaults to True for local dev; set DJANGO_DEBUG=False in production.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('1', 'true', 'yes')
 
-ALLOWED_HOSTS = ['*']
+# Comma-separated list, e.g. DJANGO_ALLOWED_HOSTS="example.com,www.example.com".
+# Falls back to localhost in dev, or '*' only while DEBUG is on.
+_allowed_hosts = os.environ.get('DJANGO_ALLOWED_HOSTS', '').strip()
+if _allowed_hosts:
+    ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts.split(',') if h.strip()]
+elif DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -120,9 +143,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR.parent / 'staticfiles'
 
-STATICFILES_DIRS = [
-    BASE_DIR.parent / 'frontend' / 'dist',
-]
+# Only expose the built frontend bundle when it actually exists. During local
+# development the SPA is served by the Vite dev server, so frontend/dist is
+# absent and including it would raise a staticfiles warning.
+_frontend_dist = BASE_DIR.parent / 'frontend' / 'dist'
+STATICFILES_DIRS = [_frontend_dist] if _frontend_dist.exists() else []
 
 # Media files configuration
 MEDIA_URL = '/media/'
@@ -144,15 +169,30 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
-# CORS settings
-CORS_ALLOW_ALL_ORIGINS = True  # Enable for development ease
+# CORS settings.
+# In production set DJANGO_CORS_ORIGINS to a comma-separated allow-list, e.g.
+# "https://app.example.com". When it is unset we fall back to allowing all
+# origins only in DEBUG, so local dev stays frictionless.
+_cors_origins = os.environ.get('DJANGO_CORS_ORIGINS', '').strip()
+if _cors_origins:
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_origins.split(',') if o.strip()]
+    CORS_ALLOW_ALL_ORIGINS = False
+else:
+    CORS_ALLOW_ALL_ORIGINS = DEBUG
 CORS_ALLOW_CREDENTIALS = True
 
-# CSRF settings for same-origin requests
+# CSRF settings for same-origin requests. Extra trusted origins can be supplied
+# via DJANGO_CSRF_TRUSTED_ORIGINS (comma-separated).
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
+    "http://127.0.0.1:8080",
+    "http://localhost:8080",
+    "http://localhost:5173",
 ]
+_extra_csrf = os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS', '').strip()
+if _extra_csrf:
+    CSRF_TRUSTED_ORIGINS += [o.strip() for o in _extra_csrf.split(',') if o.strip()]
 
 # Allow large image uploads for AI processing (50 MB limit)
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB

@@ -93,6 +93,43 @@ body {
     animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.profile-input {
+    @apply w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl outline-none transition-all;
+}
+.profile-input:focus {
+    @apply ring-2 ring-nature-500/30 border-nature-500;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(24px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.animate-slideIn {
+    animation: slideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slideUp {
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Sidebar Animations */
 .sidebar-overlay {
     @apply fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm transition-opacity duration-300;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/axios';
 import { Plus, Package, Users, ShoppingCart, Tag, User, ShieldAlert, ShieldCheck, XCircle, Search, AlertTriangle, Bell, MessageCircle, Send, Image, Clock, FileText, Stethoscope, MapPin, Star, Hammer, Flower2, GraduationCap, Download, ExternalLink } from 'lucide-react';
@@ -228,18 +229,11 @@ export default function AdminDashboard() {
             setSubscriptions(Array.isArray(subRes.data) ? subRes.data : []);
             setSortedTickets(supportRes.data);
 
-            // Load Botanist Data from Mock DB (localStorage)
-            const savedApps = localStorage.getItem('local_botanist_appointments');
-            if (savedApps) {
-                setBotanistRequests(JSON.parse(savedApps));
-            } else {
-                const initial = [
-                    { id: 'APP-1021', date: '2024-10-20', status: 'completed', botanist: 'Sarah Ahmed', symptoms: 'Yellow leaves on Monstera', prescription: true, user: 'Mock User' },
-                    { id: 'APP-1105', date: '2024-10-25', status: 'requested', botanist: 'Not Assigned', symptoms: 'Root rot in Succulents', prescription: false, user: 'Mock User' }
-                ];
-                setBotanistRequests(initial);
-                localStorage.setItem('local_botanist_appointments', JSON.stringify(initial));
-            }
+            // Load real botanist appointments from the backend.
+            try {
+                const apptRes = await api.get('/plant-care/appointments/');
+                setBotanistRequests(Array.isArray(apptRes.data) ? apptRes.data : (apptRes.data.results || []));
+            } catch (e) { console.error('appointments load failed', e); }
 
             setAllBotanists([
                 { id: 1, name: 'Sarah Ahmed', rating: 4.9, location: 'Gulshan', active_tasks: 1 },
@@ -247,18 +241,11 @@ export default function AdminDashboard() {
                 { id: 3, name: 'Tania Kabir', rating: 4.8, location: 'Dhanmondi', active_tasks: 0 }
             ]);
 
-            // Load Potting Requests from Mock DB
-            const savedPotting = localStorage.getItem('local_potting_requests');
-            if (savedPotting) {
-                setPottingRequests(JSON.parse(savedPotting));
-            } else {
-                const initial = [
-                    { id: 'POT-8821', date: '2024-11-05', status: 'completed', expert: 'Rahat Hasan', pots: '3 Small, 1 Large', package: 'Soil & Fertilizer', total: 1000, user: 'Mock User', location: 'Banani' },
-                    { id: 'POT-9012', date: '2024-11-12', status: 'requested', expert: 'Not Assigned', pots: '5 Medium', package: 'Labor Only', total: 500, user: 'Mock User', location: 'Uttara' }
-                ];
-                setPottingRequests(initial);
-                localStorage.setItem('local_potting_requests', JSON.stringify(initial));
-            }
+            // Load real potting requests from the backend.
+            try {
+                const pottingRes = await api.get('/plant-care/potting-requests/');
+                setPottingRequests(Array.isArray(pottingRes.data) ? pottingRes.data : (pottingRes.data.results || []));
+            } catch (e) { console.error('potting load failed', e); }
 
             setAllGardeners([
                 { id: 1, name: 'Rahat Hasan', rating: 4.8, location: 'Banani', active_tasks: 1 },
@@ -308,7 +295,7 @@ export default function AdminDashboard() {
             });
         } catch (err) {
             console.error("Update error:", err);
-            alert("Failed to update. Please try again.");
+            toast.error("Failed to update. Please try again.");
         }
     };
 
@@ -496,7 +483,7 @@ export default function AdminDashboard() {
             setFraudData(mockData);
         } catch (err) {
             console.error("Fraud check failed:", err);
-            alert("Could not connect to Fraud Database.");
+            toast.error("Could not connect to Fraud Database.");
         } finally {
             setFraudLoading(false);
         }
@@ -511,7 +498,7 @@ export default function AdminDashboard() {
             }
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.error || "Failed to mark as shipped");
+            toast.error(err.response?.data?.error || "Failed to mark as shipped");
         }
     };
 
@@ -1370,9 +1357,9 @@ export default function AdminDashboard() {
                                     <div key={req.id} className="p-5 bg-nature-50/50 rounded-2xl border border-nature-50 hover:border-nature-100 transition-all">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h4 className="font-black text-gray-900">#{req.id} - {req.user}</h4>
+                                                <h4 className="font-black text-gray-900">#{req.id} - {req.user_username}</h4>
                                                 <p className="text-[10px] font-bold text-gray-500 mt-1 flex items-center gap-1">
-                                                    <MapPin size={10} /> {req.location}
+                                                    <MapPin size={10} /> {req.address}
                                                 </p>
                                             </div>
                                             <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${req.status === 'requested' ? 'bg-amber-100 text-amber-700' : 'bg-nature-100 text-nature-700'}`}>
@@ -1385,13 +1372,13 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="flex gap-2">
                                             {req.status === 'requested' ? (
-                                                <button 
-                                                    onClick={() => {
+                                                <button
+                                                    onClick={async () => {
                                                         const botanist = allBotanists[Math.floor(Math.random() * allBotanists.length)].name;
-                                                        const updated = botanistRequests.map(r => r.id === req.id ? {...r, status: 'assigned', botanist: botanist} : r);
-                                                        setBotanistRequests(updated);
-                                                        localStorage.setItem('local_botanist_appointments', JSON.stringify(updated));
-                                                        window.dispatchEvent(new Event('storage'));
+                                                        try {
+                                                            const res = await api.post(`/plant-care/appointments/${req.id}/set_status/`, { status: 'assigned', assigned_botanist: botanist });
+                                                            setBotanistRequests(prev => prev.map(r => r.id === req.id ? res.data : r));
+                                                        } catch (e) { toast.error('Could not assign botanist.'); }
                                                     }}
                                                     className="flex-1 bg-nature-900 text-white font-black py-2.5 rounded-lg text-[10px] uppercase tracking-widest hover:bg-black transition-all"
                                                 >
@@ -1402,11 +1389,12 @@ export default function AdminDashboard() {
                                                     <select 
                                                         className="flex-1 text-[10px] font-black uppercase bg-white border border-nature-100 rounded-lg px-2"
                                                         value={req.status}
-                                                        onChange={(e) => {
-                                                            const updated = botanistRequests.map(r => r.id === req.id ? {...r, status: e.target.value} : r);
-                                                            setBotanistRequests(updated);
-                                                            localStorage.setItem('local_botanist_appointments', JSON.stringify(updated));
-                                                            window.dispatchEvent(new Event('storage'));
+                                                        onChange={async (e) => {
+                                                            const newStatus = e.target.value;
+                                                            try {
+                                                                const res = await api.post(`/plant-care/appointments/${req.id}/set_status/`, { status: newStatus });
+                                                                setBotanistRequests(prev => prev.map(r => r.id === req.id ? res.data : r));
+                                                            } catch (err) { toast.error('Could not update status.'); }
                                                         }}
                                                     >
                                                         <option value="assigned">Assigned</option>
@@ -1483,9 +1471,9 @@ export default function AdminDashboard() {
                                     <div key={req.id} className="p-5 bg-nature-50/50 rounded-2xl border border-nature-50 hover:border-nature-100 transition-all">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <h4 className="font-black text-gray-900">#{req.id} - {req.user}</h4>
+                                                <h4 className="font-black text-gray-900">#{req.id} - {req.user_username}</h4>
                                                 <p className="text-[10px] font-bold text-gray-500 mt-1 flex items-center gap-1">
-                                                    <MapPin size={10} /> {req.location || 'N/A'}
+                                                    <MapPin size={10} /> {req.address || 'N/A'}
                                                 </p>
                                             </div>
                                             <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-1 rounded-full ${req.status === 'requested' ? 'bg-amber-100 text-amber-700' : 'bg-nature-100 text-nature-700'}`}>
@@ -1494,18 +1482,18 @@ export default function AdminDashboard() {
                                         </div>
                                         <div className="p-3 bg-white rounded-xl mb-4 border border-nature-50">
                                             <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Items & Plan</p>
-                                            <p className="text-xs text-gray-900 font-black">{req.pots}</p>
-                                            <p className="text-[9px] text-nature-600 font-bold mt-0.5">{req.package}</p>
+                                            <p className="text-xs text-gray-900 font-black">{req.pots_summary}</p>
+                                            <p className="text-[9px] text-nature-600 font-bold mt-0.5">{req.package_type === 'soil' ? 'Soil & Fertilizer' : 'Labor Only'}</p>
                                         </div>
                                         <div className="flex gap-2">
                                             {req.status === 'requested' ? (
-                                                <button 
-                                                    onClick={() => {
+                                                <button
+                                                    onClick={async () => {
                                                         const expert = allGardeners[Math.floor(Math.random() * allGardeners.length)].name;
-                                                        const updated = pottingRequests.map(r => r.id === req.id ? {...r, status: 'assigned', expert: expert} : r);
-                                                        setPottingRequests(updated);
-                                                        localStorage.setItem('local_potting_requests', JSON.stringify(updated));
-                                                        window.dispatchEvent(new Event('storage'));
+                                                        try {
+                                                            const res = await api.post(`/plant-care/potting-requests/${req.id}/set_status/`, { status: 'assigned', assigned_expert: expert });
+                                                            setPottingRequests(prev => prev.map(r => r.id === req.id ? res.data : r));
+                                                        } catch (e) { toast.error('Could not assign expert.'); }
                                                     }}
                                                     className="flex-1 bg-nature-900 text-white font-black py-2.5 rounded-lg text-[10px] uppercase tracking-widest hover:bg-black transition-all"
                                                 >
@@ -1515,11 +1503,12 @@ export default function AdminDashboard() {
                                                 <select 
                                                     className="flex-1 text-[10px] font-black uppercase bg-white border border-nature-100 rounded-lg px-2 py-2"
                                                     value={req.status}
-                                                    onChange={(e) => {
-                                                        const updated = pottingRequests.map(r => r.id === req.id ? {...r, status: e.target.value} : r);
-                                                        setPottingRequests(updated);
-                                                        localStorage.setItem('local_potting_requests', JSON.stringify(updated));
-                                                        window.dispatchEvent(new Event('storage'));
+                                                    onChange={async (e) => {
+                                                        const newStatus = e.target.value;
+                                                        try {
+                                                            const res = await api.post(`/plant-care/potting-requests/${req.id}/set_status/`, { status: newStatus });
+                                                            setPottingRequests(prev => prev.map(r => r.id === req.id ? res.data : r));
+                                                        } catch (err) { toast.error('Could not update status.'); }
                                                     }}
                                                 >
                                                     <option value="assigned">Assigned</option>
@@ -1839,7 +1828,7 @@ export default function AdminDashboard() {
                                                         }
                                                     } catch (e) {
                                                         console.error("Error approving:", e.response?.data || e.message);
-                                                        alert(`Failed to approve botanist: ${e.response?.data?.error || e.message}`);
+                                                        toast.error(`Failed to approve botanist: ${e.response?.data?.error || e.message}`);
                                                     }
                                                 }}
                                                 className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200"
@@ -1860,7 +1849,7 @@ export default function AdminDashboard() {
                                                         }
                                                     } catch (e) {
                                                         console.error("Error rejecting:", e.response?.data || e.message);
-                                                        alert(`Failed to reject botanist: ${e.response?.data?.error || e.message}`);
+                                                        toast.error(`Failed to reject botanist: ${e.response?.data?.error || e.message}`);
                                                     }
                                                 }}
                                                 className="w-full py-4 bg-white text-red-500 border-2 border-red-50 font-black uppercase tracking-widest text-xs hover:bg-red-50 transition-all"

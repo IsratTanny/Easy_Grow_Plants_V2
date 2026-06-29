@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { api, isAuthenticated } from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 import { Leaf, MapPin, Search, Plus, X, Heart, Star } from 'lucide-react';
@@ -99,7 +100,7 @@ export default function ExchangeDashboard() {
             fetchPosts();
         } catch (error) {
             console.error("Failed to submit post", error);
-            alert("Error creating post.");
+            toast.error("Error creating post.");
         }
     };
 
@@ -147,7 +148,7 @@ export default function ExchangeDashboard() {
                     else if (typeof firstVal === 'string') errMsg = firstVal;
                 }
             }
-            alert("Error: " + errMsg);
+            toast.error("Error: " + errMsg);
         }
     };
 

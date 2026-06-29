@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import { Truck, Search, ChevronRight, CheckCircle, Package, AlertCircle } from 'lucide-react';
 
 export default function ShipfastAdmin() {
@@ -48,7 +49,7 @@ export default function ShipfastAdmin() {
         localStorage.setItem('shipfast_cleared_balance', (currentBalance + payableAmt).toString());
 
         setParcels(prev => prev.map(p => p.id === parcel.id ? { ...p, billCleared: true } : p));
-        alert(`Bill Cleared! ৳${payableAmt} deposited to ${parcel.merchant}'s balance.`);
+        toast(`Bill Cleared! ৳${payableAmt} deposited to ${parcel.merchant}'s balance.`);
     };
 
     return (

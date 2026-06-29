@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { api, isAuthenticated } from '../api/axios';
 import { Leaf, MessageSquare, Repeat, X, Send, Image as ImageIcon, MapPin, CheckCircle, Trash2 } from 'lucide-react';
 
@@ -100,14 +101,14 @@ export default function MyExchanges() {
                 }
             });
         } else {
-            alert("Geolocation is not supported by your browser.");
+            toast("Geolocation is not supported by your browser.");
         }
     };
 
     const markAsCompleted = async (proposal) => {
         try {
             await api.post(`/exchange-proposals/${proposal.id}/complete/`);
-            alert("Exchange marked as completed!");
+            toast.success("Exchange marked as completed!");
             fetchProposals();
         } catch (e) {
             console.error("Error completing", e);
@@ -118,7 +119,7 @@ export default function MyExchanges() {
         if(!window.confirm("Are you sure you want to delete this listing permanently?")) return;
         try {
             await api.delete(`/exchange-posts/${proposal.plant}/`);
-            alert("Post deleted successfully.");
+            toast.success("Post deleted successfully.");
             fetchProposals();
         } catch (e) {
             console.error("Error deleting", e);

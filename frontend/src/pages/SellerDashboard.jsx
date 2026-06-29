@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../api/axios';
 import { Plus, Package, Trash2, Edit3, TrendingUp, Tag, User, ShoppingCart, Search, XCircle, FileText, ShieldAlert, Bell, Wallet, Truck, MapPin, Monitor, Headphones, List, DollarSign, Cloud, PieChart, Edit, CheckCircle, RotateCcw, CreditCard, Send, Image as ImageIcon, ChevronRight, Clock, ArrowLeft, Copy, Phone, ExternalLink, Calendar, Check, Box, Rocket, Zap, X, Smartphone, Landmark } from 'lucide-react';
@@ -143,7 +144,7 @@ export default function SellerDashboard() {
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [formData, setFormData] = useState({
-        name: '', stock: 0, price: 0, buying_price: 0, description: '', category: ''
+        plant_name: '', stock_quantity: 0, price: 0, buying_price: 0, description: '', category: ''
     });
     const [imageFile, setImageFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
@@ -387,7 +388,7 @@ export default function SellerDashboard() {
                 setSelectedParcel(found);
                 setShipfastView('parcel_detail');
             } else {
-                alert("Parcel not found! Please check the ID.");
+                toast.error("Parcel not found! Please check the ID.");
             }
         }
     };
@@ -397,7 +398,7 @@ export default function SellerDashboard() {
         try {
             const payload = new FormData();
             payload.append('plant_name', formData.plant_name);
-            payload.append('stock', formData.stock);
+            payload.append('stock_quantity', formData.stock_quantity);
             payload.append('price', formData.price);
             payload.append('buying_price', formData.buying_price);
             payload.append('description', formData.description);

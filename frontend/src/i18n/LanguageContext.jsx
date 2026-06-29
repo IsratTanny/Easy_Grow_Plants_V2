@@ -27,11 +27,10 @@ export function LanguageProvider({ children }) {
     const changeLanguage = (lang) => {
         window.localStorage.setItem('preferred_language', lang);
         document.cookie = "preferred_language=" + lang + "; path=/";
+        // Updating state re-renders every consumer of the context, so there is
+        // no need for a full page reload (which would wipe in-memory state).
         setLanguage(lang);
         setIsModalOpen(false);
-        setTimeout(() => {
-            window.location.reload();
-        }, 100);
     };
 
     return (

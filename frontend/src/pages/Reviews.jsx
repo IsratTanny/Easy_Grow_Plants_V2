@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { api } from '../api/axios';
 import { Star, MessageSquare, Image as ImageIcon, Trash2, User, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -73,7 +74,7 @@ export default function Reviews() {
             setRating(5);
             setComment('');
             setImage(null);
-            alert('Review posted successfully!');
+            toast.success('Review posted successfully!');
         } catch (err) {
             if (err.response?.status === 403) {
                 setErrorMsg(err.response.data.detail || "Only customers who have purchased from us can leave a review.");

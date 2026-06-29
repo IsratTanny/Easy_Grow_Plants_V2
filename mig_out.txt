@@ -1,4 +1,0 @@
-Operations to perform:
-  Apply all migrations: admin, auth, contenttypes, iot, marketplace, plant_care, sessions, support, users
-Running migrations:
-  Applying users.0008_customuser_latitude_customuser_longitude... OK

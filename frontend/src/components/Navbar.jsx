@@ -46,7 +46,7 @@ export default function Navbar() {
 
     const fetchNotifications = async () => {
         try {
-            const res = await api.get('/notifications/');
+            const res = await api.get('/support/notifications/');
             // Backend returns { unread_count: X, notifications: [...] }
             const data = Array.isArray(res.data) ? res.data : (res.data.notifications || []);
             setNotifications(data.filter(n => !n.is_read));
@@ -57,7 +57,7 @@ export default function Navbar() {
 
     const markAsRead = async (id) => {
         try {
-            await api.post(`/notifications/${id}/read/`);
+            await api.post(`/support/notifications/${id}/read/`);
             setNotifications(prev => prev.filter(n => n.id !== id));
         } catch (err) {
             console.error('Error marking notification as read:', err);

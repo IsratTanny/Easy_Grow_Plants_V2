@@ -85,3 +85,34 @@ class PostSerializer(serializers.ModelSerializer):
         if request and request.user.is_authenticated:
             return obj.likes.filter(id=request.user.id).exists()
         return False
+
+
+from .models import BotanistAppointment, PottingRequest
+
+
+class BotanistAppointmentSerializer(serializers.ModelSerializer):
+    has_prescription = serializers.SerializerMethodField()
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = BotanistAppointment
+        fields = '__all__'
+        read_only_fields = (
+            'user', 'assigned_botanist', 'status', 'base_fee', 'distance_charge',
+            'total_fee', 'prescription_notes', 'created_at',
+        )
+
+    def get_has_prescription(self, obj):
+        return bool(obj.prescription_notes)
+
+
+class PottingRequestSerializer(serializers.ModelSerializer):
+    user_username = serializers.CharField(source='user.username', read_only=True)
+
+    class Meta:
+        model = PottingRequest
+        fields = '__all__'
+        read_only_fields = (
+            'user', 'status', 'assigned_expert', 'service_fee', 'travel_charge',
+            'total_bill', 'pot_count', 'pots_summary', 'created_at',
+        )

@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Mic, MicOff } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { api } from '../api/axios';
@@ -379,7 +380,7 @@ const VoiceAssistant = () => {
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            alert('Voice assistant is not supported in this browser. Please use Chrome.');
+            toast('Voice assistant is not supported in this browser. Please use Chrome.');
             return;
         }
 

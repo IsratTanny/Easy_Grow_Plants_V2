@@ -53,6 +53,11 @@ def react_app_view(request, *args, **kwargs):
     Serve the React app's index.html file
     This catches all routes and lets React Router handle the routing
     """
+    # Unmatched API/media requests must not fall through to the SPA HTML
+    # (which would return a misleading 200). Return a real JSON 404 instead.
+    if request.path.startswith(('/api/', '/media/')):
+        from django.http import JsonResponse
+        return JsonResponse({'detail': 'Not found.'}, status=404)
     try:
         # Path to the built frontend index.html
         index_path = settings.BASE_DIR.parent / 'frontend' / 'dist' / 'index.html'

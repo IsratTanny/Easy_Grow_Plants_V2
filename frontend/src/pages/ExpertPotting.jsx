@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
     Sprout, ArrowLeft, ArrowRight, Activity, Calendar, 
@@ -30,32 +31,22 @@ export default function ExpertPotting() {
 
     const [requests, setRequests] = useState([]);
     
-    const STATUS_STAGES = ['requested', 'assigned', 'in_progress', 'completed'];
+    const STATUS_STAGES = ['requested', 'scheduled', 'in_progress', 'completed'];
+    const [booking, setBooking] = useState(false);
 
-    // Load from LocalStorage (Mock DB)
-    useEffect(() => {
-        const saved = localStorage.getItem('local_potting_requests');
-        if (saved) {
-            setRequests(JSON.parse(saved));
-        } else {
-            const initial = [
-                { id: 'POT-8821', date: '2024-11-05', status: 'completed', expert: 'Rahat Hasan', pots: '3 Small, 1 Large', package: 'Soil & Fertilizer', total: 1000 },
-                { id: 'POT-9012', date: '2024-11-12', status: 'requested', expert: 'Not Assigned', pots: '5 Medium', package: 'Labor Only', total: 500 }
-            ];
-            setRequests(initial);
-            localStorage.setItem('local_potting_requests', JSON.stringify(initial));
+    const fetchRequests = async () => {
+        try {
+            const res = await api.get('/plant-care/potting-requests/');
+            setRequests(Array.isArray(res.data) ? res.data : res.data.results || []);
+        } catch (err) {
+            console.error('Error fetching potting requests:', err);
         }
-    }, []);
+    };
 
-    // Listen for changes
+    // Load real requests from the backend.
     useEffect(() => {
-        const handleStorage = () => {
-            const saved = localStorage.getItem('local_potting_requests');
-            if (saved) setRequests(JSON.parse(saved));
-        };
-        window.addEventListener('storage', handleStorage);
-        return () => window.removeEventListener('storage', handleStorage);
-    }, []);
+        if (isAuth) fetchRequests();
+    }, [isAuth]);
 
     const PRICING = {
         labor: 100,
@@ -82,45 +73,48 @@ export default function ExpertPotting() {
         if (step === 0) {
             const totalPots = bookingData.smallPots + bookingData.mediumPots + bookingData.largePots;
             if (totalPots <= 0) {
-                alert("Please add at least one pot to proceed");
+                toast("Please add at least one pot to proceed");
                 return;
             }
         }
         if (step === 1 && (!bookingData.date || !bookingData.timeSlot)) {
-            alert("Please select both date and time slot");
+            toast("Please select both date and time slot");
             return;
         }
         if (step === 2 && !bookingData.address) {
-            alert("Please enter the visit address");
+            toast("Please enter the visit address");
             return;
         }
         setStep(step + 1);
     };
 
-    const handleConfirmBooking = () => {
-        const potSummary = [
-            bookingData.smallPots > 0 ? `${bookingData.smallPots} Small` : '',
-            bookingData.mediumPots > 0 ? `${bookingData.mediumPots} Medium` : '',
-            bookingData.largePots > 0 ? `${bookingData.largePots} Large` : '',
-        ].filter(Boolean).join(', ');
-
-        const newReq = {
-            id: `POT-${Math.floor(1000 + Math.random() * 9000)}`,
-            date: bookingData.date,
-            status: 'requested',
-            expert: 'Not Assigned',
-            pots: potSummary,
-            package: bookingData.packageType === 'soil' ? 'Soil & Fertilizer Included' : 'Labor Only',
-            total: totals.total,
-            timestamp: new Date().toISOString()
-        };
-
-        const updated = [newReq, ...requests];
-        setRequests(updated);
-        localStorage.setItem('local_potting_requests', JSON.stringify(updated));
-        
-        window.dispatchEvent(new Event('storage'));
-        setStep(4);
+    const handleConfirmBooking = async () => {
+        if (!isAuth) { navigate('/login'); return; }
+        setBooking(true);
+        try {
+            const payload = {
+                pots: {
+                    small: bookingData.smallPots,
+                    medium: bookingData.mediumPots,
+                    large: bookingData.largePots,
+                },
+                package_type: bookingData.packageType,
+                time_slot: bookingData.timeSlot,
+                address: bookingData.address,
+                distance: bookingData.distance || 0,
+                payment_method: bookingData.paymentMethod === 'online' ? 'online' : 'cash',
+                visit_date: bookingData.date || null,
+            };
+            await api.post('/plant-care/potting-requests/', payload);
+            await fetchRequests();
+            toast.success('Potting request submitted successfully!');
+            setStep(4);
+        } catch (err) {
+            console.error('Potting request failed:', err);
+            toast.error('Could not submit the request. Please try again.');
+        } finally {
+            setBooking(false);
+        }
     };
 
     const StatusTracker = ({ status }) => {
@@ -352,7 +346,7 @@ export default function ExpertPotting() {
 
                                     <div className="flex gap-4 pt-4">
                                         <button onClick={() => setStep(2)} className="px-8 py-5 bg-nature-50 text-nature-900 font-black rounded-2xl hover:bg-nature-100 transition-all uppercase tracking-widest text-xs">Back</button>
-                                        <button onClick={handleConfirmBooking} className="flex-1 bg-nature-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-2xl uppercase tracking-widest text-xs">Confirm Request</button>
+                                        <button onClick={handleConfirmBooking} disabled={booking} className="flex-1 bg-nature-900 text-white font-black py-5 rounded-2xl hover:bg-black transition-all shadow-2xl uppercase tracking-widest text-xs disabled:opacity-50">{booking ? 'Submitting…' : 'Confirm Request'}</button>
                                     </div>
                                 </div>
                             )}
@@ -435,7 +429,7 @@ export default function ExpertPotting() {
                                     <div className="flex flex-col md:flex-row justify-between gap-8">
                                         <div className="space-y-4 flex-1">
                                             <div className="flex items-center gap-3">
-                                                <span className="bg-nature-900 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg">#{req.id}</span>
+                                                <span className="bg-nature-900 text-white text-[10px] font-black px-4 py-1.5 rounded-full shadow-lg">#POT-{req.id}</span>
                                                 <span className={`text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full ${
                                                     req.status === 'completed' ? 'bg-nature-100 text-nature-700' : 'bg-amber-100 text-amber-700'
                                                 }`}>
@@ -448,14 +442,14 @@ export default function ExpertPotting() {
                                                     <div className="w-10 h-10 rounded-xl bg-nature-50 flex items-center justify-center shrink-0 text-nature-600"><Sprout size={20} /></div>
                                                     <div>
                                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Expert Assigned</p>
-                                                        <p className="font-black text-gray-900">{req.expert}</p>
+                                                        <p className="font-black text-gray-900">{req.assigned_expert}</p>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-start gap-3">
                                                     <div className="w-10 h-10 rounded-xl bg-nature-50 flex items-center justify-center shrink-0 text-nature-600"><Package size={20} /></div>
                                                     <div>
                                                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Plan & Items</p>
-                                                        <p className="font-black text-gray-900">{req.pots} • {req.package}</p>
+                                                        <p className="font-black text-gray-900">{req.pots_summary} • {req.package_type === 'soil' ? 'Soil & Fertilizer' : 'Labor Only'}</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -468,12 +462,12 @@ export default function ExpertPotting() {
                                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Visit Date</p>
                                                 <div className="flex items-center gap-2 justify-center text-nature-900 font-black">
                                                     <Calendar size={16} />
-                                                    {req.date}
+                                                    {req.visit_date || 'TBD'}
                                                 </div>
                                             </div>
                                             <div className="mt-6">
                                                 <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1">Total Bill</p>
-                                                <p className="text-3xl font-black text-nature-900 tracking-tighter">৳{req.total}</p>
+                                                <p className="text-3xl font-black text-nature-900 tracking-tighter">৳{req.total_bill}</p>
                                             </div>
                                             {req.status === 'requested' && (
                                                 <button className="w-full mt-6 bg-white text-red-500 font-black py-3 rounded-2xl hover:bg-red-50 transition-all text-xs uppercase tracking-widest shadow-sm">Cancel</button>

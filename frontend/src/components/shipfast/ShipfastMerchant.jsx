@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Truck, Search, ChevronRight, Wallet, Bell, Plus, Headphones, List, DollarSign, ArrowLeft, Package, MapPin, Calendar, CheckCircle, RotateCcw, Send, User, Clock, Check, Box, Rocket, Copy, Phone, Edit } from 'lucide-react';
 
 const DISTRICTS_DATA = {
@@ -75,7 +76,7 @@ export default function ShipfastMerchant({ userRole = 'merchant' }) {
                 setSelectedParcel(found);
                 setShipfastView('parcel_detail');
             } else {
-                alert("Parcel not found! Please check the ID.");
+                toast.error("Parcel not found! Please check the ID.");
             }
         }
     };
@@ -114,7 +115,7 @@ export default function ShipfastMerchant({ userRole = 'merchant' }) {
     };
 
     const handlePaymentReq = () => {
-        if(!paymentPhone) return alert("Please enter bKash number");
+        if(!paymentPhone) return toast("Please enter bKash number");
         setPaymentSuccess('Successful notification: Payment Request Sent!');
         setClearedBalance(0);
         localStorage.setItem('shipfast_cleared_balance', '0');

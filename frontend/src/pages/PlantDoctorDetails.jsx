@@ -29,7 +29,7 @@ export default function PlantDoctorDetails() {
                 
                 // Attempt to fetch from API
                 try {
-                    const response = await api.get(`/appointments/${id}/`);
+                    const response = await api.get(`/plant-care/appointments/${id}/`);
                     if (response.data) {
                         console.log("DEBUG: Data fetched from API", response.data);
                         setAppointment(response.data);

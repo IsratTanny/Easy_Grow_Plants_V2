@@ -84,8 +84,6 @@ function App() {
                         <Route path="/exchange" element={<PrivateRoute><ExchangeDashboard /></PrivateRoute>} />
                         <Route path="/exchange-history" element={<PrivateRoute><MyExchanges /></PrivateRoute>} />
                         <Route path="/smart-finder" element={<PrivateRoute><SmartPlantFinder /></PrivateRoute>} />
-                        <Route path="/smart-plant-finder" element={<PrivateRoute><SmartPlantFinder /></PrivateRoute>} />
-                        <Route path="/plant-detection" element={<PrivateRoute><PlantDetection /></PrivateRoute>} />
                         <Route path="/nearby-sellers" element={<PrivateRoute><NearbySellers /></PrivateRoute>} />
                         <Route path="/plant-doctor" element={<PrivateRoute><PlantDoctor /></PrivateRoute>} />
                         <Route path="/plant-doctor/details/:id" element={<PrivateRoute><PlantDoctorDetails /></PrivateRoute>} />

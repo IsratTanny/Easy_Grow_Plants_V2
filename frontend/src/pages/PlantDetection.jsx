@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import { Camera, Image as ImageIcon, X, RefreshCw, Leaf, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -52,7 +53,7 @@ export default function PlantDetection() {
                 videoRef.current.srcObject = mediaStream;
             }
         } catch (err) {
-            alert(t('cameraDenied'));
+            toast.error(t('cameraDenied'));
             console.error(err);
         }
     };

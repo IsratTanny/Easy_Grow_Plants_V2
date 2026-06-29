@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import plantsData from '../data/plants/plants.json';
 import PlantFilter from '../components/PlantFilter';
@@ -94,7 +95,7 @@ const PaymentModal = ({ plan, onClose, onSuccess }) => {
     const handleShippingSubmit = (e) => {
         e.preventDefault();
         if (!formData.customer_name || !formData.customer_phone || !formData.address) {
-            alert("Please fill all required fields");
+            toast.error("Please fill all required fields");
             return;
         }
         setStep(1); // proceed to bKash UI
@@ -106,7 +107,7 @@ const PaymentModal = ({ plan, onClose, onSuccess }) => {
 
     const handlePayment = async () => {
         if (paymentMode === 'full' && (!phoneNumber || phoneNumber.length < 11)) {
-            alert("Please enter a valid bKash number");
+            toast("Please enter a valid bKash number");
             return;
         }
         setStep(2); // processing
@@ -115,7 +116,7 @@ const PaymentModal = ({ plan, onClose, onSuccess }) => {
             await onSuccess({ ...formData, payment_mode: paymentMode });
             setStep(3);
         } catch (err) {
-            alert("Subscription activation failed. Please check your data and try again.");
+            toast.error("Subscription activation failed. Please check your data and try again.");
             setStep(1); // revert back
         }
     };

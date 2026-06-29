@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { api } from '../api/axios';
 import { Heart, MessageCircle, Share2, Plus, X, Image as ImageIcon, Leaf, Trash2, Send } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
@@ -86,11 +87,11 @@ export default function Community() {
 
     const handleOpenModal = () => {
         if (!currentUser) {
-            alert('Please login to post in the community.');
+            toast('Please login to post in the community.');
             return;
         }
         if (userRole === 'seller' || userRole === 'admin') {
-            alert('This section is for community members only.');
+            toast('This section is for community members only.');
             return;
         }
         setShowPostModal(true);
@@ -117,7 +118,7 @@ export default function Community() {
             fetchPosts(); // Refresh feed
         } catch (error) {
             console.error('Error creating post:', error);
-            alert('Failed to post. Please try again.');
+            toast.error('Failed to post. Please try again.');
         } finally {
             setSubmitting(false);
         }
@@ -125,7 +126,7 @@ export default function Community() {
 
     const handleLike = async (postId) => {
         if (!currentUser) {
-            alert('Please login to like posts.');
+            toast('Please login to like posts.');
             return;
         }
 
@@ -169,7 +170,7 @@ export default function Community() {
                 await api.delete(`/plant-care/posts/${postId}/`);
                 setAllPosts(prev => Array.isArray(prev) ? prev.filter(p => p.id !== postId) : []);
             } catch (err) {
-                alert("Failed to delete post");
+                toast.error("Failed to delete post");
             }
         }
     };
@@ -202,7 +203,7 @@ export default function Community() {
                     return post;
                 }) : []);
             } catch (err) {
-                alert("Failed to delete comment");
+                toast.error("Failed to delete comment");
             }
         }
     };

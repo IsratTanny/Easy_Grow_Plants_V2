@@ -11,7 +11,7 @@ export default function LanguageSelectionModal() {
         if (!hasChosen) {
             setIsModalOpen(true);
         }
-    }, []);
+    }, [setIsModalOpen]);
 
     const handleSelect = (lang) => {
         changeLanguage(lang);
@@ -49,11 +49,7 @@ export default function LanguageSelectionModal() {
                         </button>
 
                         <button
-                            onClick={() => {
-                                console.log('Bangla selected');
-                                window.localStorage.setItem('preferred_language', 'bn');
-                                changeLanguage('bn');
-                            }}
+                            onClick={() => handleSelect('bn')}
                             className="group flex items-center justify-between p-6 bg-nature-50 border-2 border-transparent hover:border-nature-500 rounded-3xl transition-all active:scale-95"
                         >
                             <div className="text-left">
