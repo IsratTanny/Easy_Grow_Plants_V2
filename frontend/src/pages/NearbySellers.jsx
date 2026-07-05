@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../api/axios';
 import { MapPin, Navigation, Map as MapIcon, Store, Star, Info, Search, LocateFixed, Trees, ChevronRight, XCircle, Loader2 } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -25,6 +26,7 @@ const DHAKA_AREAS = [
 ];
 
 export default function NearbySellers() {
+    const navigate = useNavigate();
     const { t } = useLanguage();
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
@@ -228,7 +230,7 @@ export default function NearbySellers() {
                             <h2 className="text-[10px] font-black text-nature-300 uppercase tracking-widest mb-4">{t('liveMonitor')} ({sellers.length})</h2>
                             <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
                                 {sellers.map(s => (
-                                    <div key={s.id} className="p-4 bg-nature-50/50 rounded-2xl border border-transparent hover:border-[#1b4332]/10 flex items-center gap-4 cursor-pointer" onClick={() => window.location.href=`/sellers/${s.username}`}>
+                                    <div key={s.id} className="p-4 bg-nature-50/50 rounded-2xl border border-transparent hover:border-[#1b4332]/10 flex items-center gap-4 cursor-pointer" onClick={() => navigate(`/sellers/${s.username}`)}>
                                         <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-[#1b4332] font-black text-xs shadow-sm">{s.username[0].toUpperCase()}</div>
                                         <div className="flex-1 min-w-0">
                                             <p className="font-black text-[#1b4332] text-[10px] uppercase truncate">{s.full_name || s.username}</p>

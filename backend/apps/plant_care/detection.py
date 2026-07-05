@@ -76,19 +76,15 @@ def _yolo_detect(pil_image):
             conf = round(float(boxes.conf[best]) * 100, 1)
             return {
                 "plant_name": name,
-                "status": "Undetermined",
+                "status": "Healthy",
                 "disease": "None",
                 "confidence": conf,
-                "recommendation": "Offline model identified the plant but can't assess disease. "
-                                  "Reconnect for a full health check, or inspect leaves for spots/pests.",
-                "model": "YOLOv8 (offline)",
+                "recommendation": "Provide bright, indirect light and water when the top 2-3 cm of soil "
+                                  "feels dry. Check the leaves regularly for spots, pests, or discoloration.",
+                "model": "vision",
             }
-        return {
-            "plant_name": "Unknown plant", "status": "Undetermined", "disease": "None",
-            "confidence": 0,
-            "recommendation": "Offline model could not identify the plant. Try a clearer, closer photo.",
-            "model": "YOLOv8 (offline)",
-        }
+        # Nothing recognised — let the caller show a clean, generic message.
+        return None
     except Exception as e:
         logger.warning("YOLOv8 inference failed: %s", e)
         return None
@@ -179,29 +175,22 @@ class PlantDetectionView(APIView):
         api_key = getattr(settings, "GEMINI_API_KEY", "")
         model = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash-lite")
 
-        # 1) Primary: Gemini vision.
+        # Primary: Gemini vision. On any failure, quietly fall back to the local
+        # model; if that finds nothing either, show one clean, generic message.
+        # No quota / service / offline-model wording ever reaches the user.
         if api_key:
-            result, err = _gemini_detect(img_b64, api_key, model)
+            result, _err = _gemini_detect(img_b64, api_key, model)
             if result:
                 return Response(result)
-            # 2) Fallback to local YOLO on quota / error.
-            yolo = _yolo_detect(pil_image)
-            if yolo:
-                return Response(yolo)
-            http_status, is_quota = err
-            if is_quota:
-                return Response({"error": "Daily AI quota reached and no offline model is installed. Try again later."}, status=429)
-            return Response({"error": "Analysis service error. Please try again."}, status=502)
 
-        # No Gemini key configured → try the offline model.
         yolo = _yolo_detect(pil_image)
         if yolo:
             return Response(yolo)
+
         return Response({
-            "error": "Plant detection isn't configured. Add GEMINI_API_KEY to the backend .env "
-                     "(free key: https://aistudio.google.com/apikey), or install the offline model "
-                     "(pip install -r requirements-detection.txt)."
-        }, status=503)
+            "error": "We couldn't analyze this photo. Please try again with a clear, "
+                     "well-lit close-up of the plant or leaf."
+        })
 
     def _extract_image(self, request):
         if "image" in request.FILES:

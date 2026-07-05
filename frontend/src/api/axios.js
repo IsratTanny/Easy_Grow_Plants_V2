@@ -37,10 +37,9 @@ const responseErrorInterceptor = (error) => {
     const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/refresh');
     if (status === 401 && !isAuthEndpoint) {
         clearAuthToken();
+        // Soft, client-side sign-out via the 'authChange' listener + PrivateRoute.
+        // A hard window.location redirect white-screens the Capacitor WebView.
         window.dispatchEvent(new Event('authChange'));
-        if (window.location.pathname !== '/login') {
-            window.location.assign('/login');
-        }
     }
     return Promise.reject(error);
 };

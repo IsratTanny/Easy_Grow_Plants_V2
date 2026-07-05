@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Mic, MicOff } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
@@ -97,21 +98,21 @@ const INTENTS = [
     { route: '/ar-decorator', label: 'AR Decorator', keywords: ['ar decorator', 'augmented', 'decorate', 'visualize', 'ar view', 'room design', 'plant visualizer', 'ভার্চুয়াল', 'সাজাও', 'ঘর সাজা'], word: 'ar' },
     { route: '/track-order', label: 'Order Tracking', keywords: ['track order', 'order status', 'my order', 'where is my order', 'track my', 'track', 'ট্র্যাক', 'অর্ডার', 'অর্ডার স্ট্যাটাস'] },
     { route: '/expert-potting', label: 'Expert Potting', keywords: ['expert potting', 'repot', 're-pot', 'pot my plant', 'potting service', 'potting', 'পটিং', 'রিপট', 'টব বদল'] },
-    { route: '/devices', label: 'Devices', keywords: ['smart pot', 'iot', 'my device', 'device', 'sensor', 'monitor', 'ডিভাইস', 'যন্ত্র', 'সেন্সর', 'স্মার্ট পট'] },
+    { route: '/devices', label: 'Devices', keywords: ['smart pot', 'iot', 'my device', 'device', 'sensor', 'monitor', 'ডিভাইস', 'যন্ত্র', 'সেন্সর', 'স্মার্ট পট', 'jontro', 'smart pot'] },
     { route: '/community', label: 'Community', keywords: ['community', 'forum', 'feed', 'social', 'post', 'কমিউনিটি', 'ফোরাম', 'পোস্ট'] },
     { route: '/register-botanist', label: 'Botanist Registration', keywords: ['become a botanist', 'register botanist', 'join botanist', 'botanist registration', 'apply botanist', 'বোটানিস্ট হতে', 'বিশেষজ্ঞ হতে', 'বোটানিস্ট রেজিস্ট্রেশন'] },
     { route: '/plant-doctor', label: 'Plant Doctor', keywords: ['plant doctor', 'doctor', 'book appointment', 'botanist visit', 'sick plant', 'গাছের ডাক্তার', 'ডাক্তার', 'অ্যাপয়েন্টমেন্ট'] },
-    { route: '/detect-plant', label: 'Disease Detection', keywords: ['detect', 'disease', 'diagnos', 'scan plant', 'identify problem', 'sick leaf', 'রোগ', 'স্ক্যান', 'রোগ নির্ণয়'] },
+    { route: '/detect-plant', label: 'Disease Detection', keywords: ['detect', 'disease', 'diagnos', 'scan plant', 'identify problem', 'sick leaf', 'রোগ', 'স্ক্যান', 'রোগ নির্ণয়', 'rog', 'scan'] },
     { route: '/smart-finder', label: 'Smart Plant Finder', keywords: ['smart finder', 'find plant', 'suggest plant', 'recommend plant', 'which plant', 'plant finder', 'গাছ খুঁজে', 'সাজেস্ট', 'কোন গাছ'] },
     { route: '/plant-care?tab=subscription', label: 'Subscription Plans', keywords: ['subscription', 'subscribe', 'care plan', 'monthly plan', 'সাবস্ক্রিপশন', 'প্ল্যান'] },
-    { route: '/plant-care', label: 'Plant Care', keywords: ['plant care', 'care guide', 'how to care', 'caring for', 'watering guide', 'care instruction', 'পরিচর্যা', 'যত্ন', 'কেয়ার গাইড', 'গাছের যত্ন'] },
+    { route: '/plant-care', label: 'Plant Care', keywords: ['plant care', 'care guide', 'how to care', 'caring for', 'watering guide', 'care instruction', 'পরিচর্যা', 'যত্ন', 'কেয়ার গাইড', 'গাছের যত্ন', 'jotno', 'porichorja'] },
     { route: '/notifications', label: 'Notifications', keywords: ['notification', 'alert', 'my notice', 'নোটিফিকেশন', 'বিজ্ঞপ্তি'] },
     { route: '/dashboard', label: 'Dashboard', keywords: ['dashboard', 'my garden', 'overview', 'ড্যাশবোর্ড', 'আমার বাগান'] },
     { route: '/profile', label: 'Profile', keywords: ['my profile', 'profile', 'my account', 'account setting', 'settings', 'প্রোফাইল', 'অ্যাকাউন্ট', 'সেটিংস'] },
     { route: '/help-center', label: 'Help Center', keywords: ['help center', 'help', 'support', 'faq', 'সাহায্য', 'হেল্প', 'সহায়তা'] },
-    { route: '/marketplace', label: 'Marketplace', keywords: ['marketplace', 'market place', 'plants market', 'plant market', 'the market', 'market', 'shop', 'store', 'buy plant', 'buy a plant', 'browse plant', 'purchase', 'মার্কেটপ্লেস', 'মার্কেট', 'বাজার', 'দোকান', 'কিনতে', 'গাছ কিনব', 'কেনাকাটা'] },
-    { action: 'water', keywords: ['water my', 'water the plant', 'record watering', 'পানি দাও', 'পানি দিলাম'] },
-    { action: 'fertilize', keywords: ['fertiliz', 'feed my plant', 'সার দাও', 'সার দিলাম'] },
+    { route: '/marketplace', label: 'Marketplace', keywords: ['marketplace', 'market place', 'plants market', 'plant market', 'the market', 'market', 'shop', 'store', 'buy plant', 'buy a plant', 'browse plant', 'purchase', 'মার্কেটপ্লেস', 'মার্কেট', 'বাজার', 'দোকান', 'কিনতে', 'গাছ কিনব', 'কেনাকাটা', 'dokan', 'bazar', 'bajar'] },
+    { action: 'water', keywords: ['water my', 'water the plant', 'record watering', 'পানি দাও', 'পানি দিলাম', 'পানি', 'pani dao', 'pani dilam'] },
+    { action: 'fertilize', keywords: ['fertiliz', 'feed my plant', 'সার দাও', 'সার দিলাম', 'সার দি', 'sar dao', 'shar dao'] },
     { route: '/login', label: 'Login', keywords: ['log in', 'login', 'sign in', 'লগইন', 'লগ ইন'] },
     { route: '/register', label: 'Register', keywords: ['register', 'sign up', 'create account', 'রেজিস্টার', 'সাইন আপ'] },
     { route: '/', label: 'Home', keywords: ['home page', 'go home', 'main page', 'landing page', 'front page', 'take me home', 'হোম', 'হোমপেজ', 'প্রথম পাতা'] },
@@ -175,6 +176,7 @@ Handle natural speech variations, spelling errors, mixed language (English/Bangl
 
 const VoiceAssistant = () => {
     const { language } = useLanguage();
+    const navigate = useNavigate();
     const [isListening, setIsListening]     = useState(false);
     const [isProcessing, setIsProcessing]   = useState(false);
     const [feedback, setFeedback]           = useState('');
@@ -200,7 +202,8 @@ const VoiceAssistant = () => {
         } catch (e) { console.warn('TTS failed:', e); }
     }, [language]);
 
-    // ── Navigate with hard redirect (avoids stale closures) ──
+    // ── Navigate client-side (React Router) — a hard window.location redirect
+    // white-screens the Capacitor WebView, so we use navigate() instead. ──
     const navigateTo = useCallback((path, label, confirmMsg) => {
         if (recognitionRef.current) {
             try { recognitionRef.current.stop(); } catch (e) {}
@@ -210,10 +213,8 @@ const VoiceAssistant = () => {
         speak(msg, bn ? 'bn-BD' : 'en-US');
         setFeedback(`✅ ${msg}`);
         setIsListening(false);
-        setTimeout(() => {
-            window.location.href = window.location.origin + path;
-        }, 600);
-    }, [speak, language]);
+        setTimeout(() => { navigate(path); }, 600);
+    }, [speak, language, navigate]);
 
     // ── Water Plant Action ──────────────────────────
     const waterUrgentPlant = useCallback(async (confirmMsg) => {
@@ -294,95 +295,19 @@ const VoiceAssistant = () => {
         setFeedback(`❓ ${msg}`);
     }, [language, speak]);
 
-    // ── Command processor: fast local router first, Gemini only if configured ──
-    const processVoiceCommand = useCallback(async (rawText) => {
+    // ── Command processor: fully offline bilingual router (no AI / no API calls) ──
+    const processVoiceCommand = useCallback((rawText) => {
         setIsProcessing(true);
         setFeedback(`🎙️ "${rawText}"`);
 
-        // 1) Instant offline bilingual routing — handles the vast majority of commands.
-        if (routeCommand(rawText)) {
-            setIsProcessing(false);
-            return;
-        }
-
-        // 2) Optional AI fallback — only if a Gemini API key is actually configured.
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) {
+        // Instant offline routing handles navigation + watering/fertilizing in
+        // both English and Bangla. If nothing matches, we say so — we never call
+        // any cloud AI here (keeps it fast, free, and offline-friendly).
+        if (!routeCommand(rawText)) {
             sayNotRecognized(rawText);
-            setIsProcessing(false);
-            return;
         }
-
-        setFeedback(`🎙️ "${rawText}" — thinking...`);
-        try {
-            const modelName = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash-lite';
-            const cleanModel = modelName.startsWith('models/') ? modelName : `models/${modelName}`;
-            const url = `https://generativelanguage.googleapis.com/v1beta/${cleanModel}:generateContent?key=${apiKey}`;
-
-            const payload = {
-                contents: [{
-                    parts: [{
-                        text: `${SYSTEM_PROMPT}\n\nUser command: "${rawText}"`
-                    }]
-                }],
-                generationConfig: {
-                    responseMimeType: 'application/json',
-                    maxOutputTokens: 120,   // Strict limit to save tokens
-                    temperature: 0.1,       // More deterministic routing
-                }
-            };
-
-            const res = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-                signal: AbortSignal.timeout(10000)
-            });
-
-            if (!res.ok) throw new Error(`Gemini API error: ${res.status}`);
-
-            const data = await res.json();
-            const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-            if (!text) throw new Error('Empty Gemini response');
-
-            const result = JSON.parse(text.trim());
-            const { status, intent, message } = result;
-
-            if (status === 'fallback' || status === 'clarify' || intent === 'unknown') {
-                const msg = message || "Sorry, I'm not sure what you mean. Try saying 'open ar decorator' or 'show my devices'.";
-                speak(msg, 'en-US');
-                setFeedback(`🤖 ${msg}`);
-                setIsProcessing(false);
-                return;
-            }
-
-            // Resolve intent to route or action
-            const route = INTENT_ROUTES[intent];
-
-            if (!route) {
-                const msg = message || "I understood but couldn't locate that page. Try another command.";
-                speak(msg, 'en-US');
-                setFeedback(`🤖 ${msg}`);
-                setIsProcessing(false);
-                return;
-            }
-
-            if (route === '__ACTION_WATER__') {
-                await waterUrgentPlant(message);
-            } else if (route === '__ACTION_FERTILIZE__') {
-                await fertilizeUrgentPlant(message);
-            } else {
-                const label = result.action || intent;
-                navigateTo(route, label, message);
-            }
-
-        } catch (err) {
-            console.warn('Gemini routing failed:', err.message);
-            sayNotRecognized(rawText);
-        } finally {
-            setIsProcessing(false);
-        }
-    }, [speak, navigateTo, waterUrgentPlant, fertilizeUrgentPlant, routeCommand, sayNotRecognized]);
+        setIsProcessing(false);
+    }, [routeCommand, sayNotRecognized]);
 
     // ── Start Speech Recognition ────────────────────
     // Chrome's Web Speech API sends audio to Google's servers. The Bangla
