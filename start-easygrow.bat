@@ -26,8 +26,8 @@ if not exist "%CD%\frontend\node_modules\" (
 )
 
 rem ---- pick free ports (backend 8000 then 8080, frontend 5173 then 5174) ----
-set "BPORT=8000"
-netstat -ano | findstr LISTENING | findstr ":8000 " >nul && set "BPORT=8080"
+rem Fixed backend port so the phone app + website always agree on it.
+set "BPORT=8080"
 set "FPORT=5173"
 netstat -ano | findstr LISTENING | findstr ":5173 " >nul && set "FPORT=5174"
 echo   Backend port: !BPORT!    Frontend port: !FPORT!

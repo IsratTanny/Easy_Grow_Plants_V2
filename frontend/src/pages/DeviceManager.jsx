@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { api } from '../api/axios';
 import { Cpu, Plus, Droplets, Wind, Clock, Trash2, ExternalLink, AlertCircle,
     Pencil, ImagePlus, BookOpen, X, Sparkles, Leaf } from 'lucide-react';
@@ -39,17 +39,29 @@ export default function DeviceManager() {
     const [guideText, setGuideText] = useState('');
     const [guideLoading, setGuideLoading] = useState(false);
     
+    // Keep the latest devices in a ref so the auto-ping interval below can read
+    // them without being torn down and recreated on every 5s poll.
+    const devicesRef = useRef([]);
+    useEffect(() => { devicesRef.current = devices; }, [devices]);
+
     // Initial fetch
     useEffect(() => {
         fetchDevices();
-        
-        // Poll for updates from backend every 5 seconds
-        // This allows real-time monitoring during calibration
+
+        // Poll the DB every 5 seconds so the dashboard shows fresh readings.
         const pollInterval = setInterval(() => {
             fetchDevices();
         }, 5000);
 
-        return () => clearInterval(pollInterval);
+        // Auto "Sync Now" (ping the Arduino directly) every 60 seconds, silently,
+        // for every device that has an IP — keeps moisture live without clicking.
+        const pingInterval = setInterval(() => {
+            devicesRef.current.forEach((d) => {
+                if (d.ip_address) refreshDeviceStatus(d, true);
+            });
+        }, 60000);
+
+        return () => { clearInterval(pollInterval); clearInterval(pingInterval); };
     }, []);
 
     const fetchDevices = async () => {
@@ -63,18 +75,18 @@ export default function DeviceManager() {
         }
     };
 
-    const refreshDeviceStatus = async (device) => {
+    const refreshDeviceStatus = async (device, silent = false) => {
         if (refreshing[device.device_id]) return;
-        
+
         setRefreshing(prev => ({ ...prev, [device.device_id]: true }));
         try {
-            // This endpoint still calls Arduino directly, so we keep it manual only
+            // Pings the Arduino directly and saves a fresh reading.
             const res = await api.get(`/devices/${device.device_id}/status/`);
             if (res.data.success) {
-                toast.success('Device status refreshed');
+                if (!silent) toast.success('Device status refreshed');
                 // Refresh list to get the newly saved telemetry in latest_reading
                 await fetchDevices();
-            } else {
+            } else if (!silent) {
                 toast.error(`Refresh failed: ${res.data.message}`);
             }
         } catch (err) {
