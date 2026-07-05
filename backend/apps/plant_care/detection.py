@@ -1,16 +1,22 @@
 """
-Plant Leaf Detection & Classification using YOLOv8 & Gemini AI Hybrid Pipeline
-Model: foduucom/plant-leaf-detection-and-classification (HuggingFace)
-"""
-import os
-import base64
-import tempfile
-import logging
-import requests
-import json
-from io import BytesIO
-from PIL import Image
+Plant leaf detection & health assessment.
 
+Primary  : Gemini vision (accurate species + health), key kept server-side,
+           image downscaled to 384px so each call is ~300 tokens.
+Fallback : local YOLOv8 model (foduucom/plant-leaf-detection-and-classification)
+           used automatically if the Gemini key is missing or its quota is hit.
+           Requires the optional deps in requirements-detection.txt
+           (ultralytics + torch); if those aren't installed the endpoint returns
+           a clear message instead of a fake result.
+"""
+import base64
+import json
+import logging
+from io import BytesIO
+
+import requests
+from PIL import Image
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -18,151 +24,280 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 logger = logging.getLogger(__name__)
 
-# Global model cache to avoid reloading on every request
-_model = None
+PROMPT = (
+    "You are an expert botanist and plant pathologist. Look carefully at this "
+    "plant/leaf photo and respond with ONLY a compact JSON object, no markdown:\n"
+    '{"plant_name":"most likely common name","status":"Healthy" or "Diseased",'
+    '"disease":"specific disease or pest name, or None if healthy",'
+    '"confidence":integer 0-100,'
+    '"recommendation":"one or two short, specific care sentences"}\n'
+    "Judge health strictly from visible symptoms (spots, wilting, pests, "
+    "discoloration). A green, unblemished leaf is Healthy with disease None. "
+    'If the image is not a plant, set plant_name to "Not a plant".'
+)
 
-def get_model():
-    """Lazily load and cache the YOLOv8 model from HuggingFace."""
-    global _model
-    if _model is None:
+# ── Local YOLOv8 fallback (lazy-loaded, cached) ──────────────────────────────
+_yolo_model = None
+_yolo_unavailable = False
+
+
+def _get_yolo():
+    global _yolo_model, _yolo_unavailable
+    if _yolo_model is not None or _yolo_unavailable:
+        return _yolo_model
+    try:
+        from ultralytics import YOLO
+        from huggingface_hub import hf_hub_download
+        path = hf_hub_download(repo_id="foduucom/plant-leaf-detection-and-classification", filename="best.pt")
+        _yolo_model = YOLO(path)
+        logger.info("YOLOv8 fallback model loaded.")
+    except Exception as e:
+        logger.warning("YOLOv8 fallback unavailable: %s", e)
+        _yolo_unavailable = True
+    return _yolo_model
+
+
+def _yolo_detect(pil_image):
+    """Return a result dict from the local model, or None if it can't run."""
+    model = _get_yolo()
+    if model is None:
+        return None
+    import tempfile, os
+    tmp_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
+            pil_image.save(tmp, format="JPEG", quality=85)
+            tmp_path = tmp.name
+        results = model.predict(source=tmp_path, save=False, conf=0.20, verbose=False)
+        if results and results[0].boxes is not None and len(results[0].boxes) > 0:
+            boxes = results[0].boxes
+            best = max(range(len(boxes)), key=lambda i: float(boxes.conf[i]))
+            name = results[0].names.get(int(boxes.cls[best]), "Plant").replace("_", " ").title()
+            conf = round(float(boxes.conf[best]) * 100, 1)
+            return {
+                "plant_name": name,
+                "status": "Undetermined",
+                "disease": "None",
+                "confidence": conf,
+                "recommendation": "Offline model identified the plant but can't assess disease. "
+                                  "Reconnect for a full health check, or inspect leaves for spots/pests.",
+                "model": "YOLOv8 (offline)",
+            }
+        return {
+            "plant_name": "Unknown plant", "status": "Undetermined", "disease": "None",
+            "confidence": 0,
+            "recommendation": "Offline model could not identify the plant. Try a clearer, closer photo.",
+            "model": "YOLOv8 (offline)",
+        }
+    except Exception as e:
+        logger.warning("YOLOv8 inference failed: %s", e)
+        return None
+    finally:
+        if tmp_path:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
+
+
+def _gemini_detect(img_b64, api_key, model):
+    """Return (result_dict, None) on success, or (None, (http_status, is_quota)) on failure."""
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+    payload = {
+        "contents": [{"parts": [
+            {"text": PROMPT},
+            {"inline_data": {"mime_type": "image/jpeg", "data": img_b64}},
+        ]}],
+        "generationConfig": {"responseMimeType": "application/json", "maxOutputTokens": 220, "temperature": 0},
+    }
+    import time
+    r = None
+    for attempt in range(3):
         try:
-            from ultralytics import YOLO
-            from huggingface_hub import hf_hub_download
-            logger.info("Loading YOLOv8 plant detection model via hf_hub_download...")
-            # Download model weight file directly from HF hub
-            model_path = hf_hub_download(
-                repo_id="foduucom/plant-leaf-detection-and-classification", 
-                filename="best.pt"
-            )
-            _model = YOLO(model_path)
-            logger.info("YOLOv8 model loaded successfully.")
-        except Exception as e:
-            logger.error(f"Failed to load YOLOv8 model: {e}")
-            raise
-    return _model
+            r = requests.post(url, json=payload, timeout=25)
+        except requests.RequestException as e:
+            logger.error("Gemini request failed: %s", e)
+            return None, (502, False)
+        # Retry transient server overloads (500/503), which are common and brief.
+        if r.status_code in (500, 503) and attempt < 2:
+            time.sleep(1.2 * (attempt + 1))
+            continue
+        break
 
+    if r.status_code != 200:
+        msg = ""
+        try:
+            msg = r.json().get("error", {}).get("message", "")
+        except Exception:
+            pass
+        logger.error("Gemini API %s: %s", r.status_code, msg)
+        is_quota = r.status_code == 429 or "quota" in msg.lower() or "leaked" in msg.lower()
+        return None, (r.status_code, is_quota)
 
-# Fallback recommendations mapped to common detections
-RECOMMENDATIONS = {
-    "healthy": "Your plant looks great! Keep up the current care routine with proper watering and sunlight.",
-    "leaf_spot": "Detected Leaf Spot disease. Remove affected leaves, improve air circulation, and avoid overhead watering.",
-    "powdery_mildew": "Powdery Mildew detected. Apply a fungicide spray and ensure good airflow around the plant.",
-    "rust": "Rust disease detected. Remove infected leaves and apply a copper-based fungicide.",
-    "blight": "Blight detected. Remove all affected tissue immediately and apply appropriate fungicide treatment.",
-    "nutrient_deficiency": "Signs of nutrient deficiency. Consider a balanced fertilizer and check soil pH levels.",
-    "pest_damage": "Pest damage detected. Inspect the plant closely and apply appropriate insecticide or neem oil.",
-    "default_diseased": "Disease detected on your plant. Isolate the plant, remove affected leaves, and consider appropriate care.",
-    "default_healthy": "No significant issues detected. Maintain regular watering and appropriate light conditions.",
-}
+    try:
+        parsed = json.loads(r.json()["candidates"][0]["content"]["parts"][0]["text"])
+    except (KeyError, IndexError, ValueError) as e:
+        logger.error("Bad Gemini response: %s", e)
+        return None, (502, False)
 
-
-def get_recommendation(class_name, is_healthy):
-    """Get care recommendation based on detection class."""
-    key = class_name.lower().replace(" ", "_").replace("-", "_")
-    if is_healthy:
-        return RECOMMENDATIONS.get(key, RECOMMENDATIONS["default_healthy"])
-    return RECOMMENDATIONS.get(key, RECOMMENDATIONS["default_diseased"])
+    status = str(parsed.get("status", "Healthy")).capitalize()
+    disease = parsed.get("disease") or "None"
+    if status != "Diseased":
+        status, disease = "Healthy", "None"
+    try:
+        confidence = max(0, min(100, int(round(float(parsed.get("confidence", 90))))))
+    except (TypeError, ValueError):
+        confidence = 90
+    return {
+        "plant_name": parsed.get("plant_name") or "Unknown plant",
+        "status": status,
+        "disease": disease,
+        "confidence": confidence,
+        "recommendation": parsed.get("recommendation") or "Maintain regular watering and appropriate light.",
+        "model": "Gemini Vision",
+    }, None
 
 
 class PlantDetectionView(APIView):
-    """
-    API endpoint for plant leaf detection and classification.
-    Accepts either:
-      - A base64-encoded image in JSON body: {"image": "data:image/jpeg;base64,..."}
-      - A file upload via multipart form: file field named "image"
-    """
+    """POST an image (multipart 'image' file, or base64 in JSON 'image') -> JSON result."""
     permission_classes = [AllowAny]
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def post(self, request):
-        try:
-            # 1. Extract image
-            raw_base64 = request.data.get("image", "")
-            pil_image = self._extract_image(request)
-            if pil_image is None:
-                return Response(
-                    {"error": "No image provided. Send base64 in 'image' field or upload a file."},
-                    status=400
-                )
+        pil_image = self._extract_image(request)
+        if pil_image is None:
+            return Response({"error": "No image provided."}, status=400)
 
-            # If multipart file uploaded, convert to base64 for Gemini
-            if not raw_base64:
-                buffered = BytesIO()
-                pil_image.save(buffered, format="JPEG")
-                raw_base64 = "data:image/jpeg;base64," + base64.b64encode(buffered.getvalue()).decode("utf-8")
+        # Downscale once; used for both Gemini (tokens) and YOLO.
+        pil_image.thumbnail((512, 512))
+        buf = BytesIO()
+        small = pil_image.copy()
+        small.thumbnail((384, 384))
+        small.save(buf, format="JPEG", quality=80)
+        img_b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
 
-            # 2. Run Local YOLOv8 Detection to identify plant species and bounding box
-            detections = []
-            yolo_plant_name = "Unknown Plant"
-            yolo_confidence = 0
-            
-            try:
-                with tempfile.NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
-                    pil_image.save(tmp, format="JPEG", quality=85)
-                    tmp_path = tmp.name
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        model = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash-lite")
 
-                try:
-                    model = get_model()
-                    results = model.predict(source=tmp_path, save=False, conf=0.20, verbose=False)
-                finally:
-                    if os.path.exists(tmp_path):
-                        os.unlink(tmp_path)
+        # 1) Primary: Gemini vision.
+        if api_key:
+            result, err = _gemini_detect(img_b64, api_key, model)
+            if result:
+                return Response(result)
+            # 2) Fallback to local YOLO on quota / error.
+            yolo = _yolo_detect(pil_image)
+            if yolo:
+                return Response(yolo)
+            http_status, is_quota = err
+            if is_quota:
+                return Response({"error": "Daily AI quota reached and no offline model is installed. Try again later."}, status=429)
+            return Response({"error": "Analysis service error. Please try again."}, status=502)
 
-                if results and len(results) > 0:
-                    result = results[0]
-                    if result.boxes is not None and len(result.boxes) > 0:
-                        for box in result.boxes:
-                            cls_id = int(box.cls[0])
-                            conf = float(box.conf[0])
-                            class_name = result.names.get(cls_id, f"class_{cls_id}")
-                            coords = box.xyxy[0].tolist()  # [x1, y1, x2, y2]
-                            detections.append({
-                                "class": class_name,
-                                "confidence": round(conf * 100, 1),
-                                "bbox": [round(c, 1) for c in coords],
-                            })
-                        
-                        # Sort by confidence, set primary detection
-                        detections.sort(key=lambda d: d["confidence"], reverse=True)
-                        yolo_plant_name = detections[0]["class"].replace("_", " ").title()
-                        yolo_confidence = detections[0]["confidence"]
-            except Exception as yolo_err:
-                logger.warning(f"Local YOLOv8 inference failed: {yolo_err}")
-
-            # Return the YOLOv8 detection result
-            # The frontend will use this plant name as a hint for the Gemini helper
-            return Response({
-                "plant_name": yolo_plant_name,
-                "confidence": yolo_confidence,
-                "all_detections": detections,
-                "model": "YOLOv8 (foduucom/plant-leaf-detection-and-classification)"
-            })
-
-        except Exception as e:
-            logger.error(f"Plant detection error: {e}", exc_info=True)
-            return Response(
-                {"error": f"Detection failed: {str(e)}"},
-                status=500
-            )
+        # No Gemini key configured → try the offline model.
+        yolo = _yolo_detect(pil_image)
+        if yolo:
+            return Response(yolo)
+        return Response({
+            "error": "Plant detection isn't configured. Add GEMINI_API_KEY to the backend .env "
+                     "(free key: https://aistudio.google.com/apikey), or install the offline model "
+                     "(pip install -r requirements-detection.txt)."
+        }, status=503)
 
     def _extract_image(self, request):
-        """Extract PIL Image from either base64 JSON or file upload."""
-        # Check for file upload
         if "image" in request.FILES:
-            file = request.FILES["image"]
-            return Image.open(file).convert("RGB")
-
-        # Check for base64 in JSON body
-        base64_data = request.data.get("image", "")
-        if base64_data:
-            # Strip data URL prefix if present
-            if "," in base64_data:
-                base64_data = base64_data.split(",", 1)[1]
             try:
-                img_bytes = base64.b64decode(base64_data)
-                return Image.open(BytesIO(img_bytes)).convert("RGB")
-            except Exception as e:
-                logger.warning(f"Failed to decode base64 image: {e}")
+                return Image.open(request.FILES["image"]).convert("RGB")
+            except Exception:
                 return None
-
+        data = request.data.get("image", "")
+        if data:
+            if "," in data:
+                data = data.split(",", 1)[1]
+            try:
+                return Image.open(BytesIO(base64.b64decode(data))).convert("RGB")
+            except Exception:
+                return None
         return None
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Chatbot — "Easy Grow Expert" (Gemini text/vision, server-side key, low token)
+# ─────────────────────────────────────────────────────────────────────────────
+CHAT_SYSTEM = (
+    "You are the 'Easy Grow Expert', a friendly professional botanist for a plant "
+    "care app. Answer the user's question in at most 2-3 short, direct sentences. "
+    "No greetings or filler. If a photo is attached, identify the plant and any "
+    "issue. Give one clear, practical care instruction. Plain text only."
+)
+
+
+def _offline_chat(message):
+    """Keyword fallback so the chatbot still helps if Gemini is unavailable."""
+    t = (message or "").lower()
+    if any(k in t for k in ("snake plant", "sansevieria")):
+        return "Snake plants tolerate low light and need water only when the soil is fully dry (every 2-3 weeks). Overwatering is the main risk."
+    if any(k in t for k in ("succulent", "cactus")):
+        return "Give succulents bright, direct light and water deeply only when the soil is completely dry. Use a gritty, fast-draining mix."
+    if "pothos" in t:
+        return "Pothos thrive in low to bright indirect light. Water when the top 2 inches of soil feel dry, about weekly."
+    if "monstera" in t:
+        return "Monsteras like bright indirect light and a chunky, well-draining mix. Water when the top half of the soil is dry, and add a moss pole."
+    if any(k in t for k in ("yellow", "brown", "spot", "sick", "disease")):
+        return "Yellow leaves usually mean overwatering; crispy brown tips mean low humidity or underwatering; spots suggest fungal or bacterial infection."
+    if any(k in t for k in ("water", "watering")):
+        return "Check the soil first — water thoroughly only when the top 2 inches feel dry. Underwatering is safer than overwatering."
+    if any(k in t for k in ("fertil", "feed")):
+        return "Feed monthly in spring and summer with a balanced liquid fertilizer diluted to half strength; skip winter."
+    if any(k in t for k in ("soil", "potting")):
+        return "Use a well-draining mix: about 50% coco coir or peat, 30% perlite for aeration, and 20% compost."
+    return "Place plants in bright indirect light, water only when the topsoil is dry, use pots with drainage, and keep temperatures stable."
+
+
+def _downscale_b64(data):
+    try:
+        if "," in data:
+            data = data.split(",", 1)[1]
+        img = Image.open(BytesIO(base64.b64decode(data))).convert("RGB")
+        img.thumbnail((384, 384))
+        buf = BytesIO()
+        img.save(buf, format="JPEG", quality=80)
+        return base64.b64encode(buf.getvalue()).decode("utf-8")
+    except Exception:
+        return None
+
+
+class PlantChatView(APIView):
+    """POST {message, image?(base64)} -> {reply}. Gemini with an offline fallback."""
+    permission_classes = [AllowAny]
+    parser_classes = [JSONParser, MultiPartParser, FormParser]
+
+    def post(self, request):
+        message = (request.data.get("message") or "").strip()
+        image = request.data.get("image") or ""
+        if not message and not image:
+            return Response({"error": "Empty message."}, status=400)
+
+        api_key = getattr(settings, "GEMINI_API_KEY", "")
+        if not api_key:
+            return Response({"reply": _offline_chat(message)})
+
+        parts = [{"text": f"{CHAT_SYSTEM}\n\nUser: {message or 'Please analyse this plant photo.'}"}]
+        if image:
+            b = _downscale_b64(image)
+            if b:
+                parts.insert(0, {"inline_data": {"mime_type": "image/jpeg", "data": b}})
+
+        model = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash-lite")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        payload = {"contents": [{"parts": parts}],
+                   "generationConfig": {"maxOutputTokens": 160, "temperature": 0.5}}
+        try:
+            r = requests.post(url, json=payload, timeout=25)
+            if r.status_code == 200:
+                reply = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+                if reply:
+                    return Response({"reply": reply})
+        except Exception as e:
+            logger.warning("Chat Gemini failed: %s", e)
+        # Any failure / quota → graceful offline answer.
+        return Response({"reply": _offline_chat(message)})

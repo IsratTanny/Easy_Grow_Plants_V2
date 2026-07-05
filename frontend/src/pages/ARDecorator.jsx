@@ -1,36 +1,28 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { api } from '../api/axios';
 import toast from 'react-hot-toast';
 import {
     Box, Upload, Download, Trash2, FlipHorizontal, Plus, Minus,
     ImagePlus, Sparkles, X, Move,
 } from 'lucide-react';
 
-const PLACEHOLDER = 'https://images.unsplash.com/photo-1501004318641-729e8439a7df?q=80&w=400&auto=format&fit=crop';
-
-const resolveImg = (url) => {
-    if (!url) return PLACEHOLDER;
-    // Normalise backend-absolute media URLs (e.g. http://127.0.0.1:8080/media/..)
-    // to a same-origin relative path so the export canvas isn't tainted by CORS.
-    const mediaIdx = url.indexOf('/media/');
-    if (url.startsWith('http') && mediaIdx !== -1) return url.slice(mediaIdx);
-    return url;
-};
+// Clean, transparent-background potted plants (only pot + plant) so they drop
+// onto a room photo as proper cut-outs instead of rectangular photo tiles.
+const DECOR_PLANTS = [
+    { id: 'snake',     name: 'Snake Plant',  src: '/ar-plants/snake.svg' },
+    { id: 'rubber',    name: 'Rubber Plant', src: '/ar-plants/rubber.svg' },
+    { id: 'agave',     name: 'Agave',        src: '/ar-plants/agave.svg' },
+    { id: 'aloe',      name: 'Aloe Vera',    src: '/ar-plants/aloe.svg' },
+    { id: 'cactus',    name: 'Cactus',       src: '/ar-plants/cactus.svg' },
+    { id: 'succulent', name: 'Succulent',    src: '/ar-plants/succulent.svg' },
+];
 
 export default function ARDecorator() {
     const stageRef = useRef(null);
     const [roomImage, setRoomImage] = useState(null);
-    const [catalog, setCatalog] = useState([]);
     const [placed, setPlaced] = useState([]); // {uid, src, name, xPct, yPct, widthPct, flip}
     const [selectedUid, setSelectedUid] = useState(null);
     const dragState = useRef(null);
     const uidCounter = useRef(0);
-
-    useEffect(() => {
-        api.get('/plants/')
-            .then((res) => setCatalog((Array.isArray(res.data) ? res.data : res.data.results || []).slice(0, 18)))
-            .catch(() => setCatalog([]));
-    }, []);
 
     const handleRoomUpload = (e) => {
         const file = e.target.files[0];
@@ -46,9 +38,9 @@ export default function ARDecorator() {
         const uid = uidCounter.current;
         setPlaced((prev) => [...prev, {
             uid,
-            src: resolveImg(plant.image_url),
-            name: plant.plant_name,
-            xPct: 50, yPct: 60, widthPct: 22, flip: false,
+            src: plant.src,
+            name: plant.name,
+            xPct: 50, yPct: 62, widthPct: 20, flip: false,
         }]);
         setSelectedUid(uid);
     };
@@ -251,20 +243,21 @@ export default function ARDecorator() {
                         </div>
                     )}
 
-                    {/* Plant palette */}
+                    {/* Plant palette — clean transparent cut-outs */}
                     <div className="card p-5">
-                        <h3 className="font-black text-gray-900 mb-3">Plant Catalog</h3>
+                        <h3 className="font-black text-gray-900 mb-1">Plant Catalog</h3>
+                        <p className="text-xs text-gray-400 font-medium mb-3">Tap a plant to drop it in, then drag to position.</p>
                         <div className="grid grid-cols-3 gap-2 max-h-[360px] overflow-y-auto pr-1">
-                            {catalog.length === 0 ? (
-                                <p className="col-span-3 text-sm text-gray-400 font-medium text-center py-6">Loading plants…</p>
-                            ) : catalog.map((plant) => (
-                                <button key={plant.id} onClick={() => addPlant(plant)}
-                                    className="group relative aspect-square rounded-xl overflow-hidden border border-gray-100 hover:border-nature-300 transition-all">
-                                    <img src={resolveImg(plant.image_url)} alt={plant.plant_name}
-                                        onError={(e) => { e.target.src = PLACEHOLDER; }}
-                                        className="w-full h-full object-cover" />
-                                    <span className="absolute inset-0 bg-nature-900/0 group-hover:bg-nature-900/40 flex items-center justify-center transition-all">
-                                        <Plus className="w-6 h-6 text-white opacity-0 group-hover:opacity-100" />
+                            {DECOR_PLANTS.map((plant) => (
+                                <button key={plant.id} onClick={() => addPlant(plant)} title={plant.name}
+                                    className="group relative aspect-square rounded-xl overflow-hidden border border-gray-100 bg-nature-50/50 hover:border-nature-300 hover:bg-nature-50 transition-all p-1.5">
+                                    <img src={plant.src} alt={plant.name} draggable={false}
+                                        className="w-full h-full object-contain" />
+                                    <span className="absolute bottom-0 inset-x-0 text-[10px] font-bold text-nature-700 bg-white/70 py-0.5 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                                        {plant.name}
+                                    </span>
+                                    <span className="absolute inset-0 bg-nature-900/0 group-hover:bg-nature-900/10 flex items-center justify-center transition-all">
+                                        <Plus className="w-6 h-6 text-nature-700 opacity-0 group-hover:opacity-100" />
                                     </span>
                                 </button>
                             ))}

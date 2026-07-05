@@ -52,6 +52,10 @@ fi
 "$PY" manage.py runserver "0.0.0.0:$BPORT" >/tmp/easygrow-backend.log 2>&1 &
 BPID=$!
 
+# ── Start Arduino auto-discovery (LAN UDP listener) ──────────────────────────
+"$PY" manage.py device_discovery >/tmp/easygrow-discovery.log 2>&1 &
+DPID=$!
+
 # ── Start frontend on the chosen port ────────────────────────────────────────
 cd "$FRONTEND"
 npm run dev -- --port "$FPORT" --strictPort >/tmp/easygrow-frontend.log 2>&1 &

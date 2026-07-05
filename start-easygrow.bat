@@ -54,6 +54,7 @@ rem ---- start backend and frontend, each in its own window (helpers read the --
 rem ---- BPORT/FPORT/PY environment inherited from here) ----------------------
 start "Easy Grow Backend" "%CD%\run-backend.bat"
 start "Easy Grow Frontend" "%CD%\run-frontend.bat"
+start "Easy Grow Device Discovery" "%CD%\run-discovery.bat"
 
 rem ---- wait for the frontend, then open the browser ----
 echo   Starting servers, please wait...
@@ -68,6 +69,7 @@ echo      Backend : http://localhost:!BPORT!
 echo      Login   : Israt Sultana / EasyGrow123!
 echo      Admin   : admin / EasyGrow123!
 echo   ============================================================
-echo    Two server windows opened. CLOSE THEM to stop the servers.
+echo    Three windows opened (backend, frontend, device discovery).
+echo    CLOSE THEM to stop everything.
 echo(
 pause

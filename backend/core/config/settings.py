@@ -201,3 +201,8 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50 MB
 # Force reload at 04/08/2026 11:21:28
 # Reload
 # Emergency Reload
+
+# ── Gemini (Generative Language API) — used by plant detection & chatbot ──
+# Key is read from the environment (repo-root .env). Never commit a real key.
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+GEMINI_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-2.5-flash-lite')

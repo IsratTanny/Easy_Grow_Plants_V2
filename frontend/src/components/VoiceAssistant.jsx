@@ -385,6 +385,11 @@ const VoiceAssistant = () => {
     }, [speak, navigateTo, waterUrgentPlant, fertilizeUrgentPlant, routeCommand, sayNotRecognized]);
 
     // ── Start Speech Recognition ────────────────────
+    // Chrome's Web Speech API sends audio to Google's servers. The Bangla
+    // locale (bn-BD) intermittently returns a "network" error on many systems
+    // even with a working connection, while en-US is reliable. So in Bangla
+    // mode we try a fallback chain of locales; the bilingual intent router
+    // handles English/mixed speech, so the demo keeps working either way.
     const startListening = () => {
         if (isProcessing) return;
 
@@ -398,8 +403,13 @@ const VoiceAssistant = () => {
             try { recognitionRef.current.stop(); } catch (e) {}
         }
 
+        const langChain = language === 'bn' ? ['bn-BD', 'bn-IN', 'en-US'] : ['en-US'];
+        runRecognition(SpeechRecognition, langChain, 0);
+    };
+
+    const runRecognition = (SpeechRecognition, langChain, index) => {
         const recognition = new SpeechRecognition();
-        recognition.lang = language === 'bn' ? 'bn-BD' : 'en-US';
+        recognition.lang = langChain[index];
         recognition.continuous = false;
         recognition.interimResults = false;
         recognition.maxAlternatives = 1;
@@ -418,26 +428,41 @@ const VoiceAssistant = () => {
         };
 
         recognition.onerror = (event) => {
-            console.error('Speech error:', event.error);
+            console.error('Speech error:', event.error, '(lang', langChain[index] + ')');
+            // These errors are locale-related — silently try the next fallback locale.
+            const canFallback = ['network', 'language-not-supported', 'service-not-allowed']
+                .includes(event.error) && index < langChain.length - 1;
+            if (canFallback) {
+                recognitionRef.current = null;
+                setFeedback(language === 'bn' ? '🎙️ শুনছি...' : '🎙️ Listening...');
+                try { runRecognition(SpeechRecognition, langChain, index + 1); } catch (e) {}
+                return;
+            }
             setIsListening(false);
             if (event.error === 'no-speech') {
-                setFeedback("I didn't hear anything. Tap to try again.");
+                setFeedback(language === 'bn' ? 'কিছু শুনতে পাইনি। আবার চেষ্টা করুন।' : "I didn't hear anything. Tap to try again.");
             } else if (event.error === 'network') {
-                setFeedback('Network error. Check your internet connection.');
+                setFeedback(language === 'bn' ? 'ইন্টারনেট সংযোগ পরীক্ষা করুন।' : 'Network error. Check your internet connection.');
+            } else if (event.error === 'not-allowed') {
+                setFeedback(language === 'bn' ? 'মাইক্রোফোন অনুমতি দিন।' : 'Please allow microphone access.');
             } else {
                 setFeedback(`Error: ${event.error}. Please try again.`);
             }
         };
 
         recognition.onend = () => {
-            setIsListening(false);
-            recognitionRef.current = null;
+            // Only reset if this is still the active recognition — during a
+            // locale fallback a newer one may already be starting.
+            if (recognitionRef.current === recognition) {
+                setIsListening(false);
+                recognitionRef.current = null;
+            }
         };
 
         try {
             recognition.start();
         } catch (e) {
-            setFeedback('Could not start microphone. Please try again.');
+            setFeedback(language === 'bn' ? 'মাইক্রোফোন চালু করা যায়নি।' : 'Could not start microphone. Please try again.');
             setIsListening(false);
         }
     };

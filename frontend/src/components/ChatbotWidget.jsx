@@ -166,57 +166,14 @@ ROLE AWARENESS: User Role: ${userRole}.`;
         return `${response}\n\n*(Note: Running in offline expert mode)*`;
     };
 
+    // Chat runs through the backend, which holds the Gemini key server-side,
+    // keeps tokens low, and falls back to an offline expert if the quota is hit.
     const callGeminiAPI = async (textPrompt, base64Image = null) => {
-        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-        if (!apiKey) throw new Error("Missing VITE_GEMINI_API_KEY in .env file.");
-
-        let modelName = 'models/gemini-1.5-flash-latest';
-        try {
-            const modelsRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-            if (modelsRes.ok) {
-                const modelsData = await modelsRes.json();
-                const availableModels = modelsData.models || [];
-                const flashModel = availableModels.find(m => m.name.includes('flash') && m.supportedGenerationMethods?.includes('generateContent'));
-                const proModel = availableModels.find(m => m.name.includes('gemini-1.5-pro') && m.supportedGenerationMethods?.includes('generateContent'));
-                if (flashModel) modelName = flashModel.name;
-                else if (proModel) modelName = proModel.name;
-            }
-        } catch (e) {
-            console.warn("Model auto-detection failed, falling back to default:", modelName);
-        }
-
-        const cleanModelName = modelName.startsWith('models/') ? modelName : `models/${modelName}`;
-        const url = `https://generativelanguage.googleapis.com/v1beta/${cleanModelName}:generateContent?key=${apiKey}`;
-
-        const systemPromptLive = `IDENTITY: You are the "Easy Grow Expert," a professional botanist available 24/7.
-RULE 1: Provide short and moderate size answers (strictly under 2-3 sentences).
-RULE 2: Respond directly and concisely to save tokens. Do not use conversational filler or greetings.
-RULE 3: Analyze the uploaded image (if any) and user text. Identify plants and issues accurately.
-RULE 4: Provide one definitive care instruction or solution without code blocks or JSON.`;
-
-        const contents = [{
-            role: "user",
-            parts: [{ text: `SYSTEM INSTRUCTIONS:\n${systemPromptLive}\n\nUSER PROMPT: ${textPrompt}` }]
-        }];
-
-        if (base64Image) {
-            const mimeType = base64Image.split(';')[0].split(':')[1];
-            const data = base64Image.split(',')[1];
-            contents[0].parts.unshift({
-                inlineData: { data, mimeType }
-            });
-        }
-
-        const payload = {
-            contents,
-            generationConfig: {
-                maxOutputTokens: 120, // Strict token limit to prevent quota overuse!
-                temperature: 0.7
-            }
-        };
-
-        const data = await fetchWithRetry(url, payload);
-        return data.candidates[0].content.parts[0].text;
+        const { data } = await api.post('/plant-care/chat/', {
+            message: textPrompt,
+            image: base64Image || undefined,
+        });
+        return data.reply;
     };
 
     const handleSend = async () => {

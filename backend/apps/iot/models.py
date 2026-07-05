@@ -10,6 +10,10 @@ class Device(models.Model):
     name = models.CharField(max_length=100, default="My Device")
     plant_name = models.CharField(max_length=150, blank=True, default='')
     nickname = models.CharField(max_length=100, blank=True, default='')
+    plant_image = models.ImageField(upload_to='device_plants/', null=True, blank=True,
+                                    help_text="Photo of the plant on this pot")
+    care_guide = models.TextField(blank=True, default='',
+                                  help_text="AI-generated care guide for this plant")
     ip_address = models.GenericIPAddressField(null=True, blank=True, help_text="Local IP of the Arduino/ESP32 device")
     
     # Scheduling and Auto-Watering configurations

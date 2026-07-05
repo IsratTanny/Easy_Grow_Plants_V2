@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { Camera, Image as ImageIcon, X, RefreshCw, Leaf, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../i18n/LanguageContext';
+import { api } from '../api/axios';
 
 export default function PlantDetection() {
     const { t } = useLanguage();
@@ -97,120 +98,26 @@ export default function PlantDetection() {
     const processImage = async (base64Image) => {
         setIsDetecting(true);
         setResult(null);
-
-        let yoloPlantName = "Unknown Plant";
-        let yoloConfidence = 0;
-        let detections = [];
-
-        // ──── STEP 1: Local YOLOv8 Inference (Zero Tokens) ────
         try {
-            const response = await fetch('/api/plant-care/detect/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ image: base64Image }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data && data.plant_name) {
-                    yoloPlantName = data.plant_name;
-                    yoloConfidence = data.confidence || 0;
-                    detections = data.all_detections || [];
-                }
-            }
-        } catch (yoloErr) {
-            console.warn("Backend unavailable, falling back completely to Gemini:", yoloErr.message);
-        }
-
-        // ──── STEP 2: Gemini Helper for Disease Identification (Lightweight) ────
-        try {
-            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-            if (!apiKey) throw new Error("Missing VITE_GEMINI_API_KEY in .env file.");
-
-            // Use the exact model the user specified
-            const configuredModel = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash-lite';
-            const cleanModelName = configuredModel.startsWith('models/') ? configuredModel : `models/${configuredModel}`;
-            const url = `https://generativelanguage.googleapis.com/v1beta/${cleanModelName}:generateContent?key=${apiKey}`;
-
-            // We must shrink the image to a tiny size specifically for Gemini to save tokens
-            const tinyImageBase64 = await compressImage(base64Image, 512, 512);
-
-            const commaIndex = tinyImageBase64.indexOf(',');
-            const data = commaIndex !== -1 ? tinyImageBase64.substring(commaIndex + 1) : tinyImageBase64;
-            const mimeMatch = tinyImageBase64.match(/data:([a-zA-Z0-9]+\/[a-zA-Z0-9-.+]+).*,/);
-            const mimeType = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-            
-            const promptText = `You are a plant pathologist helper. The YOLOv8 model detected the plant as '${yoloPlantName}'. Identify the plant and detect any leaf diseases. Respond ONLY with a JSON object: {"plant_name": "Name", "disease": "Disease or 'None'", "status": "'Healthy' or 'Diseased'", "recommendation": "Brief advice"}`;
-
-            const payload = {
-                contents: [{
-                    parts: [
-                        { text: promptText },
-                        { inlineData: { mimeType: mimeType, data: data } }
-                    ]
-                }],
-                generationConfig: {
-                    responseMimeType: "application/json",
-                    maxOutputTokens: 150 // STRICT limit to save tokens during presentation
-                }
-            };
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-            const geminiResponse = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-
-            if (!geminiResponse.ok) {
-                throw new Error("Gemini API Failure");
-            }
-
-            const resData = await geminiResponse.json();
-            
-            if (resData.candidates && resData.candidates.length > 0) {
-                const text = resData.candidates[0].content.parts[0].text;
-                const parsed = JSON.parse(text);
-                
-                setResult({
-                    plant_name: parsed.plant_name || yoloPlantName,
-                    disease: parsed.disease || "None",
-                    status: parsed.status || "Healthy",
-                    confidence: yoloConfidence > 0 ? yoloConfidence : 92.5,
-                    recommendation: parsed.recommendation || "Maintain current care routines.",
-                    all_detections: detections,
-                    model: "YOLOv8 + Gemini Helper"
-                });
+            // The backend analyses the photo with Gemini vision (key stays server-side)
+            // and returns an accurate species + health assessment.
+            const { data } = await api.post('/plant-care/detect/', { image: base64Image });
+            if (data.error) {
+                setResult({ error: data.error });
             } else {
-                throw new Error("Invalid format");
+                setResult({
+                    plant_name: data.plant_name,
+                    disease: data.disease,
+                    status: data.status,
+                    confidence: data.confidence,
+                    recommendation: data.recommendation,
+                    model: data.model,
+                });
             }
-        } catch (error) {
-            console.warn("Gemini Helper failed, using Offline Fallback:", error);
-            
-            // ──── STEP 3: Ultimate Offline Fallback ────
-            const diseases = ['Healthy', 'Healthy', 'Leaf Spot', 'Powdery Mildew', 'Spider Mites', 'Nitrogen Deficiency', 'Healthy'];
-            const plants = ['Monstera Deliciosa', 'Golden Pothos', 'Snake Plant (Sansevieria)', 'Ficus Lyrata', 'Aloe Vera', 'Peace Lily', 'Spider Plant'];
-            
-            const randomPlant = yoloPlantName !== "Unknown Plant" ? yoloPlantName : plants[Math.floor(Math.random() * plants.length)];
-            const randomDisease = diseases[Math.floor(Math.random() * diseases.length)];
-            const isHealthy = randomDisease === 'Healthy';
-            
-            setResult({
-                plant_name: randomPlant,
-                disease: isHealthy ? 'None' : randomDisease,
-                status: isHealthy ? 'Healthy' : 'Diseased',
-                confidence: yoloConfidence,
-                recommendation: isHealthy 
-                    ? 'Your plant looks great! Maintain current watering and light conditions.' 
-                    : `Detected signs of ${randomDisease}. Isolate the plant and apply appropriate treatment.`,
-                model: "Offline Fallback",
-                all_detections: detections
-            });
+        } catch (err) {
+            const msg = err.response?.data?.error
+                || 'Could not analyse the image. Make sure the backend is running and try again.';
+            setResult({ error: msg });
         } finally {
             setIsDetecting(false);
         }

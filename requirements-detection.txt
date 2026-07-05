@@ -1,0 +1,7 @@
+# OPTIONAL — offline YOLOv8 fallback for Plant Detection.
+# Only needed if you want detection to keep working when the Gemini free quota
+# is exhausted. It is heavy (CPU PyTorch ~200 MB). Install with:
+#   venv/bin/pip install torch --index-url https://download.pytorch.org/whl/cpu
+#   venv/bin/pip install -r requirements-detection.txt
+ultralytics
+huggingface_hub

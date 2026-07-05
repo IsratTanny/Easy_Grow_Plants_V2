@@ -1,15 +1,88 @@
+import base64
 import random
 import time
+from io import BytesIO
+
 import requests
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from django.conf import settings
 from .models import Device, DeviceReading, ChatLog, WateringLog
 from .serializers import DeviceSerializer, DeviceReadingSerializer, ChatLogSerializer
 from django.utils import timezone
+
+
+def _offline_care_guide(plant_name):
+    """Generic care guide used when Gemini is unavailable (no key / quota)."""
+    name = plant_name or "your plant"
+    return (
+        f"Care guide for {name}:\n"
+        "• Light: Bright, indirect light. Avoid harsh direct afternoon sun.\n"
+        "• Water: Only when the top 2-3 cm of soil feels dry; empty any saucer so roots never sit in water.\n"
+        "• Soil: A well-draining potting mix with some perlite.\n"
+        "• Feeding: A balanced liquid fertilizer once a month in spring and summer.\n"
+        "• Watch for: Yellow leaves usually mean overwatering; crispy brown tips mean underwatering or dry air."
+    )
+
+
+def _generate_care_guide(device):
+    """Build a short, specific care guide from the device's plant info + photo.
+    Uses Gemini (low token) with a graceful offline fallback."""
+    api_key = getattr(settings, "GEMINI_API_KEY", "")
+    if not api_key:
+        return _offline_care_guide(device.plant_name)
+
+    prompt = (
+        "You are a plant-care expert. Write a concise care guide for this houseplant "
+        "as 5 short bullet lines covering Light, Water, Soil, Feeding, and one common "
+        "problem to watch for. Plain text, no markdown headers.\n"
+        f"Plant name: {device.plant_name or 'unknown'}. "
+        f"Nickname/location: {device.nickname or 'indoor'}. "
+        f"Owner waters when soil moisture drops below {device.moisture_threshold}%."
+    )
+    parts = [{"text": prompt}]
+
+    # Attach the plant photo (downscaled) if one was uploaded, so the guide can be
+    # tailored to the actual plant. Kept tiny to minimise tokens.
+    if device.plant_image:
+        try:
+            from PIL import Image
+            device.plant_image.open("rb")
+            img = Image.open(device.plant_image).convert("RGB")
+            img.thumbnail((384, 384))
+            buf = BytesIO()
+            img.save(buf, format="JPEG", quality=80)
+            b64 = base64.b64encode(buf.getvalue()).decode("utf-8")
+            parts.insert(0, {"inline_data": {"mime_type": "image/jpeg", "data": b64}})
+        except Exception:
+            pass
+        finally:
+            try:
+                device.plant_image.close()
+            except Exception:
+                pass
+
+    model = getattr(settings, "GEMINI_MODEL", "gemini-2.5-flash-lite")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+    payload = {"contents": [{"parts": parts}],
+               "generationConfig": {"maxOutputTokens": 260, "temperature": 0.4}}
+    try:
+        r = requests.post(url, json=payload, timeout=25)
+        if r.status_code == 200:
+            text = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+            if text:
+                return text
+    except Exception:
+        pass
+    return _offline_care_guide(device.plant_name)
+
+
 class DeviceViewSet(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
     lookup_field = 'device_id'
 
     def get_queryset(self):
@@ -17,6 +90,27 @@ class DeviceViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    def perform_update(self, serializer):
+        # If the plant identity changed, drop the cached guide so it regenerates.
+        old = self.get_object()
+        old_name, old_img = old.plant_name, bool(old.plant_image)
+        instance = serializer.save()
+        if instance.plant_name != old_name or bool(instance.plant_image) != old_img:
+            if instance.care_guide:
+                instance.care_guide = ''
+                instance.save(update_fields=['care_guide'])
+
+    @action(detail=True, methods=['post', 'get'], url_path='care-guide')
+    def care_guide(self, request, device_id=None):
+        """Return the stored care guide, regenerating it when missing or when
+        ?refresh=1 is passed (e.g. after editing the plant name/photo)."""
+        device = self.get_object()
+        refresh = str(request.query_params.get('refresh', '')).lower() in ('1', 'true', 'yes')
+        if refresh or not device.care_guide:
+            device.care_guide = _generate_care_guide(device)
+            device.save(update_fields=['care_guide'])
+        return Response({"care_guide": device.care_guide})
 
     @action(detail=True, methods=['get'], url_path='control-pump')
     def toggle_pump(self, request, device_id=None):

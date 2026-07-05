@@ -1,4 +1,5 @@
 #include <WiFiS3.h>
+#include <WiFiUdp.h>
 #include <ArduinoJson.h>
 
 // ===================== DEVICE SETTINGS =====================
@@ -9,11 +10,24 @@ char ssid[] = "Tanny";
 char pass[] = "israttan";
 
 // ===================== SERVER SETTINGS =====================
+// NOTE: The backend no longer needs to be hard-coded here. The device announces
+// itself over the LAN (UDP broadcast below) and the backend auto-detects it, so
+// changing DHCP IPs no longer break the presentation. serverAddress is only used
+// by the optional legacy telemetry push (disabled by default in loop()).
 char serverAddress[] = "10.206.38.220";
 int serverPort = 8000;
 
 WiFiServer server(80);
 WiFiClient client;
+
+// ===================== AUTO-DISCOVERY (UDP broadcast) =====================
+// The device shouts "{device_id, ip}" onto the local network every few seconds.
+// The backend's `python manage.py device_discovery` listener hears it and keeps
+// the registered device's IP up to date automatically — zero configuration.
+WiFiUDP udp;
+const int DISCOVERY_PORT = 45454;
+const unsigned long BROADCAST_INTERVAL = 4000; // announce presence every 4s
+unsigned long lastBroadcastAt = 0;
 
 // ===================== PIN SETTINGS =====================
 const int SENSOR_PIN = A0;
@@ -48,8 +62,32 @@ void setup() {
   // Safety: Force relay OFF immediately
   pinMode(RELAY_PIN, OUTPUT);
   turnPumpOff();
-  
+
   connectWiFi();
+  broadcastPresence(); // announce ourselves immediately on boot
+}
+
+// Compute the network broadcast address (e.g. 192.168.0.255) and shout our
+// identity + IP to every device on the LAN, including the backend listener.
+void broadcastPresence() {
+  if (WiFi.status() != WL_CONNECTED) return;
+
+  IPAddress ip = WiFi.localIP();
+  IPAddress mask = WiFi.subnetMask();
+  IPAddress bcast;
+  for (int i = 0; i < 4; i++) {
+    bcast[i] = (ip[i] & mask[i]) | (~mask[i] & 0xFF);
+  }
+
+  StaticJsonDocument<128> doc;
+  doc["device_id"] = myDeviceId;
+  doc["ip"] = ip.toString();
+  char buf[128];
+  size_t n = serializeJson(doc, buf);
+
+  udp.beginPacket(bcast, DISCOVERY_PORT);
+  udp.write((const uint8_t *)buf, n);
+  udp.endPacket();
 }
 
 void loop() {
@@ -57,11 +95,20 @@ void loop() {
   updateSensors();
   handleSafetyCutoff();
   handleInboundRequests();
-  
-  if (millis() - lastPushAt >= PUSH_INTERVAL) {
-    pushDataToServer();
-    lastPushAt = millis();
+
+  // Auto-discovery: announce our ID + current IP so the backend always finds us.
+  if (WiFi.status() == WL_CONNECTED && millis() - lastBroadcastAt >= BROADCAST_INTERVAL) {
+    broadcastPresence();
+    lastBroadcastAt = millis();
   }
+
+  // Legacy telemetry push disabled: the backend now pulls /data using the IP it
+  // learned via discovery, so we don't need (or want) a hard-coded backend IP.
+  // Re-enable only if you also set a correct serverAddress above.
+  // if (millis() - lastPushAt >= PUSH_INTERVAL) {
+  //   pushDataToServer();
+  //   lastPushAt = millis();
+  // }
 
   // Debug Calibration Monitor
   if (millis() - lastDebugPrint >= DEBUG_PRINT_INTERVAL) {
