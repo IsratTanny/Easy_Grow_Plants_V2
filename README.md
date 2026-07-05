@@ -55,23 +55,31 @@ npm run dev                              # app at http://localhost:5173
 ## 🖱️ One-click launcher (start everything by double-click)
 
 After the one-time setup above (venv + `npm install`), you can start the whole
-app with a desktop icon instead of typing commands.
+app by double-click instead of typing commands. The launcher starts both
+servers (auto-picking free ports), seeds demo data on first run, and opens the
+website in your browser.
+
+### 🪟 Windows
+
+Just **double-click `start-easygrow.bat`** in the repo folder — that's it.
+
+For a nice Desktop icon, double-click **`install-launcher.bat`** once; it creates
+a green-leaf **"Easy Grow Plants"** shortcut on your Desktop. Two small server
+windows open when it runs — **close them to stop the servers**.
+
+> First-time setup on Windows: `python -m venv venv`, then
+> `venv\Scripts\pip install -r requirements.txt`, then
+> `cd frontend && npm install --legacy-peer-deps`.
+
+### 🐧 Linux / 🍎 macOS
 
 ```bash
-# from the repo root, run once to create the desktop icon:
-bash install-launcher.sh
+bash install-launcher.sh   # run once → creates a Desktop icon
 ```
-
-This puts a green-leaf **"Easy Grow Plants"** icon on your Desktop (and in your
-app menu). **Double-click it** and it will:
-
-1. start the Django backend and the Vite frontend (auto-picking free ports),
-2. seed demo data on first run, and
-3. open the website in your browser (Edge/Chrome).
-
-Keep the little terminal window it opens; press **Ctrl+C** there to stop both
-servers. (On GNOME, if double-click is blocked the first time, right-click the
-icon → **Allow Launching**.) You can also just run `bash start-easygrow.sh`.
+Then **double-click** the "Easy Grow Plants" icon (or run `bash start-easygrow.sh`).
+Keep the terminal window it opens; press **Ctrl+C** to stop the servers. (On
+GNOME, if double-click is blocked the first time, right-click the icon →
+**Allow Launching**.)
 
 ---
 
