@@ -83,6 +83,41 @@ const INTENT_ROUTES = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Fast, offline, bilingual (English + Bangla) intent table. This is the PRIMARY
+// router — it runs instantly with no network call. Ordered most-specific first.
+// `keywords` are matched as case-insensitive substrings of the transcript.
+// `word` (optional) is matched on a word boundary (for short tokens like "ar").
+// ─────────────────────────────────────────────────────────────────────────────
+const INTENTS = [
+    { route: '/exchange-history', label: 'My Exchanges', keywords: ['exchange history', 'swap history', 'my swaps', 'my exchanges', 'trade history', 'বিনিময় ইতিহাস', 'আমার বিনিময়'] },
+    { route: '/exchange', label: 'Plant Exchange', keywords: ['plant exchange', 'exchange', 'swap plant', 'plant swap', 'trade plant', 'swap', 'বিনিময়', 'অদলবদল', 'গাছ বদল'] },
+    { route: '/nearby-sellers', label: 'Nearby Sellers', keywords: ['nearby seller', 'nearby', 'near me', 'nearest', 'local seller', 'nurser', 'close by', 'আশেপাশে', 'কাছাকাছি', 'কাছের', 'নার্সারি', 'কাছের দোকান'] },
+    { route: '/cart', label: 'Cart', keywords: ['shopping cart', 'my cart', 'cart', 'basket', 'my bag', 'shopping bag', 'checkout', 'কার্ট', 'ব্যাগ', 'ঝুড়ি', 'চেকআউট'] },
+    { route: '/reviews', label: 'Reviews', keywords: ['product review', 'review', 'rating', 'feedback', 'testimonial', 'রিভিউ', 'রেটিং', 'মতামত'] },
+    { route: '/ar-decorator', label: 'AR Decorator', keywords: ['ar decorator', 'augmented', 'decorate', 'visualize', 'ar view', 'room design', 'plant visualizer', 'ভার্চুয়াল', 'সাজাও', 'ঘর সাজা'], word: 'ar' },
+    { route: '/track-order', label: 'Order Tracking', keywords: ['track order', 'order status', 'my order', 'where is my order', 'track my', 'track', 'ট্র্যাক', 'অর্ডার', 'অর্ডার স্ট্যাটাস'] },
+    { route: '/expert-potting', label: 'Expert Potting', keywords: ['expert potting', 'repot', 're-pot', 'pot my plant', 'potting service', 'potting', 'পটিং', 'রিপট', 'টব বদল'] },
+    { route: '/devices', label: 'Devices', keywords: ['smart pot', 'iot', 'my device', 'device', 'sensor', 'monitor', 'ডিভাইস', 'যন্ত্র', 'সেন্সর', 'স্মার্ট পট'] },
+    { route: '/community', label: 'Community', keywords: ['community', 'forum', 'feed', 'social', 'post', 'কমিউনিটি', 'ফোরাম', 'পোস্ট'] },
+    { route: '/register-botanist', label: 'Botanist Registration', keywords: ['become a botanist', 'register botanist', 'join botanist', 'botanist registration', 'apply botanist', 'বোটানিস্ট হতে', 'বিশেষজ্ঞ হতে', 'বোটানিস্ট রেজিস্ট্রেশন'] },
+    { route: '/plant-doctor', label: 'Plant Doctor', keywords: ['plant doctor', 'doctor', 'book appointment', 'botanist visit', 'sick plant', 'গাছের ডাক্তার', 'ডাক্তার', 'অ্যাপয়েন্টমেন্ট'] },
+    { route: '/detect-plant', label: 'Disease Detection', keywords: ['detect', 'disease', 'diagnos', 'scan plant', 'identify problem', 'sick leaf', 'রোগ', 'স্ক্যান', 'রোগ নির্ণয়'] },
+    { route: '/smart-finder', label: 'Smart Plant Finder', keywords: ['smart finder', 'find plant', 'suggest plant', 'recommend plant', 'which plant', 'plant finder', 'গাছ খুঁজে', 'সাজেস্ট', 'কোন গাছ'] },
+    { route: '/plant-care?tab=subscription', label: 'Subscription Plans', keywords: ['subscription', 'subscribe', 'care plan', 'monthly plan', 'সাবস্ক্রিপশন', 'প্ল্যান'] },
+    { route: '/plant-care', label: 'Plant Care', keywords: ['plant care', 'care guide', 'how to care', 'caring for', 'watering guide', 'care instruction', 'পরিচর্যা', 'যত্ন', 'কেয়ার গাইড', 'গাছের যত্ন'] },
+    { route: '/notifications', label: 'Notifications', keywords: ['notification', 'alert', 'my notice', 'নোটিফিকেশন', 'বিজ্ঞপ্তি'] },
+    { route: '/dashboard', label: 'Dashboard', keywords: ['dashboard', 'my garden', 'overview', 'ড্যাশবোর্ড', 'আমার বাগান'] },
+    { route: '/profile', label: 'Profile', keywords: ['my profile', 'profile', 'my account', 'account setting', 'settings', 'প্রোফাইল', 'অ্যাকাউন্ট', 'সেটিংস'] },
+    { route: '/help-center', label: 'Help Center', keywords: ['help center', 'help', 'support', 'faq', 'সাহায্য', 'হেল্প', 'সহায়তা'] },
+    { route: '/marketplace', label: 'Marketplace', keywords: ['marketplace', 'market place', 'plants market', 'plant market', 'the market', 'market', 'shop', 'store', 'buy plant', 'buy a plant', 'browse plant', 'purchase', 'মার্কেটপ্লেস', 'মার্কেট', 'বাজার', 'দোকান', 'কিনতে', 'গাছ কিনব', 'কেনাকাটা'] },
+    { action: 'water', keywords: ['water my', 'water the plant', 'record watering', 'পানি দাও', 'পানি দিলাম'] },
+    { action: 'fertilize', keywords: ['fertiliz', 'feed my plant', 'সার দাও', 'সার দিলাম'] },
+    { route: '/login', label: 'Login', keywords: ['log in', 'login', 'sign in', 'লগইন', 'লগ ইন'] },
+    { route: '/register', label: 'Register', keywords: ['register', 'sign up', 'create account', 'রেজিস্টার', 'সাইন আপ'] },
+    { route: '/', label: 'Home', keywords: ['home page', 'go home', 'main page', 'landing page', 'front page', 'take me home', 'হোম', 'হোমপেজ', 'প্রথম পাতা'] },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Master System Prompt covering every single page and action in full detail
 // ─────────────────────────────────────────────────────────────────────────────
 const SYSTEM_PROMPT = `You are the AI routing and intent-detection engine for a voice assistant on the "Easy Grow Plants" website.
@@ -170,14 +205,15 @@ const VoiceAssistant = () => {
         if (recognitionRef.current) {
             try { recognitionRef.current.stop(); } catch (e) {}
         }
-        const msg = confirmMsg || `Moving to ${label}`;
-        speak(msg, 'en-US');
+        const bn = language === 'bn';
+        const msg = confirmMsg || (bn ? `${label} খুলছি` : `Opening ${label}`);
+        speak(msg, bn ? 'bn-BD' : 'en-US');
         setFeedback(`✅ ${msg}`);
         setIsListening(false);
         setTimeout(() => {
             window.location.href = window.location.origin + path;
         }, 600);
-    }, [speak]);
+    }, [speak, language]);
 
     // ── Water Plant Action ──────────────────────────
     const waterUrgentPlant = useCallback(async (confirmMsg) => {
@@ -231,80 +267,54 @@ const VoiceAssistant = () => {
         }
     }, [speak]);
 
-    // ── Local keyword fallback if Gemini is completely unavailable ──
-    const localFallbackRouter = useCallback((rawText) => {
-        const t = rawText.toLowerCase();
+    // ── Fast bilingual intent router (PRIMARY path — instant, no network) ──
+    const routeCommand = useCallback((rawText) => {
+        const t = (rawText || '').toLowerCase().trim();
+        if (!t) return false;
+        for (const it of INTENTS) {
+            const hit = it.keywords.some((k) => t.includes(k))
+                || (it.word && new RegExp(`\\b${it.word}\\b`).test(t));
+            if (!hit) continue;
+            if (it.action === 'water') waterUrgentPlant();
+            else if (it.action === 'fertilize') fertilizeUrgentPlant();
+            else navigateTo(it.route, it.label);
+            return true;
+        }
+        return false;
+    }, [navigateTo, waterUrgentPlant, fertilizeUrgentPlant]);
 
-        // 1. Shopping Cart (Must be checked BEFORE AR due to substring 'ar' inside 'cart')
-        if (t.includes('cart') || t.includes('checkout') || t.includes('ব্যাগ') || t.includes('কার্ট')) {
-            navigateTo('/cart', 'Cart');
-        }
-        // 2. Nearby Sellers (Must be checked BEFORE AR due to substring 'ar' inside 'nearby')
-        else if (t.includes('nearby') || t.includes('seller') || t.includes('local') || t.includes('আশেপাশে')) {
-            navigateTo('/nearby-sellers', 'Nearby Sellers');
-        }
-        // 3. Product Reviews (Must be checked BEFORE AR)
-        else if (t.includes('review') || t.includes('rating') || t.includes('feedback') || t.includes('রিভিউ') || t.includes('রেটিং') || t.includes('মতামত')) {
-            navigateTo('/reviews', 'Reviews');
-        }
-        // 4. AR Decorator (Use word boundaries for 'ar' so it doesn't match 'cart', 'nearby', 'marketplace')
-        else if (/\bar\b/.test(t) || t.includes('decorat') || t.includes('design') || t.includes('augmented') || t.includes('ভার্চুয়াল')) {
-            navigateTo('/ar-decorator', 'AR Decorator');
-        }
-        // 5. Order Tracking
-        else if (t.includes('track') || t.includes('order') || t.includes('ট্যাক')) {
-            navigateTo('/track-order', 'Order Tracking');
-        }
-        // 6. Device Manager
-        else if (t.includes('device') || t.includes('iot') || t.includes('pot') || t.includes('টব') || t.includes('যন্ত্র')) {
-            navigateTo('/devices', 'Device Manager');
-        }
-        // 7. Community Forum
-        else if (t.includes('commun') || t.includes('forum') || t.includes('blog') || t.includes('ব্লগ')) {
-            navigateTo('/community', 'Community');
-        }
-        // 8. Exchange / Swap
-        else if (t.includes('exchan') || t.includes('swap') || t.includes('বিনিময়')) {
-            navigateTo('/exchange', 'Exchange');
-        }
-        else if (t.includes('swap history') || t.includes('my swap') || t.includes('exchange history')) {
-            navigateTo('/exchange-history', 'Exchange History');
-        }
-        // 9. Botanist Registration
-        else if (t.includes('join botanist') || t.includes('register botanist') || t.includes('বিজ্ঞানী')) {
-            navigateTo('/register-botanist', 'Botanist Registration');
-        }
-        // 10. Standard features
-        else if (t.includes('market') || t.includes('buy') || t.includes('shop') || t.includes('কিন')) {
-            navigateTo('/marketplace', 'Marketplace');
-        } else if (t.includes('water') || t.includes('পানি')) {
-            waterUrgentPlant();
-        } else if (t.includes('fertil') || t.includes('সার')) {
-            fertilizeUrgentPlant();
-        } else if (t.includes('detect') || t.includes('disease') || t.includes('scan') || t.includes('রোগ')) {
-            navigateTo('/detect-plant', 'Disease Detection');
-        } else if (t.includes('doctor') || t.includes('botanist') || t.includes('ডাক্তার')) {
-            navigateTo('/plant-doctor', 'Plant Doctor');
-        } else if (t.includes('help') || t.includes('faq')) {
-            navigateTo('/help-center', 'Help Center');
-        } else if (t.includes('profile') || t.includes('care') || t.includes('dashboard')) {
-            navigateTo('/profile', 'Profile');
-        } else if (t.includes('home') || t.includes('back')) {
-            navigateTo('/', 'Home');
-        } else {
-            const msg = "I didn't recognize that command. Try 'open AR decorator' or 'show my cart'.";
-            speak(msg, 'en-US');
-            setFeedback(`❓ ${msg}`);
-        }
-    }, [navigateTo, speak, waterUrgentPlant, fertilizeUrgentPlant]);
+    // ── "Didn't understand" feedback (bilingual) ──
+    const sayNotRecognized = useCallback((rawText) => {
+        const bn = language === 'bn';
+        const heard = rawText ? (bn ? `শুনলাম: "${rawText}". ` : `Heard: "${rawText}". `) : '';
+        const msg = bn
+            ? `${heard}দুঃখিত, বুঝতে পারিনি। বলুন "মার্কেটপ্লেস খোলো" বা "কার্ট দেখাও"।`
+            : `${heard}Sorry, I didn't catch that. Try "open marketplace" or "show my cart".`;
+        speak(msg, bn ? 'bn-BD' : 'en-US');
+        setFeedback(`❓ ${msg}`);
+    }, [language, speak]);
 
-    // ── Gemini AI Intent Router ─────────────────────
+    // ── Command processor: fast local router first, Gemini only if configured ──
     const processVoiceCommand = useCallback(async (rawText) => {
         setIsProcessing(true);
-        setFeedback(`🎙️ "${rawText}" — thinking...`);
+        setFeedback(`🎙️ "${rawText}"`);
 
+        // 1) Instant offline bilingual routing — handles the vast majority of commands.
+        if (routeCommand(rawText)) {
+            setIsProcessing(false);
+            return;
+        }
+
+        // 2) Optional AI fallback — only if a Gemini API key is actually configured.
+        const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+        if (!apiKey) {
+            sayNotRecognized(rawText);
+            setIsProcessing(false);
+            return;
+        }
+
+        setFeedback(`🎙️ "${rawText}" — thinking...`);
         try {
-            const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
             const modelName = import.meta.env.VITE_GEMINI_MODEL || 'gemini-2.5-flash-lite';
             const cleanModel = modelName.startsWith('models/') ? modelName : `models/${modelName}`;
             const url = `https://generativelanguage.googleapis.com/v1beta/${cleanModel}:generateContent?key=${apiKey}`;
@@ -367,12 +377,12 @@ const VoiceAssistant = () => {
             }
 
         } catch (err) {
-            console.warn('Gemini routing failed, using local fallback:', err.message);
-            localFallbackRouter(rawText);
+            console.warn('Gemini routing failed:', err.message);
+            sayNotRecognized(rawText);
         } finally {
             setIsProcessing(false);
         }
-    }, [speak, navigateTo, waterUrgentPlant, fertilizeUrgentPlant, localFallbackRouter]);
+    }, [speak, navigateTo, waterUrgentPlant, fertilizeUrgentPlant, routeCommand, sayNotRecognized]);
 
     // ── Start Speech Recognition ────────────────────
     const startListening = () => {

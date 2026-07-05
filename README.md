@@ -52,6 +52,29 @@ npm run dev                              # app at http://localhost:5173
 
 ---
 
+## 🖱️ One-click launcher (start everything by double-click)
+
+After the one-time setup above (venv + `npm install`), you can start the whole
+app with a desktop icon instead of typing commands.
+
+```bash
+# from the repo root, run once to create the desktop icon:
+bash install-launcher.sh
+```
+
+This puts a green-leaf **"Easy Grow Plants"** icon on your Desktop (and in your
+app menu). **Double-click it** and it will:
+
+1. start the Django backend and the Vite frontend (auto-picking free ports),
+2. seed demo data on first run, and
+3. open the website in your browser (Edge/Chrome).
+
+Keep the little terminal window it opens; press **Ctrl+C** there to stop both
+servers. (On GNOME, if double-click is blocked the first time, right-click the
+icon → **Allow Launching**.) You can also just run `bash start-easygrow.sh`.
+
+---
+
 ## 🔑 Demo accounts
 
 | Role  | Username        | Password       |
