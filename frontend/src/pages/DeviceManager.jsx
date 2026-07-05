@@ -467,16 +467,15 @@ export default function DeviceManager() {
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Device IP Address</label>
-                                <input 
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Device IP Address <span className="text-gray-400 font-normal">(optional)</span></label>
+                                <input
                                     type="text"
-                                    required
                                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-nature-500 outline-none"
-                                    placeholder="e.g. 192.168.1.15"
+                                    placeholder="Auto-detected when the device powers on"
                                     value={newDevice.ip_address}
                                     onChange={(e) => setNewDevice({...newDevice, ip_address: e.target.value})}
                                 />
-                                <p className="text-[10px] text-gray-400 mt-1">Found in your Arduino Serial Monitor</p>
+                                <p className="text-[10px] text-gray-400 mt-1">Leave blank — the pot broadcasts its IP and the backend fills this in automatically.</p>
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>

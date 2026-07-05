@@ -67,26 +67,20 @@ class Command(BaseCommand):
             self._register(User, device_id, ip)
 
     def _register(self, User, device_id, ip):
+        # Update-only: we keep a registered device's IP fresh, but never
+        # auto-create one. This way the user adds the device once (with its
+        # device_id) and its IP is then tracked automatically — no duplicate
+        # device_id conflicts, and ownership stays correct.
         device = Device.objects.filter(device_id=device_id).first()
-        if device:
-            changed = device.ip_address != ip
-            device.ip_address = ip
-            device.is_active = True
-            device.last_seen = timezone.now()
-            device.save(update_fields=["ip_address", "is_active", "last_seen"])
-            tag = self.style.WARNING(f"IP updated -> {ip}") if changed else f"online @ {ip}"
-            self.stdout.write(f"  {device_id}: {tag}")
+        if not device:
+            self.stdout.write(
+                f"  {device_id} broadcasting @ {ip} — not registered yet. "
+                f"Add it on the Devices page (Device ID: {device_id}) to start tracking.")
             return
-
-        # Unknown device: auto-create it under an admin so it shows up on the
-        # dashboard immediately (owner can be reassigned later).
-        owner = User.objects.filter(is_superuser=True).first() or User.objects.first()
-        if not owner:
-            self.stdout.write(self.style.ERROR(
-                f"  {device_id} seen @ {ip} but no user exists to own it — create a user first."))
-            return
-        Device.objects.create(
-            device_id=device_id, name=device_id, ip_address=ip,
-            owner=owner, is_active=True, last_seen=timezone.now(),
-        )
-        self.stdout.write(self.style.SUCCESS(f"  {device_id}: NEW device registered @ {ip}"))
+        changed = device.ip_address != ip
+        device.ip_address = ip
+        device.is_active = True
+        device.last_seen = timezone.now()
+        device.save(update_fields=["ip_address", "is_active", "last_seen"])
+        tag = self.style.WARNING(f"IP updated -> {ip}") if changed else f"online @ {ip}"
+        self.stdout.write(f"  {device_id}: {tag}")
