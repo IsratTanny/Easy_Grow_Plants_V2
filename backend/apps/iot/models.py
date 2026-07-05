@@ -51,8 +51,8 @@ class DeviceReading(models.Model):
     device = models.ForeignKey(Device, on_delete=models.CASCADE, related_name='readings')
     soil_moisture = models.FloatField(help_text="Calculated percentage")
     soil_raw = models.IntegerField(default=0, help_text="Raw analog value from sensor")
-    temperature = models.FloatField()
-    water_level = models.FloatField()
+    temperature = models.FloatField(default=0)
+    water_level = models.FloatField(default=0)
     pump_status = models.BooleanField(default=False, help_text="True if pump was ON during reading")
     timestamp = models.DateTimeField(auto_now_add=True)
 

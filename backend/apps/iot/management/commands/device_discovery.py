@@ -15,11 +15,12 @@ Neither the laptop nor the Arduino needs to know the other's IP in advance.
 import json
 import socket
 
+import requests
 from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 
-from backend.apps.iot.models import Device
+from backend.apps.iot.models import Device, DeviceReading
 
 DEFAULT_PORT = 45454
 
@@ -83,4 +84,27 @@ class Command(BaseCommand):
         device.last_seen = timezone.now()
         device.save(update_fields=["ip_address", "is_active", "last_seen"])
         tag = self.style.WARNING(f"IP updated -> {ip}") if changed else f"online @ {ip}"
-        self.stdout.write(f"  {device_id}: {tag}")
+
+        # Pull the latest sensor reading so the dashboard shows live moisture
+        # without the device needing to know the backend's address.
+        moisture = self._poll_reading(device, ip)
+        extra = f" | moisture {moisture}%" if moisture is not None else ""
+        self.stdout.write(f"  {device_id}: {tag}{extra}")
+
+    def _poll_reading(self, device, ip):
+        try:
+            r = requests.get(f"http://{ip}/data", timeout=2)
+            if r.status_code != 200:
+                return None
+            data = r.json()
+        except (requests.RequestException, ValueError):
+            return None
+        DeviceReading.objects.create(
+            device=device,
+            soil_moisture=data.get("moisture", 0),
+            soil_raw=data.get("soil_raw", 0),
+            temperature=data.get("temp", 0),
+            water_level=data.get("water_level", 0),
+            pump_status=bool(data.get("pump_status", False)),
+        )
+        return data.get("moisture")

@@ -299,8 +299,6 @@ void pushDataToServer() {
     doc["moisture"] = moisturePercent;
     doc["soil_raw"] = soilRaw;
     doc["pump_status"] = pumpActive;
-    doc["temp"] = 25; 
-    doc["water_level"] = 100;
     doc["ip"] = WiFi.localIP().toString();
     
     String jsonBody;

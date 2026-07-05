@@ -130,11 +130,21 @@ class DeviceViewSet(viewsets.ModelViewSet):
             r = requests.get(f"http://{device.ip_address}/data", timeout=3)
             r.raise_for_status()
             data = r.json()
-            
+
             # Update heartbeat since we got a valid response
             device.last_seen = timezone.now()
             device.save(update_fields=['last_seen'])
-            
+
+            # Persist the reading so the dashboard shows live moisture.
+            DeviceReading.objects.create(
+                device=device,
+                soil_moisture=data.get('moisture', 0),
+                soil_raw=data.get('soil_raw', 0),
+                temperature=data.get('temp', 0),
+                water_level=data.get('water_level', 0),
+                pump_status=bool(data.get('pump_status', False)),
+            )
+
             return Response({"success": True, "message": "Device status retrieved", "data": data})
         except requests.exceptions.Timeout:
             return Response({"success": False, "message": "Connection timed out. Device might be offline.", "data": {}}, status=status.HTTP_504_GATEWAY_TIMEOUT)

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api/axios';
-import { Cpu, Plus, Droplets, Thermometer, Wind, Clock, Trash2, ExternalLink, AlertCircle,
+import { Cpu, Plus, Droplets, Wind, Clock, Trash2, ExternalLink, AlertCircle,
     Pencil, ImagePlus, BookOpen, X, Sparkles, Leaf } from 'lucide-react';
 import { useLanguage } from '../i18n/LanguageContext';
 import toast from 'react-hot-toast';
@@ -284,18 +284,6 @@ export default function DeviceManager() {
                                         </span>
                                     </div>
                                     
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 text-gray-600">
-                                            <div className="bg-orange-50 p-2 rounded-lg">
-                                                <Thermometer className="w-5 h-5 text-orange-500" />
-                                            </div>
-                                            <span className="text-sm font-medium">Temperature</span>
-                                        </div>
-                                        <span className="text-lg font-bold text-nature-700">
-                                            {device.latest_reading?.temperature ?? 'N/A'}°C
-                                        </span>
-                                    </div>
-
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3 text-gray-600">
                                             <div className="bg-blue-50 p-2 rounded-lg">
